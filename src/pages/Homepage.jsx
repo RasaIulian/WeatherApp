@@ -24,7 +24,7 @@ export function Homepage() {
     let img_url =
       "https://maps.googleapis.com/maps/api/staticmap?center=" +
       latlon +
-      "&zoom=12&size=400x300&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
+      "&zoom=12&size=300x200&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
     document.getElementById("demo").innerHTML =
       "Latitude: " +
       position.coords.latitude +
