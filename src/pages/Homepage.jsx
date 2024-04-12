@@ -76,6 +76,7 @@ export function Homepage() {
     <>
       <h2>Geolocation Weather App</h2>
       <p>Click the button to get your coordinates and weather.</p>
+      <p>Location permission must be allowed.</p>
       <Button onClick={getLocation}>Try It</Button>
       <p id="demo"></p>
       <Map id="mapholder"></Map>
