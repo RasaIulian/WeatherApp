@@ -28,8 +28,10 @@ export function Homepage() {
     document.getElementById("demo").innerHTML =
       "Latitude: " +
       position.coords.latitude +
+      "°" +
       "<br>Longitude: " +
-      position.coords.longitude;
+      position.coords.longitude +
+      "°";
     document.getElementById("mapholder").src = img_url;
   };
 
@@ -83,13 +85,23 @@ export function Homepage() {
       <div>
         {weatherData && weatherData.current && (
           <div>
-            <h3>Current Weather for timezone {weatherData.timezone}:</h3>
+            <h3>Current Weather conditions:</h3>
             <p>Temperature: {weatherData.current.temp}°C</p>
             <p>Feels Like: {weatherData.current.feels_like}°C</p>
             <p>UV index: {weatherData.current.uvi}</p>
             <p>Wind Speed: {weatherData.current.wind_speed} km/h</p>
             <p>Humidity: {weatherData.current.humidity}%</p>
-            <p>Atmospheric Pressure: {weatherData.current.pressure}mbar</p>
+            <p>Atm. Pressure: {weatherData.current.pressure} mbar</p>
+            <p>
+              Sunrise:{" "}
+              {new Date(
+                weatherData.current.sunrise * 1000
+              ).toLocaleTimeString()}
+            </p>
+            <p>
+              Sunset:{" "}
+              {new Date(weatherData.current.sunset * 1000).toLocaleTimeString()}
+            </p>
             <p>Description: {weatherData.current.weather[0].description}</p>
 
             <AnimatedIcon
@@ -98,28 +110,28 @@ export function Homepage() {
             />
             <h3>Hourly Forecast</h3>
             <ul>
-              {weatherData.hourly.slice(0, 5).map((hour, index) => (
+              {weatherData.hourly.slice(0, 10).map((hour, index) => (
                 <li key={index}>
                   {new Date(hour.dt * 1000).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
-                  : {hour.temp} °C
+                  : {hour.temp}°C
                 </li>
               ))}
             </ul>
             <br />
             <h3>Daily Forecast</h3>
             <ul>
-              {weatherData.daily.slice(0, 3).map((day, index) => (
+              {weatherData.daily.slice(0, 5).map((day, index) => (
                 <li key={index}>
-                  {new Date(day.dt * 1000).toLocaleDateString([], {
+                  {new Date(day.dt * 1000).toLocaleDateString("en-US", {
                     weekday: "short",
                     month: "short",
                     day: "numeric",
                   })}
-                  : MIN: {day.temp.min}°C - MAX: {day.temp.max}°C <br />
-                  {day.weather[0].description}
+                  :<br /> MIN: {day.temp.min}°C - MAX: {day.temp.max}°C <br />
+                  {day.summary}
                   <br />
                   <AnimatedIcon
                     src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
