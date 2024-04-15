@@ -1,5 +1,6 @@
 Preview:<br>
-![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/64d63130-412e-4e76-b990-d2168c9fe424)
+![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/bbacd564-f4f5-424b-8241-2b5b45e648e6)
+
 
 # npm run deploy
 
