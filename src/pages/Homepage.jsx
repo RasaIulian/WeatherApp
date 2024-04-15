@@ -109,17 +109,17 @@ export function Homepage() {
               alt="Weather Icon"
             />
             <h3>Hourly Forecast</h3>
-            <ul>
-              {weatherData.hourly.slice(0, 10).map((hour, index) => (
-                <li key={index}>
-                  {new Date(hour.dt * 1000).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  : {hour.temp}°C
-                </li>
-              ))}
-            </ul>
+
+            {weatherData.hourly.slice(0, 10).map((hour, index) => (
+              <p key={index}>
+                {new Date(hour.dt * 1000).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+                : {hour.temp}°C
+              </p>
+            ))}
+
             <br />
             <h3>Daily Forecast</h3>
             <ul>
