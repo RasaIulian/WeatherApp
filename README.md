@@ -1,7 +1,9 @@
 Preview:<br>
 ![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/64d63130-412e-4e76-b990-d2168c9fe424)
 
+# npm run deploy
 
+Deployment to GitHub Pages
 
 # Getting Started with Create React App
 
