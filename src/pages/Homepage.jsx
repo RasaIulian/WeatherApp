@@ -42,7 +42,7 @@ export function Homepage() {
         break;
       case error.PERMISSION_DENIED:
         document.getElementById("demo").innerHTML =
-          "User denied the request for Geolocation.";
+          "You denied the request for GeoLocation.";
         break;
       case error.POSITION_UNAVAILABLE:
         document.getElementById("demo").innerHTML =
@@ -78,7 +78,7 @@ export function Homepage() {
     <>
       <h2>Geolocation Weather App</h2>
       <p>Click the button to get your coordinates and weather.</p>
-      <p>Location permission must be allowed.</p>
+      <p>Location permission must be accepted.</p>
       <Button onClick={getLocation}>Try It</Button>
       <p id="demo"></p>
       <Map id="mapholder"></Map>
