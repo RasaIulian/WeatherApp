@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getWeatherData } from "../components/getWeatherData/getWeatherData";
-import { AnimatedIcon, Button, Map } from "./Homepage.style";
+import { AnimatedIcon, Button, Map, Square } from "./Homepage.style";
 
 export function Homepage() {
   const [latitude, setLatitude] = useState(null);
@@ -8,8 +8,12 @@ export function Homepage() {
   const [weatherData, setWeatherData] = useState(null);
 
   const getLocation = () => {
+    const elementsToHide = document.getElementsByClassName("toHide");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition, showError);
+      for (let i = 0; i < elementsToHide.length; i++) {
+        elementsToHide[i].style.display = "none";
+      }
     } else {
       document.getElementById("demo").innerHTML =
         "Geolocation is not supported by this browser.";
@@ -24,13 +28,13 @@ export function Homepage() {
     let img_url =
       "https://maps.googleapis.com/maps/api/staticmap?center=" +
       latlon +
-      "&zoom=12&size=300x200&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
+      "&zoom=13&size=350x200&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
     document.getElementById("demo").innerHTML =
       "Latitude: " +
-      position.coords.latitude +
+      position.coords.latitude.toFixed(2) +
       "°" +
       "<br>Longitude: " +
-      position.coords.longitude +
+      position.coords.longitude.toFixed(2) +
       "°";
     document.getElementById("mapholder").src = img_url;
   };
@@ -74,12 +78,45 @@ export function Homepage() {
     }
   }, [latitude, longitude]);
   //   console.log(weatherData);
+
+  // UV-Index categorize
+  function getUVIndexCategory(uvIndex) {
+    if (uvIndex >= 1 && uvIndex <= 2) {
+      return "Low";
+    } else if (uvIndex > 2 && uvIndex <= 5) {
+      return "Moderate";
+    } else if (uvIndex > 5 && uvIndex <= 7) {
+      return "High";
+    } else if (uvIndex > 7 && uvIndex <= 10) {
+      return "Very High";
+    } else if (uvIndex > 10) {
+      return "Extreme";
+    } else {
+      return "Unknown"; // Handle unexpected values
+    }
+  }
+
+  // Atm Pressure categorize
+  function getPressureCategory(pressure) {
+    if (pressure < 1013.2) {
+      return "Low";
+    } else if (pressure >= 1013.2) {
+      return "High";
+    } else {
+      return "Unknown"; // Handle unexpected values
+    }
+  }
+
   return (
     <>
       <h2>Geolocation Weather App</h2>
-      <p>Click the button to get your coordinates and weather.</p>
-      <p>Location permission must be accepted.</p>
-      <Button onClick={getLocation}>Try It</Button>
+      <p className="toHide">
+        Click the button to get your coordinates and weather.
+      </p>
+      <p className="toHide">Location permission must be accepted.</p>
+      <Button onClick={getLocation} className="toHide">
+        Try It
+      </Button>
       <p id="demo"></p>
       <Map id="mapholder"></Map>
       <div>
@@ -88,10 +125,33 @@ export function Homepage() {
             <h3>Current Weather conditions:</h3>
             <p>Temperature: {weatherData.current.temp}°C</p>
             <p>Feels Like: {weatherData.current.feels_like}°C</p>
-            <p>UV index: {weatherData.current.uvi}</p>
+            <p>
+              UV index: {weatherData.current.uvi} -
+              <Square
+                style={{
+                  backgroundColor:
+                    getUVIndexCategory(weatherData.current.uvi) === "Low"
+                      ? "#2ecc71" // green
+                      : getUVIndexCategory(weatherData.current.uvi) ===
+                        "Moderate"
+                      ? "#f1c40f" // yellow
+                      : getUVIndexCategory(weatherData.current.uvi) === "High"
+                      ? "#e67e22" // orange
+                      : getUVIndexCategory(weatherData.current.uvi) ===
+                        "Very High"
+                      ? "#e74c3c" // red
+                      : "#8e44ad", // purple for Extreme or Unknown
+                }}
+              ></Square>
+              <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
+            </p>
+
             <p>Wind Speed: {weatherData.current.wind_speed} km/h</p>
             <p>Humidity: {weatherData.current.humidity}%</p>
-            <p>Atm. Pressure: {weatherData.current.pressure} mbar</p>
+            <p>
+              Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
+              <span>{getPressureCategory(weatherData.current.pressure)}</span>
+            </p>
             <p>
               Sunrise:{" "}
               {new Date(
@@ -109,17 +169,17 @@ export function Homepage() {
               alt="Weather Icon"
             />
             <h3>Hourly Forecast</h3>
-
-            {weatherData.hourly.slice(0, 10).map((hour, index) => (
-              <p key={index}>
-                {new Date(hour.dt * 1000).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                : {hour.temp}°C
-              </p>
-            ))}
-
+            <ul>
+              {weatherData.hourly.slice(0, 10).map((hour, index) => (
+                <li key={index}>
+                  {new Date(hour.dt * 1000).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  : {hour.temp}°C
+                </li>
+              ))}
+            </ul>
             <br />
             <h3>Daily Forecast</h3>
             <ul>
@@ -130,7 +190,7 @@ export function Homepage() {
                     month: "short",
                     day: "numeric",
                   })}
-                  :<br /> MIN: {day.temp.min}°C - MAX: {day.temp.max}°C <br />
+                  :<br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C <br />
                   {day.summary}
                   <br />
                   <AnimatedIcon

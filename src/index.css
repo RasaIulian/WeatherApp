@@ -1,11 +1,11 @@
 /* Start reset */
 html {
   font-size: 14px; /* 1 rem*/
-  line-height: 16px;
+  line-height: 18px;
 }
 
 body {
-  font-family: sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   padding: 5px;
   background-color: rgb(0 0 0 / 10%);
 }

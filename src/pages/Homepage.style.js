@@ -31,5 +31,13 @@ export const Button = styled.button`
 
 export const Map = styled.img`
   border-radius: 5px;
-  max-width: 300px;
+  max-width: 350px;
+`;
+
+export const Square = styled.span`
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-left: 5px;
+  border-radius: 3px;
 `;
