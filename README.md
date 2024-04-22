@@ -1,5 +1,11 @@
-Preview:<br>
-![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/bbacd564-f4f5-424b-8241-2b5b45e648e6)
+Preview:
+![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/3c65c862-84e0-4fa2-b14a-37e4e40f2acf)
+![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/0ff8c46e-60ad-4845-be2f-e42b0cbcb158)
+![Uploading image.png…]()
+
+
+
+
 
 
 # npm run deploy
