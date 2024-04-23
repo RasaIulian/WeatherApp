@@ -81,7 +81,7 @@ export function Homepage() {
 
   // UV-Index categorize
   function getUVIndexCategory(uvIndex) {
-    if (uvIndex >= 1 && uvIndex <= 2) {
+    if (uvIndex >= 0 && uvIndex <= 2) {
       return "Low";
     } else if (uvIndex > 2 && uvIndex <= 5) {
       return "Moderate";
@@ -131,16 +131,19 @@ export function Homepage() {
                 style={{
                   backgroundColor:
                     getUVIndexCategory(weatherData.current.uvi) === "Low"
-                      ? "#2ecc71" // green
+                      ? "#4eb400" // green
                       : getUVIndexCategory(weatherData.current.uvi) ===
                         "Moderate"
-                      ? "#f1c40f" // yellow
+                      ? "#f7e400" // yellow
                       : getUVIndexCategory(weatherData.current.uvi) === "High"
-                      ? "#e67e22" // orange
+                      ? "#f88700" // orange
                       : getUVIndexCategory(weatherData.current.uvi) ===
                         "Very High"
-                      ? "#e74c3c" // red
-                      : "#8e44ad", // purple for Extreme or Unknown
+                      ? "#d8001d" // red
+                      : getUVIndexCategory(weatherData.current.uvi) ===
+                        "Extreme"
+                      ? "#b54cff" // purple
+                      : "#f0f0f0", // unknown
                 }}
               ></Square>
               <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
