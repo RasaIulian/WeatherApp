@@ -12,7 +12,6 @@ const moveLeftRight = keyframes`
 export const AnimatedIcon = styled.img`
   animation: ${moveLeftRight} 6s infinite alternate ease-in-out; /* Adjust animation duration as needed */
   padding-top: 0;
-  margin-bottom: 15px;
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.05);
 `;
 
@@ -32,6 +31,7 @@ export const Button = styled.button`
 export const Map = styled.img`
   border-radius: 5px;
   max-width: 350px;
+  width: 100%;
 `;
 
 export const Square = styled.span`

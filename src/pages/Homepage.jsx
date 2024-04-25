@@ -119,90 +119,109 @@ export function Homepage() {
       </Button>
       <p id="demo"></p>
       <Map id="mapholder"></Map>
+
       <div>
         {weatherData && weatherData.current && (
           <div>
-            <h3>Current Weather conditions:</h3>
-            <p>Temperature: {weatherData.current.temp}°C</p>
-            <p>Feels Like: {weatherData.current.feels_like}°C</p>
-            <p>
-              UV index: {weatherData.current.uvi} -
-              <Square
-                style={{
-                  backgroundColor:
-                    getUVIndexCategory(weatherData.current.uvi) === "Low"
-                      ? "#4eb400" // green
-                      : getUVIndexCategory(weatherData.current.uvi) ===
-                        "Moderate"
-                      ? "#f7e400" // yellow
-                      : getUVIndexCategory(weatherData.current.uvi) === "High"
-                      ? "#f88700" // orange
-                      : getUVIndexCategory(weatherData.current.uvi) ===
-                        "Very High"
-                      ? "#d8001d" // red
-                      : getUVIndexCategory(weatherData.current.uvi) ===
-                        "Extreme"
-                      ? "#b54cff" // purple
-                      : "#f0f0f0", // unknown
-                }}
-              ></Square>
-              <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
-            </p>
-
-            <p>Wind Speed: {weatherData.current.wind_speed} km/h</p>
-            <p>Humidity: {weatherData.current.humidity}%</p>
-            <p>
-              Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
-              <span>{getPressureCategory(weatherData.current.pressure)}</span>
-            </p>
-            <p>
-              Sunrise:{" "}
-              {new Date(
-                weatherData.current.sunrise * 1000
-              ).toLocaleTimeString()}
-            </p>
-            <p>
-              Sunset:{" "}
-              {new Date(weatherData.current.sunset * 1000).toLocaleTimeString()}
-            </p>
-            <p>Description: {weatherData.current.weather[0].description}</p>
-
-            <AnimatedIcon
-              src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
-              alt="Weather Icon"
-            />
-            <h3>Hourly Forecast</h3>
-            <ul>
-              {weatherData.hourly.slice(0, 10).map((hour, index) => (
-                <li key={index}>
-                  {new Date(hour.dt * 1000).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  : {hour.temp}°C
-                </li>
-              ))}
-            </ul>
             <br />
-            <h3>Daily Forecast</h3>
-            <ul>
-              {weatherData.daily.slice(0, 5).map((day, index) => (
-                <li key={index}>
-                  {new Date(day.dt * 1000).toLocaleDateString("en-US", {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                  :<br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C <br />
-                  {day.summary}
-                  <br />
-                  <AnimatedIcon
-                    src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                    alt="Weather Icon"
-                  ></AnimatedIcon>
-                </li>
-              ))}
-            </ul>
+            <div>
+              <h3>Current Weather conditions:</h3>
+              <p>Temperature: {weatherData.current.temp}°C</p>
+              <p>Feels Like: {weatherData.current.feels_like}°C</p>
+              <p>
+                UV index: {weatherData.current.uvi} -
+                <Square
+                  style={{
+                    backgroundColor:
+                      getUVIndexCategory(weatherData.current.uvi) === "Low"
+                        ? "#4eb400" // green
+                        : getUVIndexCategory(weatherData.current.uvi) ===
+                          "Moderate"
+                        ? "#f7e400" // yellow
+                        : getUVIndexCategory(weatherData.current.uvi) === "High"
+                        ? "#f88700" // orange
+                        : getUVIndexCategory(weatherData.current.uvi) ===
+                          "Very High"
+                        ? "#d8001d" // red
+                        : getUVIndexCategory(weatherData.current.uvi) ===
+                          "Extreme"
+                        ? "#b54cff" // purple
+                        : "#f0f0f0", // unknown
+                  }}
+                ></Square>
+                <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
+              </p>
+
+              <p>Wind Speed: {weatherData.current.wind_speed} km/h</p>
+              <p>Humidity: {weatherData.current.humidity}%</p>
+              <p>
+                Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
+                <span>{getPressureCategory(weatherData.current.pressure)}</span>
+              </p>
+              <p>
+                Sunrise:{" "}
+                {new Date(
+                  weatherData.current.sunrise * 1000
+                ).toLocaleTimeString()}
+              </p>
+              <p>
+                Sunset:{" "}
+                {new Date(
+                  weatherData.current.sunset * 1000
+                ).toLocaleTimeString()}
+              </p>
+              <p>Description: {weatherData.current.weather[0].description}</p>
+
+              <AnimatedIcon
+                src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
+                alt="Weather Icon"
+              />
+            </div>
+            <br />
+            <div>
+              <h3>Hourly Forecast:</h3>
+              <ul>
+                {weatherData.hourly.slice(0, 10).map((hour, index) => (
+                  <li key={index}>
+                    <b>
+                      {new Date(hour.dt * 1000).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </b>
+                    : {hour.temp}°C, {hour.weather[0].description}{" "}
+                    <AnimatedIcon
+                      src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
+                      alt="Hourly Weather Icon"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <br />
+            <div>
+              <h3>Daily Forecast:</h3>
+              <ul>
+                {weatherData.daily.slice(0, 5).map((day, index) => (
+                  <li key={index}>
+                    <b>
+                      {new Date(day.dt * 1000).toLocaleDateString("en-US", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </b>
+                    :<br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C <br />
+                    {day.summary}
+                    <br />
+                    <AnimatedIcon
+                      src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                      alt="Weather Icon"
+                    ></AnimatedIcon>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         )}
       </div>
