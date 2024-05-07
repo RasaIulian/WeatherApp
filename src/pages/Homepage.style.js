@@ -28,6 +28,36 @@ export const Button = styled.button`
   }
 `;
 
+export const Select = styled.select`
+  padding: 5px 10px;
+  border: 1px solid #eaeaea;
+  border-radius: 3px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  background-color: #eaeaea;
+  transition: box-shadow 0.3s ease;
+  &:hover {
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  &:focus {
+    border: none;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Styles for active (selected) option */
+  option:checked {
+    border: none;
+    font-weight: bold;
+  }
+
+  /* Styles for inactive (unselected) options */
+  option:not(:checked) {
+    border: none;
+    outline: none;
+  }
+`;
+
 export const Map = styled.img`
   border-radius: 5px;
   max-width: 350px;

@@ -1,40 +1,47 @@
 import React, { useState, useEffect } from "react";
 import { getWeatherData } from "../components/getWeatherData/getWeatherData";
-import { AnimatedIcon, Button, Map, Square } from "./Homepage.style";
+import { AnimatedIcon, Button, Map, Square, Select } from "./Homepage.style";
 
 export function Homepage() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
+  const [selectVisible, setSelectVisible] = useState(false);
 
   const getLocation = () => {
     const elementsToHide = document.getElementsByClassName("toHide");
+
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition, showError);
+      navigator.geolocation.getCurrentPosition(
+        (position) =>
+          showPosition(position.coords.latitude, position.coords.longitude),
+        showError
+      );
       for (let i = 0; i < elementsToHide.length; i++) {
         elementsToHide[i].style.display = "none";
       }
+      setSelectVisible(true);
     } else {
       document.getElementById("demo").innerHTML =
         "Geolocation is not supported by this browser.";
     }
   };
 
-  const showPosition = (position) => {
-    setLatitude(position.coords.latitude);
-    setLongitude(position.coords.longitude);
+  const showPosition = (latitude, longitude) => {
+    setLatitude(latitude);
+    setLongitude(longitude);
 
-    let latlon = position.coords.latitude + "," + position.coords.longitude;
+    let latlon = latitude + "," + longitude;
     let img_url =
       "https://maps.googleapis.com/maps/api/staticmap?center=" +
       latlon +
       "&zoom=13&size=350x200&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
     document.getElementById("demo").innerHTML =
       "Latitude: " +
-      position.coords.latitude.toFixed(2) +
+      latitude.toFixed(2) +
       "°" +
       "<br>Longitude: " +
-      position.coords.longitude.toFixed(2) +
+      longitude.toFixed(2) +
       "°";
     document.getElementById("mapholder").src = img_url;
   };
@@ -117,9 +124,46 @@ export function Homepage() {
       <Button onClick={getLocation} className="toHide">
         Try It
       </Button>
+      {selectVisible && (
+        <Select
+          onChange={(e) => {
+            const selectedIndex = e.target.selectedIndex;
+            const selectedOption = e.target.options[selectedIndex];
+            const selectedLatitude = selectedOption.getAttribute("latitude");
+            const selectedLongitude = selectedOption.getAttribute("longitude");
+            if (
+              selectedLatitude === "current" &&
+              selectedLongitude === "current"
+            ) {
+              // Get current location using getLocation function
+              getLocation();
+            } else {
+              showPosition(
+                parseFloat(selectedLatitude),
+                parseFloat(selectedLongitude)
+              );
+            }
+          }}
+        >
+          <option latitude={latitude} longitude={longitude}>
+            Select from Favorites
+          </option>
+          <option latitude="current" longitude="current">
+            Current Location
+          </option>
+          <option latitude="45.768739" longitude="23.641838">
+            Dobra
+          </option>
+          <option latitude="45.806776" longitude="24.146329">
+            Sibiu
+          </option>
+          <option latitude="42.83695" longitude="-84.60515">
+            Dewitt, USA
+          </option>
+        </Select>
+      )}
       <p id="demo"></p>
       <Map id="mapholder"></Map>
-
       <div>
         {weatherData && weatherData.current && (
           <div>
