@@ -1,8 +1,9 @@
 Preview:<br>
 ![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/c7a43fd0-1b51-4137-8e8f-184254e6907d)
-![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/52cea141-96b2-4b2b-8c33-a2d93258b947)
-![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/69493629-391d-4c9d-aa5c-a8e6fbd81922)
-![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/57b25c59-e682-4217-8d2c-f16daff0b3ba)
+![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/1e1d16e5-17d7-4fd6-bb40-eaaf12b2b4e7)
+![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/6df0d400-2ce0-4af1-95cb-364b0a1a208d)
+
+
 
 
 
