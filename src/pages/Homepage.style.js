@@ -1,5 +1,28 @@
 import styled, { keyframes } from "styled-components";
 
+export const Container = styled.div`
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  p {
+    margin: 5px 0;
+  }
+  h3 {
+    margin-bottom: 0;
+  }
+`;
+
+export const ErrorMessage = styled.div`
+  background-color: #ffcdd2;
+  color: #c63737;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 10px 0;
+`;
+
 const moveLeftRight = keyframes`
   0% {
     transform: translateX(0);
@@ -10,7 +33,7 @@ const moveLeftRight = keyframes`
 `;
 
 export const AnimatedIcon = styled.img`
-  animation: ${moveLeftRight} 6s infinite alternate ease-in-out; /* Adjust animation duration as needed */
+  animation: ${moveLeftRight} 6s infinite alternate ease-in-out;
   padding-top: 0;
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.05);
 `;
@@ -29,7 +52,7 @@ export const Button = styled.button`
 `;
 
 export const Select = styled.select`
-  padding: 5px 10px;
+  padding: 5px;
   border: 1px solid #eaeaea;
   border-radius: 3px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -60,8 +83,9 @@ export const Select = styled.select`
 
 export const Map = styled.img`
   border-radius: 5px;
-  max-width: 350px;
+  max-width: 400px;
   width: 100%;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 `;
 
 export const Square = styled.span`
@@ -70,4 +94,8 @@ export const Square = styled.span`
   height: 15px;
   margin-left: 5px;
   border-radius: 3px;
+`;
+
+export const Alert = styled.div`
+  color: #d32f2f;
 `;

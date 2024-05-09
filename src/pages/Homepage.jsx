@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { getWeatherData } from "../components/getWeatherData/getWeatherData";
-import { AnimatedIcon, Button, Map, Square, Select } from "./Homepage.style";
+import {
+  Container,
+  AnimatedIcon,
+  Button,
+  Map,
+  Square,
+  Select,
+  Alert,
+  ErrorMessage,
+} from "./Homepage.style";
 
 export function Homepage() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
   const [selectVisible, setSelectVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const getLocation = () => {
     const elementsToHide = document.getElementsByClassName("toHide");
@@ -75,8 +85,10 @@ export function Homepage() {
       try {
         const data = await getWeatherData(latitude, longitude);
         setWeatherData(data);
+        setErrorMessage(""); // Clear the error message on successful fetch
       } catch (error) {
         console.error("Error fetching weather data:", error);
+        setErrorMessage(`Error: ${error.message}`); // Set the error message
       }
     };
 
@@ -146,7 +158,7 @@ export function Homepage() {
           }}
         >
           <option latitude={latitude} longitude={longitude}>
-            Select from Favorites
+            Select favorite location
           </option>
           <option latitude="current" longitude="current">
             Current Location
@@ -162,13 +174,15 @@ export function Homepage() {
           </option>
         </Select>
       )}
+
       <p id="demo"></p>
       <Map id="mapholder"></Map>
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       <div>
         {weatherData && weatherData.current && (
           <div>
             <br />
-            <div>
+            <Container>
               <h3>Current Weather conditions:</h3>
               <p>Temperature: {weatherData.current.temp}°C</p>
               <p>Feels Like: {weatherData.current.feels_like}°C</p>
@@ -206,13 +220,20 @@ export function Homepage() {
                 Sunrise:{" "}
                 {new Date(
                   weatherData.current.sunrise * 1000
-                ).toLocaleTimeString()}
+                ).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
               <p>
                 Sunset:{" "}
-                {new Date(
-                  weatherData.current.sunset * 1000
-                ).toLocaleTimeString()}
+                {new Date(weatherData.current.sunset * 1000).toLocaleTimeString(
+                  [],
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }
+                )}
               </p>
               <p>Description: {weatherData.current.weather[0].description}</p>
 
@@ -220,9 +241,46 @@ export function Homepage() {
                 src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
                 alt="Weather Icon"
               />
-            </div>
+              {weatherData &&
+                weatherData.alerts &&
+                weatherData.alerts.length > 0 && (
+                  <div>
+                    {weatherData.alerts.map((alert, index) => (
+                      <Alert key={index}>
+                        <h3>Weather Alert:</h3>
+                        <p>
+                          <strong>Sender:</strong> {alert.sender_name}
+                        </p>
+                        <p>
+                          <strong>Event:</strong> {alert.event}
+                        </p>
+                        <p>
+                          <strong>Start:</strong>{" "}
+                          {new Date(alert.start * 1000).toLocaleString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                        <p>
+                          <strong>End:</strong>{" "}
+                          {new Date(alert.end * 1000).toLocaleString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                        <p>
+                          <strong>Description:</strong> {alert.description}
+                        </p>
+                        <p>
+                          <strong>Tags:</strong> {alert.tags.join(", ")}
+                        </p>
+                      </Alert>
+                    ))}
+                  </div>
+                )}
+            </Container>
             <br />
-            <div>
+            <Container>
               <h3>Hourly Forecast:</h3>
               <ul>
                 {weatherData.hourly.slice(0, 10).map((hour, index) => (
@@ -241,9 +299,9 @@ export function Homepage() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </Container>
             <br />
-            <div>
+            <Container>
               <h3>Daily Forecast:</h3>
               <ul>
                 {weatherData.daily.slice(0, 5).map((day, index) => (
@@ -265,7 +323,7 @@ export function Homepage() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </Container>
           </div>
         )}
       </div>
