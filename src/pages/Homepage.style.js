@@ -5,12 +5,16 @@ export const Container = styled.div`
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 400px;
+  max-width: 470px;
   p {
     margin: 5px 0;
+    position: relative;
   }
   h3 {
     margin-bottom: 0;
+  }
+  li {
+    margin: 5px 0;
   }
 `;
 
@@ -65,7 +69,6 @@ export const Select = styled.select`
   &:focus {
     border: none;
     outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
   }
 
   /* Styles for active (selected) option */
@@ -83,19 +86,59 @@ export const Select = styled.select`
 
 export const Map = styled.img`
   border-radius: 5px;
-  max-width: 400px;
+  max-width: 470px;
   width: 100%;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 `;
 
 export const Square = styled.span`
   display: inline-block;
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   margin-left: 5px;
   border-radius: 3px;
+  border: 1px solid rgba(170, 170, 170, 0.5); // Equivalent RGBA color for #aaaaaa
 `;
 
 export const Alert = styled.div`
   color: #d32f2f;
+`;
+
+const rotateAnimation = (props) => keyframes`
+  0% {
+    transform: rotate(${props.deg + 180 - 10}deg);
+  }
+  100% {
+    transform: rotate(${props.deg + 180 + 10}deg);
+  }
+`;
+
+export const WindArrow = styled.span`
+  width: 0;
+  height: 0;
+  position: absolute;
+  left: 122px;
+  top: 2px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 14px solid #aaaaaa;
+  transform-origin: center;
+  animation: ${(props) => rotateAnimation(props)} 1.5s infinite alternate
+    ease-in-out;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: 8px;
+    width: 4px;
+    height: 4px;
+    background: linear-gradient(
+      ${(props) => props.deg + 180}deg,
+      #ffff00,
+      #ff0000,
+      #800080
+    );
+    border-radius: 50%;
+  }
 `;

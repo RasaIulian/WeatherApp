@@ -9,6 +9,7 @@ import {
   Select,
   Alert,
   ErrorMessage,
+  WindArrow,
 } from "./Homepage.style";
 
 export function Homepage() {
@@ -126,6 +127,12 @@ export function Homepage() {
     }
   }
 
+  function degreesToDirection(degrees) {
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    const index = Math.round(degrees / 45) % 8;
+    return directions[index];
+  }
+
   return (
     <>
       <h2>Geolocation Weather App</h2>
@@ -211,6 +218,11 @@ export function Homepage() {
               </p>
 
               <p>Wind Speed: {weatherData.current.wind_speed} km/h</p>
+              <p>
+                Wind Direction:{" "}
+                {degreesToDirection(weatherData.current.wind_deg)}{" "}
+                <WindArrow deg={weatherData.current.wind_deg} />
+              </p>
               <p>Humidity: {weatherData.current.humidity}%</p>
               <p>
                 Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
@@ -251,19 +263,26 @@ export function Homepage() {
                         <p>
                           <strong>Sender:</strong> {alert.sender_name}
                         </p>
-                        <p>
-                          <strong>Event:</strong> {alert.event}
-                        </p>
+
                         <p>
                           <strong>Start:</strong>{" "}
-                          {new Date(alert.start * 1000).toLocaleString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                          {new Date(alert.start * 1000).toLocaleString(
+                            "en-US",
+                            {
+                              weekday: "long",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
                         </p>
                         <p>
                           <strong>End:</strong>{" "}
-                          {new Date(alert.end * 1000).toLocaleString([], {
+                          {new Date(alert.end * 1000).toLocaleString("en-US", {
+                            weekday: "long",
+                            month: "long",
+                            day: "numeric",
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
@@ -290,8 +309,10 @@ export function Homepage() {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
+                      :{" "}
                     </b>
-                    : {hour.temp}°C, {hour.weather[0].description}{" "}
+                    {hour.temp}°C, precip. {parseInt(hour.pop * 100)}%,{" "}
+                    {hour.weather[0].description}{" "}
                     <AnimatedIcon
                       src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
                       alt="Hourly Weather Icon"
@@ -314,6 +335,8 @@ export function Homepage() {
                       })}
                     </b>
                     :<br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C <br />
+                    Probability of precipitation: {parseInt(day.pop * 100)}%
+                    <br />
                     {day.summary}
                     <br />
                     <AnimatedIcon
@@ -324,6 +347,7 @@ export function Homepage() {
                 ))}
               </ul>
             </Container>
+            <br />
           </div>
         )}
       </div>
