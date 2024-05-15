@@ -296,7 +296,6 @@ export function Homepage() {
             <br />
             <Container>
               <h3>Hourly Forecast:</h3>
-
               <ul>
                 {weatherData.hourly.slice(0, 10).map((hour, index) => (
                   <li key={index}>
@@ -307,8 +306,7 @@ export function Homepage() {
                       })}
                       :{" "}
                     </b>
-                    {hour.temp}°C, {hour.weather[0].description}
-                    {": "}
+                    {hour.temp}°C, {hour.weather[0].description}{" "}
                     <AnimatedIcon
                       src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
                       alt="Hourly Weather Icon"

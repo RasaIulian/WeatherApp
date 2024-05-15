@@ -114,16 +114,16 @@ const rotateAnimation = (props) => keyframes`
 `;
 
 export const WindArrow = styled.span.attrs((props) => ({
-  deg: undefined, // Filter out the "deg" prop
+  $deg: props.deg, // Filter out the "deg" prop
 }))`
   width: 0;
   height: 0;
   position: absolute;
-  left: 122px;
-  top: 2px;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 14px solid #aaaaaa;
+  left: 120px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 20px solid #aaaaaa;
+  border-radius: 6px;
   transform-origin: center;
   animation: ${(props) => rotateAnimation(props)} 1.5s infinite alternate
     ease-in-out;
@@ -131,10 +131,10 @@ export const WindArrow = styled.span.attrs((props) => ({
   &::after {
     content: "";
     position: absolute;
-    left: -2px;
-    top: 8px;
-    width: 4px;
-    height: 4px;
+    left: -2.5px;
+    top: 12px;
+    width: 5px;
+    height: 5px;
     background: linear-gradient(
       ${(props) => props.deg + 180}deg,
       #ffff00,
