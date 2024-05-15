@@ -33,8 +33,7 @@ export function Homepage() {
       }
       setSelectVisible(true);
     } else {
-      document.getElementById("demo").innerHTML =
-        "Geolocation is not supported by this browser.";
+      setErrorMessage("Geolocation is not supported by this browser.");
     }
   };
 
@@ -47,7 +46,7 @@ export function Homepage() {
       "https://maps.googleapis.com/maps/api/staticmap?center=" +
       latlon +
       "&zoom=13&size=350x200&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
-    document.getElementById("demo").innerHTML =
+    document.getElementById("location").innerHTML =
       "Latitude: " +
       latitude.toFixed(2) +
       "°" +
@@ -60,23 +59,19 @@ export function Homepage() {
   const showError = (error) => {
     switch (error.code) {
       default:
-        document.getElementById("demo").innerHTML = "Unknown error";
+        setErrorMessage("Unknown error");
         break;
       case error.PERMISSION_DENIED:
-        document.getElementById("demo").innerHTML =
-          "You denied the request for GeoLocation.";
+        setErrorMessage("You denied the request for GeoLocation.");
         break;
       case error.POSITION_UNAVAILABLE:
-        document.getElementById("demo").innerHTML =
-          "Location information is unavailable.";
+        setErrorMessage("Location information is unavailable.");
         break;
       case error.TIMEOUT:
-        document.getElementById("demo").innerHTML =
-          "The request to get user location timed out.";
+        setErrorMessage("The request to get user location timed out.");
         break;
       case error.UNKNOWN_ERROR:
-        document.getElementById("demo").innerHTML =
-          "An unknown error occurred.";
+        setErrorMessage("An unknown error occurred.");
         break;
     }
   };
@@ -89,7 +84,7 @@ export function Homepage() {
         setErrorMessage(""); // Clear the error message on successful fetch
       } catch (error) {
         console.error("Error fetching weather data:", error);
-        setErrorMessage(`Error: ${error.message}`); // Set the error message
+        setErrorMessage(`Error fetching weather data: ${error.message}`); // Set the error message
       }
     };
 
@@ -182,7 +177,7 @@ export function Homepage() {
         </Select>
       )}
 
-      <p id="demo"></p>
+      <p id="location"></p>
       <Map id="mapholder"></Map>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       <div>
@@ -301,6 +296,7 @@ export function Homepage() {
             <br />
             <Container>
               <h3>Hourly Forecast:</h3>
+
               <ul>
                 {weatherData.hourly.slice(0, 10).map((hour, index) => (
                   <li key={index}>
@@ -311,8 +307,8 @@ export function Homepage() {
                       })}
                       :{" "}
                     </b>
-                    {hour.temp}°C, precip. {parseInt(hour.pop * 100)}%,{" "}
-                    {hour.weather[0].description}{" "}
+                    {hour.temp}°C, {hour.weather[0].description}
+                    {": "}
                     <AnimatedIcon
                       src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
                       alt="Hourly Weather Icon"

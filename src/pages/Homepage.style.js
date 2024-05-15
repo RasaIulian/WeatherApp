@@ -113,7 +113,9 @@ const rotateAnimation = (props) => keyframes`
   }
 `;
 
-export const WindArrow = styled.span`
+export const WindArrow = styled.span.attrs((props) => ({
+  deg: undefined, // Filter out the "deg" prop
+}))`
   width: 0;
   height: 0;
   position: absolute;
