@@ -104,17 +104,17 @@ export const Alert = styled.div`
   color: #d32f2f;
 `;
 
-const rotateAnimation = (props) => keyframes`
-  0% {
-    transform: rotate(${props.deg + 180 - 10}deg);
+const rotateAnimation = ($deg) => keyframes`
+  from {
+    transform: rotate(${$deg + 180 - 10}deg);
   }
-  100% {
-    transform: rotate(${props.deg + 180 + 10}deg);
+  to {
+    transform: rotate(${$deg + 180 + 10}deg);
   }
 `;
 
 export const WindArrow = styled.span.attrs((props) => ({
-  $deg: props.deg, // Filter out the "deg" prop
+  $deg: props.$deg, // Use $deg as transient prop
 }))`
   width: 0;
   height: 0;
@@ -125,7 +125,7 @@ export const WindArrow = styled.span.attrs((props) => ({
   border-bottom: 20px solid #aaaaaa;
   border-radius: 6px;
   transform-origin: center;
-  animation: ${(props) => rotateAnimation(props)} 1.5s infinite alternate
+  animation: ${(props) => rotateAnimation(props.$deg)} 2s infinite alternate
     ease-in-out;
 
   &::after {
@@ -136,7 +136,7 @@ export const WindArrow = styled.span.attrs((props) => ({
     width: 5px;
     height: 5px;
     background: linear-gradient(
-      ${(props) => props.deg + 180}deg,
+      ${(props) => props.$deg + 180}deg,
       #ffff00,
       #ff0000,
       #800080

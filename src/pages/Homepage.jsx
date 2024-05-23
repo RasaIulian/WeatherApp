@@ -18,6 +18,7 @@ export function Homepage() {
   const [weatherData, setWeatherData] = useState(null);
   const [selectVisible, setSelectVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const getLocation = () => {
     const elementsToHide = document.getElementsByClassName("toHide");
@@ -78,6 +79,7 @@ export function Homepage() {
 
   useEffect(() => {
     const fetchWeatherData = async () => {
+      setLoading(true); // Start loading
       try {
         const data = await getWeatherData(latitude, longitude);
         setWeatherData(data);
@@ -85,6 +87,8 @@ export function Homepage() {
       } catch (error) {
         console.error("Error fetching weather data:", error);
         setErrorMessage(`Error fetching weather data: ${error.message}`); // Set the error message
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
 
@@ -181,7 +185,8 @@ export function Homepage() {
       <Map id="mapholder"></Map>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       <div>
-        {weatherData && weatherData.current && (
+        {loading && <p>Loading data...</p>}{" "}
+        {!loading && weatherData && weatherData.current && (
           <div>
             <br />
             <Container>
@@ -216,7 +221,7 @@ export function Homepage() {
               <p>
                 Wind Direction:{" "}
                 {degreesToDirection(weatherData.current.wind_deg)}{" "}
-                <WindArrow deg={weatherData.current.wind_deg} />
+                <WindArrow $deg={weatherData.current.wind_deg} />
               </p>
               <p>Humidity: {weatherData.current.humidity}%</p>
               <p>
