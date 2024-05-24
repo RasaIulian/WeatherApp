@@ -18,12 +18,23 @@ export function Homepage() {
   const [weatherData, setWeatherData] = useState(null);
   const [selectVisible, setSelectVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loadingWeather, setLoadingWeater] = useState(false);
+  const [loadingLocation, setLoadingLocation] = useState(false);
+
+  // useEffect(() => {
+  //   console.log(`Loading weather data: ${loadingWeather}`);
+  // }, [loadingWeather]);
+
+  // useEffect(() => {
+  //   console.log(`Loading location data: ${loadingLocation}`);
+  // }, [loadingLocation]);
 
   const getLocation = () => {
+    setLoadingLocation(true);
     const elementsToHide = document.getElementsByClassName("toHide");
 
     if (navigator.geolocation) {
+      // setTimeout(() => {
       navigator.geolocation.getCurrentPosition(
         (position) =>
           showPosition(position.coords.latitude, position.coords.longitude),
@@ -33,8 +44,10 @@ export function Homepage() {
         elementsToHide[i].style.display = "none";
       }
       setSelectVisible(true);
+      // }, 5000);
     } else {
       setErrorMessage("Geolocation is not supported by this browser.");
+      setLoadingLocation(false);
     }
   };
 
@@ -55,6 +68,7 @@ export function Homepage() {
       longitude.toFixed(2) +
       "°";
     document.getElementById("mapholder").src = img_url;
+    setLoadingLocation(false);
   };
 
   const showError = (error) => {
@@ -75,12 +89,16 @@ export function Homepage() {
         setErrorMessage("An unknown error occurred.");
         break;
     }
+    setLoadingLocation(false);
   };
 
   useEffect(() => {
     const fetchWeatherData = async () => {
-      setLoading(true); // Start loading
+      setLoadingWeater(true); // Start loading
       try {
+        // Introduce an artificial delay to check loading state
+        // await new Promise((resolve) => setTimeout(resolve, 5000));
+
         const data = await getWeatherData(latitude, longitude);
         setWeatherData(data);
         setErrorMessage(""); // Clear the error message on successful fetch
@@ -88,7 +106,7 @@ export function Homepage() {
         console.error("Error fetching weather data:", error);
         setErrorMessage(`Error fetching weather data: ${error.message}`); // Set the error message
       } finally {
-        setLoading(false); // Stop loading
+        setLoadingWeater(false); // Stop loading
       }
     };
 
@@ -142,7 +160,8 @@ export function Homepage() {
       <Button onClick={getLocation} className="toHide">
         Try It
       </Button>
-      {selectVisible && (
+      {loadingLocation && <p>Loading location data...</p>}
+      {!loadingLocation && selectVisible && (
         <Select
           onChange={(e) => {
             const selectedIndex = e.target.selectedIndex;
@@ -185,170 +204,179 @@ export function Homepage() {
       <Map id="mapholder"></Map>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       <div>
-        {loading && <p>Loading data...</p>}{" "}
-        {!loading && weatherData && weatherData.current && (
-          <div>
-            <br />
-            <Container>
-              <h3>Current Weather conditions:</h3>
-              <p>Temperature: {weatherData.current.temp}°C</p>
-              <p>Feels Like: {weatherData.current.feels_like}°C</p>
-              <p>
-                UV index: {weatherData.current.uvi} -
-                <Square
-                  style={{
-                    backgroundColor:
-                      getUVIndexCategory(weatherData.current.uvi) === "Low"
-                        ? "#4eb400" // green
-                        : getUVIndexCategory(weatherData.current.uvi) ===
-                          "Moderate"
-                        ? "#f7e400" // yellow
-                        : getUVIndexCategory(weatherData.current.uvi) === "High"
-                        ? "#f88700" // orange
-                        : getUVIndexCategory(weatherData.current.uvi) ===
-                          "Very High"
-                        ? "#d8001d" // red
-                        : getUVIndexCategory(weatherData.current.uvi) ===
-                          "Extreme"
-                        ? "#b54cff" // purple
-                        : "#f0f0f0", // unknown
-                  }}
-                ></Square>
-                <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
-              </p>
+        {loadingWeather && <p>Loading weather data...</p>}
+        {!loadingWeather &&
+          !loadingLocation &&
+          weatherData &&
+          weatherData.current && (
+            <div>
+              <br />
+              <Container>
+                <h3>Current Weather conditions:</h3>
+                <p>Temperature: {weatherData.current.temp}°C</p>
+                <p>Feels Like: {weatherData.current.feels_like}°C</p>
+                <p>
+                  UV index: {weatherData.current.uvi} -
+                  <Square
+                    style={{
+                      backgroundColor:
+                        getUVIndexCategory(weatherData.current.uvi) === "Low"
+                          ? "#4eb400" // green
+                          : getUVIndexCategory(weatherData.current.uvi) ===
+                            "Moderate"
+                          ? "#f7e400" // yellow
+                          : getUVIndexCategory(weatherData.current.uvi) ===
+                            "High"
+                          ? "#f88700" // orange
+                          : getUVIndexCategory(weatherData.current.uvi) ===
+                            "Very High"
+                          ? "#d8001d" // red
+                          : getUVIndexCategory(weatherData.current.uvi) ===
+                            "Extreme"
+                          ? "#b54cff" // purple
+                          : "#f0f0f0", // unknown
+                    }}
+                  ></Square>
+                  <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
+                </p>
 
-              <p>Wind Speed: {weatherData.current.wind_speed} km/h</p>
-              <p>
-                Wind Direction:{" "}
-                {degreesToDirection(weatherData.current.wind_deg)}{" "}
-                <WindArrow $deg={weatherData.current.wind_deg} />
-              </p>
-              <p>Humidity: {weatherData.current.humidity}%</p>
-              <p>
-                Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
-                <span>{getPressureCategory(weatherData.current.pressure)}</span>
-              </p>
-              <p>
-                Sunrise:{" "}
-                {new Date(
-                  weatherData.current.sunrise * 1000
-                ).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
-              <p>
-                Sunset:{" "}
-                {new Date(weatherData.current.sunset * 1000).toLocaleTimeString(
-                  [],
-                  {
+                <p>Wind Speed: {weatherData.current.wind_speed} km/h</p>
+                <p>
+                  Wind Direction:{" "}
+                  {degreesToDirection(weatherData.current.wind_deg)}{" "}
+                  <WindArrow $deg={weatherData.current.wind_deg} />
+                </p>
+                <p>Humidity: {weatherData.current.humidity}%</p>
+                <p>
+                  Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
+                  <span>
+                    {getPressureCategory(weatherData.current.pressure)}
+                  </span>
+                </p>
+                <p>
+                  Sunrise:{" "}
+                  {new Date(
+                    weatherData.current.sunrise * 1000
+                  ).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
-                  }
-                )}
-              </p>
-              <p>Description: {weatherData.current.weather[0].description}</p>
+                  })}
+                </p>
+                <p>
+                  Sunset:{" "}
+                  {new Date(
+                    weatherData.current.sunset * 1000
+                  ).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+                <p>Description: {weatherData.current.weather[0].description}</p>
 
-              <AnimatedIcon
-                src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
-                alt="Weather Icon"
-              />
-              {weatherData &&
-                weatherData.alerts &&
-                weatherData.alerts.length > 0 && (
-                  <div>
-                    {weatherData.alerts.map((alert, index) => (
-                      <Alert key={index}>
-                        <h3>Weather Alert:</h3>
-                        <p>
-                          <strong>Sender:</strong> {alert.sender_name}
-                        </p>
+                <AnimatedIcon
+                  src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
+                  alt="Weather Icon"
+                />
+                {weatherData &&
+                  weatherData.alerts &&
+                  weatherData.alerts.length > 0 && (
+                    <div>
+                      {weatherData.alerts.map((alert, index) => (
+                        <Alert key={index}>
+                          <h3>Weather Alert:</h3>
+                          <p>
+                            <strong>Sender:</strong> {alert.sender_name}
+                          </p>
 
-                        <p>
-                          <strong>Start:</strong>{" "}
-                          {new Date(alert.start * 1000).toLocaleString(
-                            "en-US",
-                            {
-                              weekday: "long",
-                              month: "long",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )}
-                        </p>
-                        <p>
-                          <strong>End:</strong>{" "}
-                          {new Date(alert.end * 1000).toLocaleString("en-US", {
-                            weekday: "long",
-                            month: "long",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                        <p>
-                          <strong>Description:</strong> {alert.description}
-                        </p>
-                        <p>
-                          <strong>Tags:</strong> {alert.tags.join(", ")}
-                        </p>
-                      </Alert>
-                    ))}
-                  </div>
-                )}
-            </Container>
-            <br />
-            <Container>
-              <h3>Hourly Forecast:</h3>
-              <ul>
-                {weatherData.hourly.slice(0, 10).map((hour, index) => (
-                  <li key={index}>
-                    <b>
-                      {new Date(hour.dt * 1000).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                      :{" "}
-                    </b>
-                    {hour.temp}°C, {hour.weather[0].description}{" "}
-                    <AnimatedIcon
-                      src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
-                      alt="Hourly Weather Icon"
-                    />
-                  </li>
-                ))}
-              </ul>
-            </Container>
-            <br />
-            <Container>
-              <h3>Daily Forecast:</h3>
-              <ul>
-                {weatherData.daily.slice(0, 5).map((day, index) => (
-                  <li key={index}>
-                    <b>
-                      {new Date(day.dt * 1000).toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </b>
-                    :<br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C <br />
-                    Probability of precipitation: {parseInt(day.pop * 100)}%
-                    <br />
-                    {day.summary}
-                    <br />
-                    <AnimatedIcon
-                      src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                      alt="Weather Icon"
-                    ></AnimatedIcon>
-                  </li>
-                ))}
-              </ul>
-            </Container>
-            <br />
-          </div>
-        )}
+                          <p>
+                            <strong>Start:</strong>{" "}
+                            {new Date(alert.start * 1000).toLocaleString(
+                              "en-US",
+                              {
+                                weekday: "long",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </p>
+                          <p>
+                            <strong>End:</strong>{" "}
+                            {new Date(alert.end * 1000).toLocaleString(
+                              "en-US",
+                              {
+                                weekday: "long",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </p>
+                          <p>
+                            <strong>Description:</strong> {alert.description}
+                          </p>
+                          <p>
+                            <strong>Tags:</strong> {alert.tags.join(", ")}
+                          </p>
+                        </Alert>
+                      ))}
+                    </div>
+                  )}
+              </Container>
+              <br />
+              <Container>
+                <h3>Hourly Forecast:</h3>
+                <ul>
+                  {weatherData.hourly.slice(0, 10).map((hour, index) => (
+                    <li key={index}>
+                      <b>
+                        {new Date(hour.dt * 1000).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                        :{" "}
+                      </b>
+                      {hour.temp}°C, {hour.weather[0].description}{" "}
+                      <AnimatedIcon
+                        src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
+                        alt="Hourly Weather Icon"
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </Container>
+              <br />
+              <Container>
+                <h3>Daily Forecast:</h3>
+                <ul>
+                  {weatherData.daily.slice(0, 5).map((day, index) => (
+                    <li key={index}>
+                      <b>
+                        {new Date(day.dt * 1000).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </b>
+                      :<br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C{" "}
+                      <br />
+                      Probability of precipitation: {parseInt(day.pop * 100)}%
+                      <br />
+                      {day.summary}
+                      <br />
+                      <AnimatedIcon
+                        src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                        alt="Weather Icon"
+                      ></AnimatedIcon>
+                    </li>
+                  ))}
+                </ul>
+              </Container>
+              <br />
+            </div>
+          )}
       </div>
     </>
   );
