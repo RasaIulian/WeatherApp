@@ -315,10 +315,10 @@ export function Homepage() {
                             )}
                           </p>
                           <p>
-                            <strong>Description:</strong> {alert.description}
+                            <strong>Event:</strong> {alert.event}
                           </p>
                           <p>
-                            <strong>Tags:</strong> {alert.tags.join(", ")}
+                            <strong>Description:</strong> {alert.description}
                           </p>
                         </Alert>
                       ))}

@@ -32,18 +32,32 @@ const moveLeftRight = keyframes`
     transform: translateX(0);
   }
   100% {
-    transform: translateX(10px); /* Adjust the distance to move */
+    transform: translateX(10px);
+  }
+`;
+
+const fadeEffect = keyframes`
+ 0% {
+    opacity: 0.2;
+  }
+
+  
+ 
+  100% {
+    opacity: 1;
   }
 `;
 
 export const AnimatedIcon = styled.img`
-  animation: ${moveLeftRight} 6s infinite alternate ease-in-out;
+  animation: ${moveLeftRight} 6s infinite alternate ease-in-out,
+    ${fadeEffect} 6s infinite alternate;
+
   padding-top: 0;
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.05);
 `;
 
 export const Button = styled.button`
-  padding: 5px 10px;
+  padding: 10px;
   border: 1px solid #eaeaea;
   border-radius: 3px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
