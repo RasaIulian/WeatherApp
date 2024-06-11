@@ -213,8 +213,9 @@ export function Homepage() {
               <br />
               <Container>
                 <h3>Current Weather conditions:</h3>
-                <p>Temperature: {weatherData.current.temp}°C</p>
+                <p>Temperature: {weatherData.current.temp}°C</p> <br />
                 <p>Feels Like: {weatherData.current.feels_like}°C</p>
+                <br />
                 <p>
                   UV index: {weatherData.current.uvi} -
                   <Square
@@ -239,20 +240,24 @@ export function Homepage() {
                   ></Square>
                   <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
                 </p>
-
+                <br />
                 <p>Wind Speed: {weatherData.current.wind_speed} km/h</p>
+                <br />
                 <p>
                   Wind Direction:{" "}
                   {degreesToDirection(weatherData.current.wind_deg)}{" "}
                   <WindArrow $deg={weatherData.current.wind_deg} />
                 </p>
+                <br />
                 <p>Humidity: {weatherData.current.humidity}%</p>
+                <br />
                 <p>
                   Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
                   <span>
                     {getPressureCategory(weatherData.current.pressure)}
                   </span>
                 </p>
+                <br />
                 <p>
                   Sunrise:{" "}
                   {new Date(
@@ -262,6 +267,7 @@ export function Homepage() {
                     minute: "2-digit",
                   })}
                 </p>
+                <br />
                 <p>
                   Sunset:{" "}
                   {new Date(
@@ -271,8 +277,9 @@ export function Homepage() {
                     minute: "2-digit",
                   })}
                 </p>
+                <br />
                 <p>Description: {weatherData.current.weather[0].description}</p>
-
+                <br />
                 <AnimatedIcon
                   src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
                   alt="Weather Icon"

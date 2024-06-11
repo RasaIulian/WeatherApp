@@ -8,7 +8,9 @@ export const Container = styled.div`
   max-width: 470px;
   p {
     margin: 5px 0;
-    position: relative;
+
+    display: inline-flex;
+    align-items: center;
   }
   h3 {
     margin-bottom: 0;
@@ -130,10 +132,7 @@ const rotateAnimation = ($deg) => keyframes`
 export const WindArrow = styled.span.attrs((props) => ({
   $deg: props.$deg, // Use $deg as transient prop
 }))`
-  width: 0;
-  height: 0;
-  position: absolute;
-  left: 120px;
+  margin-left: 10px;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
   border-bottom: 20px solid #aaaaaa;
