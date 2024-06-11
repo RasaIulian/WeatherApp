@@ -111,7 +111,7 @@ export const Square = styled.span`
   display: inline-block;
   width: 14px;
   height: 14px;
-  margin-left: 5px;
+  margin: 0 5px;
   border-radius: 3px;
   border: 1px solid rgba(170, 170, 170, 0.5); // Equivalent RGBA color for #aaaaaa
 `;

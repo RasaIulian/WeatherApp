@@ -253,9 +253,7 @@ export function Homepage() {
                 <br />
                 <p>
                   Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
-                  <span>
-                    {getPressureCategory(weatherData.current.pressure)}
-                  </span>
+                  {getPressureCategory(weatherData.current.pressure)}
                 </p>
                 <br />
                 <p>
