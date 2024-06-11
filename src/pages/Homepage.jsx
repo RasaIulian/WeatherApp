@@ -290,11 +290,11 @@ export function Homepage() {
                         <Alert key={index}>
                           <h3>Weather Alert:</h3>
                           <p>
-                            <strong>Sender:</strong> {alert.sender_name}
+                            <strong>Sender:&nbsp;</strong> {alert.sender_name}
                           </p>
 
                           <p>
-                            <strong>Start:</strong>{" "}
+                            <strong>Start:&nbsp;</strong>
                             {new Date(alert.start * 1000).toLocaleString(
                               "en-US",
                               {
@@ -306,8 +306,9 @@ export function Homepage() {
                               }
                             )}
                           </p>
+                          <br />
                           <p>
-                            <strong>End:</strong>{" "}
+                            <strong>End:&nbsp;</strong>
                             {new Date(alert.end * 1000).toLocaleString(
                               "en-US",
                               {
@@ -320,10 +321,11 @@ export function Homepage() {
                             )}
                           </p>
                           <p>
-                            <strong>Event:</strong> {alert.event}
+                            <strong>Event:&nbsp;</strong> {alert.event}
                           </p>
                           <p>
-                            <strong>Description:</strong> {alert.description}
+                            <strong>Description:&nbsp;</strong>
+                            {alert.description}
                           </p>
                         </Alert>
                       ))}

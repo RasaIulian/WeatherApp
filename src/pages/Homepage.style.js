@@ -8,9 +8,7 @@ export const Container = styled.div`
   max-width: 470px;
   p {
     margin: 5px 0;
-
     display: inline-flex;
-    align-items: center;
   }
   h3 {
     margin-bottom: 0;
