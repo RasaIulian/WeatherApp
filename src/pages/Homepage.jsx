@@ -62,10 +62,10 @@ export function Homepage() {
       "&zoom=13&size=350x200&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
     document.getElementById("location").innerHTML =
       "Latitude: " +
-      latitude.toFixed(2) +
+      latitude.toFixed(1) +
       "°" +
       "<br>Longitude: " +
-      longitude.toFixed(2) +
+      longitude.toFixed(1) +
       "°";
     document.getElementById("mapholder").src = img_url;
     setLoadingLocation(false);
@@ -335,6 +335,7 @@ export function Homepage() {
               <br />
               <Container>
                 <h3>Hourly Forecast:</h3>
+                <p>*pop = probability of precipitation</p>
                 <ul>
                   {weatherData.hourly.slice(0, 10).map((hour, index) => (
                     <li key={index}>
@@ -345,7 +346,8 @@ export function Homepage() {
                         })}
                         :{" "}
                       </b>
-                      {hour.temp}°C, {hour.weather[0].description}{" "}
+                      {hour.temp}°C, pop: {Math.round(hour.pop * 100)}
+                      %, {hour.weather[0].description}
                       <AnimatedIcon
                         src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
                         alt="Hourly Weather Icon"
@@ -358,27 +360,38 @@ export function Homepage() {
               <Container>
                 <h3>Daily Forecast:</h3>
                 <ul>
-                  {weatherData.daily.slice(0, 5).map((day, index) => (
-                    <li key={index}>
-                      <b>
-                        {new Date(day.dt * 1000).toLocaleDateString("en-US", {
-                          weekday: "short",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </b>
-                      :<br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C{" "}
-                      <br />
-                      Probability of precipitation: {parseInt(day.pop * 100)}%
-                      <br />
-                      {day.summary}
-                      <br />
-                      <AnimatedIcon
-                        src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                        alt="Weather Icon"
-                      ></AnimatedIcon>
-                    </li>
-                  ))}
+                  {weatherData.daily.slice(0, 5).map((day, index) => {
+                    const date = new Date(day.dt * 1000);
+                    const dateString = date.toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    });
+
+                    let displayDate;
+                    if (index === 0) {
+                      displayDate = "Today - " + dateString;
+                    } else if (index === 1) {
+                      displayDate = "Tomorrow - " + dateString;
+                    } else {
+                      displayDate = dateString;
+                    }
+                    return (
+                      <li key={index}>
+                        <b>{displayDate}</b>
+                        :<br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C
+                        <br />
+                        Probability of precipitation: {parseInt(day.pop * 100)}%
+                        <br />
+                        {day.summary}
+                        <br />
+                        <AnimatedIcon
+                          src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                          alt="Weather Icon"
+                        ></AnimatedIcon>
+                      </li>
+                    );
+                  })}
                 </ul>
               </Container>
               <br />

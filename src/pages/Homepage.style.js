@@ -27,12 +27,15 @@ export const ErrorMessage = styled.div`
   margin: 10px 0;
 `;
 
-const moveLeftRight = keyframes`
+const moveLeftRightZoom = keyframes`
   0% {
     transform: translateX(0);
   }
+  50% {
+    transform: scale(1.2);
+  }
   100% {
-    transform: translateX(10px);
+    transform: translateX(20px);
   }
 `;
 
@@ -40,8 +43,6 @@ const fadeEffect = keyframes`
  0% {
     opacity: 0.2;
   }
-
-  
  
   100% {
     opacity: 1;
@@ -49,7 +50,7 @@ const fadeEffect = keyframes`
 `;
 
 export const AnimatedIcon = styled.img`
-  animation: ${moveLeftRight} 6s infinite alternate ease-in-out,
+  animation: ${moveLeftRightZoom} 6s infinite alternate ease-in-out,
     ${fadeEffect} 6s infinite alternate;
 
   padding-top: 0;
