@@ -378,8 +378,8 @@ export function Homepage() {
                     }
                     return (
                       <li key={index}>
-                        <b>{displayDate}</b>
-                        :<br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C
+                        <b>{displayDate}:</b>
+                        <br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C
                         <br />
                         Probability of precipitation: {parseInt(day.pop * 100)}%
                         <br />

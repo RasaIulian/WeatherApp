@@ -35,7 +35,7 @@ const moveLeftRightZoom = keyframes`
     transform: scale(1.2);
   }
   100% {
-    transform: translateX(20px);
+    transform: translateX(10px);
   }
 `;
 
