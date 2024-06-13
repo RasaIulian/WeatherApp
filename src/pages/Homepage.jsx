@@ -301,6 +301,7 @@ export function Homepage() {
                             }
                           )}
                         </p>
+                        <br />
                         <p>
                           <strong>End:&nbsp;</strong>
                           {new Date(alert.end * 1000).toLocaleString("en-US", {
