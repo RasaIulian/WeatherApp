@@ -59,7 +59,7 @@ export function Homepage() {
     let img_url =
       "https://maps.googleapis.com/maps/api/staticmap?center=" +
       latlon +
-      "&zoom=13&size=350x200&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
+      "&zoom=13&size=470x250&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
     document.getElementById("location").innerHTML =
       "Latitude: " +
       latitude.toFixed(1) +
