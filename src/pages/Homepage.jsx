@@ -18,7 +18,7 @@ export function Homepage() {
   const [weatherData, setWeatherData] = useState(null);
   const [selectVisible, setSelectVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [loadingWeather, setLoadingWeater] = useState(false);
+  const [loadingWeather, setLoadingWeather] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
 
   // useEffect(() => {
@@ -94,7 +94,7 @@ export function Homepage() {
 
   useEffect(() => {
     const fetchWeatherData = async () => {
-      setLoadingWeater(true); // Start loading
+      setLoadingWeather(true); // Start loading
       try {
         // Introduce an artificial delay to check loading state
         // await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -106,7 +106,7 @@ export function Homepage() {
         console.error("Error fetching weather data:", error);
         setErrorMessage(`Error fetching weather data: ${error.message}`); // Set the error message
       } finally {
-        setLoadingWeater(false); // Stop loading
+        setLoadingWeather(false); // Stop loading
       }
     };
 
@@ -288,6 +288,7 @@ export function Homepage() {
                         <p>
                           <strong>Sender:&nbsp;</strong> {alert.sender_name}
                         </p>
+                        <br />
                         <p>
                           <strong>Start:&nbsp;</strong>
                           {new Date(alert.start * 1000).toLocaleString(
@@ -312,6 +313,7 @@ export function Homepage() {
                             minute: "2-digit",
                           })}
                         </p>
+                        <br />
                         <p>
                           <strong>Event:&nbsp;</strong> {alert.event}
                         </p>
