@@ -16,6 +16,7 @@ export function Homepage() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState("");
   const [selectVisible, setSelectVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loadingWeather, setLoadingWeather] = useState(false);
@@ -104,7 +105,8 @@ export function Homepage() {
           longitude.toFixed(1) +
           "°" +
           "<br>Altitude: " +
-          altitudeValue;
+          altitudeValue +
+          "m";
 
         mapElement.src = img_url;
       }
@@ -209,11 +211,13 @@ export function Homepage() {
       )}
       {!loadingLocation && !loadingAltitude && selectVisible && (
         <Select
+          value={selectedLocation}
           onChange={(e) => {
             const selectedIndex = e.target.selectedIndex;
             const selectedOption = e.target.options[selectedIndex];
             const selectedLatitude = selectedOption.getAttribute("latitude");
             const selectedLongitude = selectedOption.getAttribute("longitude");
+            setSelectedLocation(selectedOption.text);
             if (
               selectedLatitude === "current" &&
               selectedLongitude === "current"
@@ -228,9 +232,9 @@ export function Homepage() {
             }
           }}
         >
-          <option latitude={latitude} longitude={longitude}>
-            Select favorite location
-          </option>
+          {selectedLocation === "" && (
+            <option value="">Select favorite location</option>
+          )}
           <option latitude="current" longitude="current">
             Current Location
           </option>
