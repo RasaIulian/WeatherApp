@@ -20,6 +20,8 @@ export function Homepage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [loadingAltitude, setLoadingAltitude] = useState(false);
+  const [altitudeError, setAltitudeError] = useState("");
 
   // useEffect(() => {
   //   console.log(`Loading weather data: ${loadingWeather}`);
@@ -44,6 +46,7 @@ export function Homepage() {
         elementsToHide[i].style.display = "none";
       }
       setSelectVisible(true);
+      setLoadingLocation(false);
       // }, 5000);
     } else {
       setErrorMessage("Geolocation is not supported by this browser.");
@@ -51,24 +54,63 @@ export function Homepage() {
     }
   };
 
-  const showPosition = (latitude, longitude) => {
+  const fetchAltitude = async (latitude, longitude) => {
+    setLoadingAltitude(true);
+    const url = `https://api.open-elevation.com/api/v1/lookup?locations=${latitude},${longitude}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        const altitudeValue = data.results[0].elevation;
+        return altitudeValue;
+      } else {
+        throw new Error("Altitude data is not available.");
+      }
+    } catch (error) {
+      console.error("Error fetching altitude data:", error);
+      setAltitudeError("Error fetching altitude data: " + error.message);
+    } finally {
+      setLoadingAltitude(false);
+    }
+  };
+
+  const showPosition = async (latitude, longitude) => {
     setLatitude(latitude);
     setLongitude(longitude);
 
-    let latlon = latitude + "," + longitude;
-    let img_url =
-      "https://maps.googleapis.com/maps/api/staticmap?center=" +
-      latlon +
-      "&zoom=15&size=470x250&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
-    document.getElementById("location").innerHTML =
-      "Latitude: " +
-      latitude.toFixed(1) +
-      "°" +
-      "<br>Longitude: " +
-      longitude.toFixed(1) +
-      "°";
-    document.getElementById("mapholder").src = img_url;
-    setLoadingLocation(false);
+    try {
+      const altitudeValue = await fetchAltitude(latitude, longitude);
+
+      let latlon = latitude + "," + longitude;
+      let img_url =
+        "https://maps.googleapis.com/maps/api/staticmap?center=" +
+        latlon +
+        "&zoom=15&size=470x250&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
+
+      const locationElement = document.getElementById("location");
+      const mapElement = document.getElementById("mapholder");
+
+      if (locationElement && mapElement) {
+        locationElement.innerHTML =
+          "Latitude: " +
+          latitude.toFixed(1) +
+          "°" +
+          "<br>Longitude: " +
+          longitude.toFixed(1) +
+          "°" +
+          "<br>Altitude: " +
+          altitudeValue;
+
+        mapElement.src = img_url;
+      }
+    } catch (error) {
+      console.error("Error fetching altitude data:", error);
+    }
   };
 
   const showError = (error) => {
@@ -151,7 +193,7 @@ export function Homepage() {
   }
 
   return (
-    <>
+    <div>
       <h2>Geolocation Weather App</h2>
       <p className="toHide">
         Click the button to get your coordinates and weather.
@@ -160,8 +202,12 @@ export function Homepage() {
       <Button onClick={getLocation} className="toHide">
         Try It
       </Button>
-      {loadingLocation && <p>Loading location data...</p>}
-      {!loadingLocation && selectVisible && (
+      {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
+      {loadingAltitude && !altitudeError && <p>Loading altitude data...</p>}
+      {loadingLocation && !loadingAltitude && !altitudeError && (
+        <p>Loading location data...</p>
+      )}
+      {!loadingLocation && !loadingAltitude && selectVisible && (
         <Select
           onChange={(e) => {
             const selectedIndex = e.target.selectedIndex;
@@ -200,203 +246,215 @@ export function Homepage() {
         </Select>
       )}
 
-      <p id="location"></p>
-      <Map id="mapholder"></Map>
+      <div>
+        <p id="location"></p>
+        <Map id="mapholder"></Map>
+      </div>
+
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       <div>
         {loadingWeather && <p>Loading weather data...</p>}
-        {!loadingWeather && !loadingLocation && weatherData && (
-          <div>
-            <br />
-            {weatherData.current && (
-              <Container>
-                <h3>Current Weather conditions:</h3>
-                <p>Temperature: {weatherData.current.temp}°C</p> <br />
-                <p>Feels Like: {weatherData.current.feels_like}°C</p>
-                <br />
-                <p>
-                  UV index: {weatherData.current.uvi} -
-                  <Square
-                    style={{
-                      backgroundColor:
-                        getUVIndexCategory(weatherData.current.uvi) === "Low"
-                          ? "#4eb400" // green
-                          : getUVIndexCategory(weatherData.current.uvi) ===
-                            "Moderate"
-                          ? "#f7e400" // yellow
-                          : getUVIndexCategory(weatherData.current.uvi) ===
-                            "High"
-                          ? "#f88700" // orange
-                          : getUVIndexCategory(weatherData.current.uvi) ===
-                            "Very High"
-                          ? "#d8001d" // red
-                          : getUVIndexCategory(weatherData.current.uvi) ===
-                            "Extreme"
-                          ? "#b54cff" // purple
-                          : "#f0f0f0", // unknown
-                    }}
-                  ></Square>
-                  <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
-                </p>
-                <br />
-                <p>Wind Speed: {weatherData.current.wind_speed} m/s</p>
-                <br />
-                <p>
-                  Wind Direction:{" "}
-                  {degreesToDirection(weatherData.current.wind_deg)}{" "}
-                  <WindArrow $deg={weatherData.current.wind_deg} />
-                </p>
-                <br />
-                <p>Humidity: {weatherData.current.humidity}%</p>
-                <br />
-                <p>
-                  Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
-                  {getPressureCategory(weatherData.current.pressure)}
-                </p>
-                <br />
-                <p>
-                  Sunrise:{" "}
-                  {new Date(
-                    weatherData.current.sunrise * 1000
-                  ).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-                <br />
-                <p>
-                  Sunset:{" "}
-                  {new Date(
-                    weatherData.current.sunset * 1000
-                  ).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-                <br />
-                <p>Description: {weatherData.current.weather[0].description}</p>
-                <br />
-                <AnimatedIcon
-                  src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
-                  alt="Weather Icon"
-                />
-                {weatherData.alerts && weatherData.alerts.length > 0 && (
-                  <div>
-                    {weatherData.alerts.map((alert, index) => (
-                      <Alert key={index}>
-                        <h3>Weather Alert:</h3>
-                        <p>
-                          <strong>Sender:&nbsp;</strong> {alert.sender_name}
-                        </p>
-                        <br />
-                        <p>
-                          <strong>Start:&nbsp;</strong>
-                          {new Date(alert.start * 1000).toLocaleString(
-                            "en-US",
-                            {
-                              weekday: "long",
-                              month: "long",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )}
-                        </p>
-                        <br />
-                        <p>
-                          <strong>End:&nbsp;</strong>
-                          {new Date(alert.end * 1000).toLocaleString("en-US", {
-                            weekday: "long",
-                            month: "long",
-                            day: "numeric",
+        {!loadingWeather &&
+          !loadingLocation &&
+          !loadingAltitude &&
+          weatherData && (
+            <div>
+              <br />
+              {weatherData.current && (
+                <Container>
+                  <h3>Current Weather conditions:</h3>
+                  <p>Temperature: {weatherData.current.temp}°C</p> <br />
+                  <p>Feels Like: {weatherData.current.feels_like}°C</p>
+                  <br />
+                  <p>
+                    UV index: {weatherData.current.uvi} -
+                    <Square
+                      style={{
+                        backgroundColor:
+                          getUVIndexCategory(weatherData.current.uvi) === "Low"
+                            ? "#4eb400" // green
+                            : getUVIndexCategory(weatherData.current.uvi) ===
+                              "Moderate"
+                            ? "#f7e400" // yellow
+                            : getUVIndexCategory(weatherData.current.uvi) ===
+                              "High"
+                            ? "#f88700" // orange
+                            : getUVIndexCategory(weatherData.current.uvi) ===
+                              "Very High"
+                            ? "#d8001d" // red
+                            : getUVIndexCategory(weatherData.current.uvi) ===
+                              "Extreme"
+                            ? "#b54cff" // purple
+                            : "#f0f0f0", // unknown
+                      }}
+                    ></Square>
+                    <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
+                  </p>
+                  <br />
+                  <p>Wind Speed: {weatherData.current.wind_speed} m/s</p>
+                  <br />
+                  <p>
+                    Wind Direction:{" "}
+                    {degreesToDirection(weatherData.current.wind_deg)}{" "}
+                    <WindArrow $deg={weatherData.current.wind_deg} />
+                  </p>
+                  <br />
+                  <p>Humidity: {weatherData.current.humidity}%</p>
+                  <br />
+                  <p>
+                    Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
+                    {getPressureCategory(weatherData.current.pressure)}
+                  </p>
+                  <br />
+                  <p>
+                    Sunrise:{" "}
+                    {new Date(
+                      weatherData.current.sunrise * 1000
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                  <br />
+                  <p>
+                    Sunset:{" "}
+                    {new Date(
+                      weatherData.current.sunset * 1000
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                  <br />
+                  <p>
+                    Description: {weatherData.current.weather[0].description}
+                  </p>
+                  <br />
+                  <AnimatedIcon
+                    src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
+                    alt="Weather Icon"
+                  />
+                  {weatherData.alerts && weatherData.alerts.length > 0 && (
+                    <div>
+                      {weatherData.alerts.map((alert, index) => (
+                        <Alert key={index}>
+                          <h3>Weather Alert:</h3>
+                          <p>
+                            <strong>Sender:&nbsp;</strong> {alert.sender_name}
+                          </p>
+                          <br />
+                          <p>
+                            <strong>Start:&nbsp;</strong>
+                            {new Date(alert.start * 1000).toLocaleString(
+                              "en-US",
+                              {
+                                weekday: "long",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </p>
+                          <br />
+                          <p>
+                            <strong>End:&nbsp;</strong>
+                            {new Date(alert.end * 1000).toLocaleString(
+                              "en-US",
+                              {
+                                weekday: "long",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </p>
+                          <br />
+                          <p>
+                            <strong>Event:&nbsp;</strong> {alert.event}
+                          </p>
+                          <p>
+                            <strong>Description:&nbsp;</strong>
+                            {alert.description}
+                          </p>
+                        </Alert>
+                      ))}
+                    </div>
+                  )}
+                </Container>
+              )}
+              <br />
+              {weatherData.hourly && (
+                <Container>
+                  <h3>Hourly Forecast:</h3>
+                  <p>*pop = probability of precipitation</p>
+                  <ul>
+                    {weatherData.hourly.slice(0, 10).map((hour, index) => (
+                      <li key={index}>
+                        <b>
+                          {new Date(hour.dt * 1000).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
-                        </p>
-                        <br />
-                        <p>
-                          <strong>Event:&nbsp;</strong> {alert.event}
-                        </p>
-                        <p>
-                          <strong>Description:&nbsp;</strong>
-                          {alert.description}
-                        </p>
-                      </Alert>
-                    ))}
-                  </div>
-                )}
-              </Container>
-            )}
-            <br />
-            {weatherData.hourly && (
-              <Container>
-                <h3>Hourly Forecast:</h3>
-                <p>*pop = probability of precipitation</p>
-                <ul>
-                  {weatherData.hourly.slice(0, 10).map((hour, index) => (
-                    <li key={index}>
-                      <b>
-                        {new Date(hour.dt * 1000).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                        :{" "}
-                      </b>
-                      {hour.temp}°C, pop: {Math.round(hour.pop * 100)}
-                      %, {hour.weather[0].description}
-                      <AnimatedIcon
-                        src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
-                        alt="Hourly Weather Icon"
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </Container>
-            )}
-            <br />
-            {weatherData.daily && (
-              <Container>
-                <h3>Daily Forecast:</h3>
-                <ul>
-                  {weatherData.daily.slice(0, 5).map((day, index) => {
-                    const date = new Date(day.dt * 1000);
-                    const dateString = date.toLocaleDateString("en-US", {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                    });
-
-                    let displayDate;
-                    if (index === 0) {
-                      displayDate = "Today - " + dateString;
-                    } else if (index === 1) {
-                      displayDate = "Tomorrow - " + dateString;
-                    } else {
-                      displayDate = dateString;
-                    }
-                    return (
-                      <li key={index}>
-                        <b>{displayDate}:</b>
-                        <br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C
-                        <br />
-                        Probability of precipitation: {parseInt(day.pop * 100)}%
-                        <br />
-                        {day.summary}
-                        <br />
+                          :{" "}
+                        </b>
+                        {hour.temp}°C, pop: {Math.round(hour.pop * 100)}
+                        %, {hour.weather[0].description}
                         <AnimatedIcon
-                          src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                          alt="Weather Icon"
-                        ></AnimatedIcon>
+                          src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
+                          alt="Hourly Weather Icon"
+                        />
                       </li>
-                    );
-                  })}
-                </ul>
-              </Container>
-            )}
-            <br />
-          </div>
-        )}
+                    ))}
+                  </ul>
+                </Container>
+              )}
+              <br />
+              {weatherData.daily && (
+                <Container>
+                  <h3>Daily Forecast:</h3>
+                  <ul>
+                    {weatherData.daily.slice(0, 5).map((day, index) => {
+                      const date = new Date(day.dt * 1000);
+                      const dateString = date.toLocaleDateString("en-US", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                      });
+
+                      let displayDate;
+                      if (index === 0) {
+                        displayDate = "Today - " + dateString;
+                      } else if (index === 1) {
+                        displayDate = "Tomorrow - " + dateString;
+                      } else {
+                        displayDate = dateString;
+                      }
+                      return (
+                        <li key={index}>
+                          <b>{displayDate}:</b>
+                          <br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C
+                          <br />
+                          Probability of precipitation:{" "}
+                          {parseInt(day.pop * 100)}%
+                          <br />
+                          {day.summary}
+                          <br />
+                          <AnimatedIcon
+                            src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                            alt="Weather Icon"
+                          ></AnimatedIcon>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </Container>
+              )}
+              <br />
+            </div>
+          )}
       </div>
-    </>
+    </div>
   );
 }
