@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { getWeatherData } from "../hooks/getWeatherData/getWeatherData";
 import { useAltitude } from "../hooks/getAltitude/getAltitude";
+import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWind } from "@fortawesome/free-solid-svg-icons";
 import {
   Container,
   AnimatedIcon,
@@ -13,6 +16,24 @@ import {
   WindArrow,
 } from "./Homepage.style";
 
+const getAQICategory = (aqi) => {
+  if (aqi === 1) return "Good";
+  if (aqi === 2) return "Fair";
+  if (aqi === 3) return "Moderate";
+  if (aqi === 4) return "Poor";
+  if (aqi === 5) return "Very Poor";
+  return "Unknown";
+};
+
+const getAQIColor = (aqi) => {
+  if (aqi === 1) return "#00cc66"; // Good - Lighter Green
+  if (aqi === 2) return "#ffcc00"; // Fair - Gold
+  if (aqi === 3) return "#ff6600"; // Moderate - Dark Orange
+  if (aqi === 4) return "#cc0000"; // Poor - Dark Red
+  if (aqi === 5) return "#9900cc"; // Very Poor - Dark Purple
+  return "#333333"; // Unknown - Dark Grey
+};
+
 export function Homepage() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -24,6 +45,15 @@ export function Homepage() {
   const [loadingLocation, setLoadingLocation] = useState(false);
 
   const { fetchAltitude, loadingAltitude, altitudeError } = useAltitude(); // Destructure the custom hook
+  const { aqi, components, loadingAQI, errorAQI } = useAirQuality(
+    latitude,
+    longitude
+  );
+  const [showComponents, setShowComponents] = useState(false);
+
+  const toggleShowComponents = () => {
+    setShowComponents(!showComponents);
+  };
 
   // useEffect(() => {
   //   console.log(`Loading weather data: ${loadingWeather}`);
@@ -185,6 +215,7 @@ export function Homepage() {
       {loadingLocation && !loadingAltitude && !altitudeError && (
         <p>Loading location data...</p>
       )}
+      {loadingAQI && <p>Loading air quality...</p>}
       {!loadingLocation && !loadingAltitude && selectVisible && (
         <Select
           value={selectedLocation}
@@ -237,9 +268,59 @@ export function Homepage() {
         {!loadingWeather &&
           !loadingLocation &&
           !loadingAltitude &&
+          !loadingAQI &&
           weatherData && (
             <div>
               <br />
+              {aqi !== null && !loadingAQI && !errorAQI && (
+                <Container>
+                  <h3>Air Quality:</h3>
+                  <p>
+                    AQI: {aqi} - {getAQICategory(aqi)}
+                  </p>
+                  <br />
+                  <Button onClick={toggleShowComponents}>
+                    <FontAwesomeIcon
+                      icon={faWind}
+                      style={{ color: getAQIColor(aqi) }}
+                    />
+                  </Button>
+                  {!showComponents && (
+                    <div>
+                      <p>
+                        * Click icon for air components concentration details
+                      </p>
+                    </div>
+                  )}
+                  {showComponents && (
+                    <div>
+                      <p>Carbon monoxide - CO: {components.co} µg/m³</p>
+                      <br />
+                      <p>Nitrogen monoxide - NO: {components.no} µg/m³</p>
+                      <br />
+                      <p>Nitrogen dioxide - NO2: {components.no2} µg/m³</p>
+                      <br />
+                      <p>Ozone - O3: {components.o3} µg/m³</p>
+                      <br />
+                      <p>Sulphur dioxide - SO2: {components.so2} µg/m³</p>
+                      <br />
+                      <p>
+                        Fine particles matter - PM2.5: {components.pm2_5} µg/m³
+                      </p>
+                      <br />
+                      <p>
+                        Coarse particulate matter - PM10: {components.pm10}{" "}
+                        µg/m³
+                      </p>
+                      <br />
+                      <p>Ammonia - NH3: {components.nh3} µg/m³</p>
+                    </div>
+                  )}
+                </Container>
+              )}
+              <br />
+              {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
+
               {weatherData.current && (
                 <Container>
                   <h3>Current Weather conditions:</h3>
