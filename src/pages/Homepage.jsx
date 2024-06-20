@@ -249,7 +249,7 @@ export function Homepage() {
           <option latitude="52.5200" longitude="13.4050">
             Berlin, DE
           </option>
-          <option latitude="52.5200" longitude="13.4050">
+          <option latitude="42.836948" longitude="-84.605148">
             Dewitt, USA
           </option>
         </Select>
