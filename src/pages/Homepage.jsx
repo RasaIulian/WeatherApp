@@ -16,24 +16,6 @@ import {
   WindArrow,
 } from "./Homepage.style";
 
-const getAQICategory = (aqi) => {
-  if (aqi === 1) return "Good";
-  if (aqi === 2) return "Fair";
-  if (aqi === 3) return "Moderate";
-  if (aqi === 4) return "Poor";
-  if (aqi === 5) return "Very Poor";
-  return "Unknown";
-};
-
-const getAQIColor = (aqi) => {
-  if (aqi === 1) return "#00cc66"; // Good - Lighter Green
-  if (aqi === 2) return "#ffcc00"; // Fair - Gold
-  if (aqi === 3) return "#ff6600"; // Moderate - Dark Orange
-  if (aqi === 4) return "#cc0000"; // Poor - Dark Red
-  if (aqi === 5) return "#9900cc"; // Very Poor - Dark Purple
-  return "#333333"; // Unknown - Dark Grey
-};
-
 export function Homepage() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -45,10 +27,15 @@ export function Homepage() {
   const [loadingLocation, setLoadingLocation] = useState(false);
 
   const { fetchAltitude, loadingAltitude, altitudeError } = useAltitude(); // Destructure the custom hook
-  const { aqi, components, loadingAQI, errorAQI } = useAirQuality(
-    latitude,
-    longitude
-  );
+  const {
+    aqi,
+    components,
+    loadingAQI,
+    errorAQI,
+    getAQICategory,
+    getAQIColor,
+    categorizeComponent,
+  } = useAirQuality(latitude, longitude);
   const [showComponents, setShowComponents] = useState(false);
 
   const toggleShowComponents = () => {
@@ -246,12 +233,23 @@ export function Homepage() {
             Current Location
           </option>
           <option latitude="45.768739" longitude="23.641838">
-            Dobra
+            Dobra, RO
           </option>
           <option latitude="45.806776" longitude="24.146329">
-            Sibiu
+            Sibiu, RO
           </option>
-          <option latitude="42.83695" longitude="-84.60515">
+          <option latitude="44.4268" longitude="26.1025">
+            Bucharest, RO
+          </option>
+
+          <option latitude="48.8566" longitude="2.3522">
+            Paris, FR
+          </option>
+
+          <option latitude="52.5200" longitude="13.4050">
+            Berlin, DE
+          </option>
+          <option latitude="52.5200" longitude="13.4050">
             Dewitt, USA
           </option>
         </Select>
@@ -278,6 +276,7 @@ export function Homepage() {
                   <p>
                     AQI: {aqi} - {getAQICategory(aqi)}
                   </p>
+
                   <br />
                   <Button onClick={toggleShowComponents}>
                     <FontAwesomeIcon
@@ -294,26 +293,45 @@ export function Homepage() {
                   )}
                   {showComponents && (
                     <div>
-                      <p>Carbon monoxide - CO: {components.co} µg/m³</p>
-                      <br />
-                      <p>Nitrogen monoxide - NO: {components.no} µg/m³</p>
-                      <br />
-                      <p>Nitrogen dioxide - NO2: {components.no2} µg/m³</p>
-                      <br />
-                      <p>Ozone - O3: {components.o3} µg/m³</p>
-                      <br />
-                      <p>Sulphur dioxide - SO2: {components.so2} µg/m³</p>
-                      <br />
                       <p>
-                        Fine particles matter - PM2.5: {components.pm2_5} µg/m³
+                        SO₂ - Sulphur dioxide: {components.so2} μg/m3 (
+                        {categorizeComponent("so2", components.so2)})
                       </p>
                       <br />
                       <p>
-                        Coarse particulate matter - PM10: {components.pm10}{" "}
-                        µg/m³
+                        NO₂ - Nitrogen dioxide: {components.no2} μg/m3 (
+                        {categorizeComponent("no2", components.no2)})
                       </p>
                       <br />
-                      <p>Ammonia - NH3: {components.nh3} µg/m³</p>
+                      <p>
+                        PM10 - Coarse particulate matter: {components.pm10}{" "}
+                        μg/m3 ({categorizeComponent("pm10", components.pm10)})
+                      </p>
+                      <br />
+                      <p>
+                        PM2.5 - Fine particles matter: {components.pm2_5} μg/m3
+                        ({categorizeComponent("pm2_5", components.pm2_5)})
+                      </p>
+                      <br />
+                      <p>
+                        O₃ - Ozone: {components.o3} μg/m3 (
+                        {categorizeComponent("o3", components.o3)})
+                      </p>
+                      <br />
+                      <p>
+                        CO - Carbon monoxide: {components.co} μg/m3 (
+                        {categorizeComponent("co", components.co)})
+                      </p>
+                      <br />
+                      <p>
+                        NO - Nitrogen monoxide: {components.no} μg/m3 (
+                        {categorizeComponent("no", components.no)})
+                      </p>
+                      <br />
+                      <p>
+                        NH3 - Ammonia: {components.nh3} μg/m3 (
+                        {categorizeComponent("nh3", components.nh3)})
+                      </p>
                     </div>
                   )}
                 </Container>

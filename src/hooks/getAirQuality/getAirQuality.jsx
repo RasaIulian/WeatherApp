@@ -7,6 +7,45 @@ export const useAirQuality = (latitude, longitude) => {
   const [loadingAQI, setLoadingAQI] = useState(false);
   const [errorAQI, setErrorAQI] = useState("");
 
+  const getAQICategory = (aqi) => {
+    if (aqi === 1) return "Good";
+    if (aqi === 2) return "Fair";
+    if (aqi === 3) return "Moderate";
+    if (aqi === 4) return "Poor";
+    if (aqi === 5) return "Very Poor";
+    return "Unknown";
+  };
+
+  const getAQIColor = (aqi) => {
+    if (aqi === 1) return "#00cc66"; // Good - Lighter Green
+    if (aqi === 2) return "#ffcc00"; // Fair - Gold
+    if (aqi === 3) return "#ff6600"; // Moderate - Dark Orange
+    if (aqi === 4) return "#cc0000"; // Poor - Dark Red
+    if (aqi === 5) return "#9900cc"; // Very Poor - Dark Purple
+    return "#333333"; // Unknown - Dark Grey
+  };
+
+  const pollutantRanges = {
+    no2: [0, 50, 100, 200, 400, Infinity], // Very Low, Low, Medium, High, Very High
+    pm10: [0, 25, 50, 90, 180, Infinity], // Very Low, Low, Medium, High, Very High
+    o3: [0, 60, 120, 180, 240, Infinity], // Very Low, Low, Medium, High, Very High
+    pm2_5: [0, 15, 30, 55, 110, Infinity], // Very Low, Low, Medium, High, Very High
+    so2: [0, 20, 80, 250, 350, Infinity],
+    co: [0, 4400, 9400, 12400, 15400, Infinity],
+    nh3: [0.1, 40, 80, 120, 200], // Custom range for NH3
+    no: [0.1, 20, 40, 60, 100], // Custom range for NO
+  };
+
+  const categorizeComponent = (component, value) => {
+    const ranges = pollutantRanges[component];
+    if (!ranges) return "Unknown";
+    if (value <= ranges[0]) return "Very Low";
+    if (value <= ranges[1]) return "Low";
+    if (value <= ranges[2]) return "Medium";
+    if (value <= ranges[3]) return "High";
+    return "Very High";
+  };
+
   useEffect(() => {
     const fetchAirQuality = async () => {
       if (!latitude || !longitude) return;
@@ -40,5 +79,13 @@ export const useAirQuality = (latitude, longitude) => {
     fetchAirQuality();
   }, [latitude, longitude]);
 
-  return { aqi, components, loadingAQI, errorAQI };
+  return {
+    aqi,
+    components,
+    loadingAQI,
+    errorAQI,
+    getAQICategory,
+    getAQIColor,
+    categorizeComponent,
+  };
 };
