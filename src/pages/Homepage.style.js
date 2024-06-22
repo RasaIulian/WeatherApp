@@ -25,6 +25,7 @@ export const ErrorMessage = styled.div`
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   margin: 10px 0;
+  max-width: 470px;
 `;
 
 const moveLeftRightZoom = keyframes`

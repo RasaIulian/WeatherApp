@@ -79,7 +79,6 @@ export function Homepage() {
 
     try {
       const altitudeValue = await fetchAltitude(latitude, longitude);
-
       let latlon = latitude + "," + longitude;
       let img_url =
         "https://maps.googleapis.com/maps/api/staticmap?center=" +
@@ -90,21 +89,13 @@ export function Homepage() {
       const mapElement = document.getElementById("mapholder");
 
       if (locationElement && mapElement) {
-        locationElement.innerHTML =
-          "Latitude: " +
-          latitude.toFixed(1) +
-          "°" +
-          "<br>Longitude: " +
-          longitude.toFixed(1) +
-          "°" +
-          "<br>Altitude: " +
-          altitudeValue +
-          "m";
-
+        locationElement.innerHTML = `Latitude: ${latitude.toFixed(1)}°<br>
+        Longitude: ${longitude.toFixed(1)}°<br>
+        Altitude: ${altitudeValue}m`;
         mapElement.src = img_url;
       }
     } catch (error) {
-      console.error("Error fetching altitude data:", error);
+      // no aCTION SINCE altitudeError is already handled in the getAltitude hook
     }
   };
 
@@ -114,16 +105,22 @@ export function Homepage() {
         setErrorMessage("Unknown error");
         break;
       case error.PERMISSION_DENIED:
-        setErrorMessage("You denied the request for GeoLocation.");
+        setErrorMessage(
+          "You denied the request for GeoLocation. Please enable for feature to work"
+        );
         break;
       case error.POSITION_UNAVAILABLE:
-        setErrorMessage("Location information is unavailable.");
+        setErrorMessage(
+          "Location information is unavailable. Please try again later."
+        );
         break;
       case error.TIMEOUT:
-        setErrorMessage("The request to get user location timed out.");
+        setErrorMessage(
+          "The request to get user location timed out. Please try again later."
+        );
         break;
       case error.UNKNOWN_ERROR:
-        setErrorMessage("An unknown error occurred.");
+        setErrorMessage("An unknown error occurred. Please try again later.");
         break;
     }
     setLoadingLocation(false);
@@ -197,13 +194,10 @@ export function Homepage() {
       <Button onClick={getLocation} className="toHide">
         Try It
       </Button>
-      {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
       {loadingAltitude && !altitudeError && <p>Loading altitude data...</p>}
-      {loadingLocation && !loadingAltitude && !altitudeError && (
-        <p>Loading location data...</p>
-      )}
+      {loadingLocation && <p>Loading location data...</p>}
       {loadingAQI && <p>Loading air quality...</p>}
-      {!loadingLocation && !loadingAltitude && selectVisible && (
+      {!loadingLocation && !loadingAltitude && !loadingAQI && selectVisible && (
         <Select
           value={selectedLocation}
           onChange={(e) => {
@@ -241,11 +235,9 @@ export function Homepage() {
           <option latitude="44.4268" longitude="26.1025">
             Bucharest, RO
           </option>
-
           <option latitude="48.8566" longitude="2.3522">
             Paris, FR
           </option>
-
           <option latitude="52.5200" longitude="13.4050">
             Berlin, DE
           </option>
@@ -259,6 +251,7 @@ export function Homepage() {
         <p id="location"></p>
         <Map id="mapholder"></Map>
       </div>
+      {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
 
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       <div>
@@ -274,9 +267,8 @@ export function Homepage() {
                 <Container>
                   <h3>Air Quality:</h3>
                   <p>
-                    AQI: {aqi} - {getAQICategory(aqi)}
+                    AQI (Air Quality Index): {aqi} - {getAQICategory(aqi)}
                   </p>
-
                   <br />
                   <Button onClick={toggleShowComponents}>
                     <FontAwesomeIcon
