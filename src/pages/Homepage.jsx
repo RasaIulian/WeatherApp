@@ -232,12 +232,13 @@ export function Homepage() {
           <option latitude="45.806776" longitude="24.146329">
             Sibiu, RO
           </option>
+          <option latitude="45.871873" longitude="24.064956">
+            Ocna Sb, RO
+          </option>
           <option latitude="44.4268" longitude="26.1025">
             Bucharest, RO
           </option>
-          <option latitude="48.8566" longitude="2.3522">
-            Paris, FR
-          </option>
+
           <option latitude="52.5200" longitude="13.4050">
             Berlin, DE
           </option>
@@ -274,15 +275,10 @@ export function Homepage() {
                     <FontAwesomeIcon
                       icon={faWind}
                       style={{ color: getAQIColor(aqi) }}
-                    />
+                    />{" "}
+                    {!showComponents && " more"}
                   </Button>
-                  {!showComponents && (
-                    <div>
-                      <p>
-                        * Click icon for air components concentration details
-                      </p>
-                    </div>
-                  )}
+
                   {showComponents && (
                     <div>
                       <p>
