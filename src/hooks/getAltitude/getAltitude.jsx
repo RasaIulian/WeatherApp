@@ -19,7 +19,8 @@ export const useAltitude = () => {
         )
       ) {
         const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAao4fbyCIjghUZoOJQe4OBjDA64QTYm08&libraries=geometry&callback=initMap&loading=async`;
+        const api_Key = process.env.REACT_APP_Altitude_API_KEY;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${api_Key}&libraries=geometry&callback=initMap&loading=async`;
         script.async = true;
         document.head.appendChild(script);
       }
@@ -38,7 +39,7 @@ export const useAltitude = () => {
 
   const fetchAltitude = async (latitude, longitude) => {
     if (!googleMapsLoaded) {
-      setAltitudeError("Google Maps API not loaded yet");
+      setAltitudeError("Google Maps Altitude API not loaded yet");
       return;
     }
 
@@ -55,6 +56,7 @@ export const useAltitude = () => {
           (results, status) => {
             if (status === "OK" && results && results.length > 0) {
               resolve(parseInt(results[0].elevation));
+              setAltitudeError("");
             } else {
               reject(new Error(`Elevation service error: ${status}`));
             }

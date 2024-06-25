@@ -194,9 +194,10 @@ export function Homepage() {
       <Button onClick={getLocation} className="toHide">
         Try It
       </Button>
-      {loadingAltitude && !altitudeError && <p>Loading altitude data...</p>}
       {loadingLocation && <p>Loading location data...</p>}
+      {loadingAltitude && !altitudeError && <p>Loading altitude data...</p>}
       {loadingAQI && <p>Loading air quality...</p>}
+      {loadingWeather && <p>Loading weather data...</p>}
       {!loadingLocation && !loadingAltitude && !loadingAQI && selectVisible && (
         <Select
           value={selectedLocation}
@@ -256,7 +257,6 @@ export function Homepage() {
 
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       <div>
-        {loadingWeather && <p>Loading weather data...</p>}
         {!loadingWeather &&
           !loadingLocation &&
           !loadingAltitude &&
@@ -405,7 +405,11 @@ export function Homepage() {
                     <div>
                       {weatherData.alerts.map((alert, index) => (
                         <Alert key={index}>
-                          <h3>Weather Alert:</h3>
+                          <h3>
+                            Weather Alert
+                            {weatherData.alerts.length >= 2 && " "}
+                            {weatherData.alerts.length >= 2 && index + 1}:
+                          </h3>
                           <p>
                             <strong>Sender:&nbsp;</strong> {alert.sender_name}
                           </p>
@@ -441,6 +445,7 @@ export function Homepage() {
                           <p>
                             <strong>Event:&nbsp;</strong> {alert.event}
                           </p>
+                          <br />
                           <p>
                             <strong>Description:&nbsp;</strong>
                             {alert.description}

@@ -52,8 +52,9 @@ export const useAirQuality = (latitude, longitude) => {
 
       setLoadingAQI(true);
       setErrorAQI("");
+      const apiKey = process.env.REACT_APP_AirQuality_API_KEY;
 
-      const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=4cbdbc7df66de5de3bc03227c33e61be`;
+      const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
 
       try {
         const response = await fetch(url);

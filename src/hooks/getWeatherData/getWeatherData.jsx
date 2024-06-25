@@ -1,7 +1,8 @@
 // getWeatherData.jsx
 // export const getWeatherData = () => {
 export const getWeatherData = async (lat, lon) => {
-  const apiUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=minutely&appid=4cbdbc7df66de5de3bc03227c33e61be`;
+  const api_Key = process.env.REACT_APP_Weather_API_KEY;
+  const apiUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=minutely&appid=${api_Key}`;
   try {
     const response = await fetch(apiUrl);
     const data = await response.json();
