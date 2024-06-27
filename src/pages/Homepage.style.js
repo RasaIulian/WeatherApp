@@ -1,11 +1,18 @@
 import styled, { keyframes } from "styled-components";
 
+export const ContainerWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 960px;
+`;
+
 export const Container = styled.div`
   padding: 5px;
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 470px;
+  width: 48%; //  will create two columns with a small gap
+  margin-bottom: 20px; // vertical space between rows
   p {
     margin: 5px 0;
     display: inline-flex;
@@ -16,6 +23,9 @@ export const Container = styled.div`
   li {
     margin: 5px 0;
   }
+  @media (max-width: 980px) {
+    width: 460px;
+  }
 `;
 
 export const ErrorMessage = styled.div`
@@ -24,8 +34,11 @@ export const ErrorMessage = styled.div`
   padding: 5px;
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  margin: 10px 0;
-  max-width: 470px;
+  margin-bottom: 20px;
+  width: 48%;
+  @media (max-width: 980px) {
+    width: 460px;
+  }
 `;
 
 const moveLeftRightZoom = keyframes`
@@ -42,7 +55,6 @@ const moveLeftRightZoom = keyframes`
 
 export const AnimatedIcon = styled.img`
   animation: ${moveLeftRightZoom} 6s infinite alternate ease-in-out;
-
   padding-top: 0;
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.05);
 `;
@@ -91,9 +103,10 @@ export const Select = styled.select`
 
 export const Map = styled.img`
   border-radius: 5px;
-  max-width: 470px;
+  max-width: 460px;
   width: 100%;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
 `;
 
 export const Square = styled.span`

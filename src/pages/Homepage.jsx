@@ -14,6 +14,7 @@ import {
   Alert,
   ErrorMessage,
   WindArrow,
+  ContainerWrapper,
 } from "./Homepage.style";
 
 export function Homepage() {
@@ -83,7 +84,7 @@ export function Homepage() {
       let img_url =
         "https://maps.googleapis.com/maps/api/staticmap?center=" +
         latlon +
-        "&zoom=15&size=470x250&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
+        "&zoom=15&size=460x250&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
 
       const locationElement = document.getElementById("location");
       const mapElement = document.getElementById("mapholder");
@@ -251,82 +252,83 @@ export function Homepage() {
 
       <div>
         <p id="location"></p>
-        <Map id="mapholder"></Map>
       </div>
-      {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
+      <ContainerWrapper>
+        <div>
+          {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
+          <Map id="mapholder"></Map>
+        </div>
+        <br />
+        {!errorAQI && !loadingAQI && aqi && (
+          <Container>
+            <h3>Air Quality:</h3>
+            <p>
+              AQI (Air Quality Index): {aqi} - {getAQICategory(aqi)}
+            </p>
+            <br />
+            <Button onClick={toggleShowComponents}>
+              <FontAwesomeIcon
+                icon={faWind}
+                style={{ color: getAQIColor(aqi) }}
+              />{" "}
+              {!showComponents && " more"}
+            </Button>
 
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-      <div>
+            {showComponents && (
+              <div>
+                <p>
+                  SO₂ - Sulphur dioxide: {components.so2} μg/m3 (
+                  {categorizeComponent("so2", components.so2)})
+                </p>
+                <br />
+                <p>
+                  NO₂ - Nitrogen dioxide: {components.no2} μg/m3 (
+                  {categorizeComponent("no2", components.no2)})
+                </p>
+                <br />
+                <p>
+                  PM10 - Coarse particulate matter: {components.pm10} μg/m3 (
+                  {categorizeComponent("pm10", components.pm10)})
+                </p>
+                <br />
+                <p>
+                  PM2.5 - Fine particles matter: {components.pm2_5} μg/m3 (
+                  {categorizeComponent("pm2_5", components.pm2_5)})
+                </p>
+                <br />
+                <p>
+                  O₃ - Ozone: {components.o3} μg/m3 (
+                  {categorizeComponent("o3", components.o3)})
+                </p>
+                <br />
+                <p>
+                  CO - Carbon monoxide: {components.co} μg/m3 (
+                  {categorizeComponent("co", components.co)})
+                </p>
+                <br />
+                <p>
+                  NO - Nitrogen monoxide: {components.no} μg/m3 (
+                  {categorizeComponent("no", components.no)})
+                </p>
+                <br />
+                <p>
+                  NH3 - Ammonia: {components.nh3} μg/m3 (
+                  {categorizeComponent("nh3", components.nh3)})
+                </p>
+              </div>
+            )}
+          </Container>
+        )}
+        {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
+
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         {!loadingWeather &&
           !loadingLocation &&
           !loadingAltitude &&
           !loadingAQI &&
           weatherData && (
-            <div>
+            <>
               <br />
-              {aqi !== null && !loadingAQI && !errorAQI && (
-                <Container>
-                  <h3>Air Quality:</h3>
-                  <p>
-                    AQI (Air Quality Index): {aqi} - {getAQICategory(aqi)}
-                  </p>
-                  <br />
-                  <Button onClick={toggleShowComponents}>
-                    <FontAwesomeIcon
-                      icon={faWind}
-                      style={{ color: getAQIColor(aqi) }}
-                    />{" "}
-                    {!showComponents && " more"}
-                  </Button>
-
-                  {showComponents && (
-                    <div>
-                      <p>
-                        SO₂ - Sulphur dioxide: {components.so2} μg/m3 (
-                        {categorizeComponent("so2", components.so2)})
-                      </p>
-                      <br />
-                      <p>
-                        NO₂ - Nitrogen dioxide: {components.no2} μg/m3 (
-                        {categorizeComponent("no2", components.no2)})
-                      </p>
-                      <br />
-                      <p>
-                        PM10 - Coarse particulate matter: {components.pm10}{" "}
-                        μg/m3 ({categorizeComponent("pm10", components.pm10)})
-                      </p>
-                      <br />
-                      <p>
-                        PM2.5 - Fine particles matter: {components.pm2_5} μg/m3
-                        ({categorizeComponent("pm2_5", components.pm2_5)})
-                      </p>
-                      <br />
-                      <p>
-                        O₃ - Ozone: {components.o3} μg/m3 (
-                        {categorizeComponent("o3", components.o3)})
-                      </p>
-                      <br />
-                      <p>
-                        CO - Carbon monoxide: {components.co} μg/m3 (
-                        {categorizeComponent("co", components.co)})
-                      </p>
-                      <br />
-                      <p>
-                        NO - Nitrogen monoxide: {components.no} μg/m3 (
-                        {categorizeComponent("no", components.no)})
-                      </p>
-                      <br />
-                      <p>
-                        NH3 - Ammonia: {components.nh3} μg/m3 (
-                        {categorizeComponent("nh3", components.nh3)})
-                      </p>
-                    </div>
-                  )}
-                </Container>
-              )}
-              <br />
-              {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
-
               {weatherData.current && (
                 <Container>
                   <h3>Current Weather conditions:</h3>
@@ -523,10 +525,11 @@ export function Homepage() {
                   </ul>
                 </Container>
               )}
+
               <br />
-            </div>
+            </>
           )}
-      </div>
+      </ContainerWrapper>
     </div>
   );
 }

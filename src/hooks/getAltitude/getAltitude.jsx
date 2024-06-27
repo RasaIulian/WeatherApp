@@ -39,17 +39,17 @@ export const useAltitude = () => {
 
   const fetchAltitude = async (latitude, longitude) => {
     if (!googleMapsLoaded) {
-      setAltitudeError("Google Maps Altitude API not loaded yet");
+      setAltitudeError("Google Maps Altitude API loading error");
       return;
     }
-
-    setLoadingAltitude(true);
     setAltitudeError("");
 
     const elevator = new window.google.maps.ElevationService();
     const location = { lat: parseFloat(latitude), lng: parseFloat(longitude) };
 
     try {
+      setLoadingAltitude(true);
+
       const result = await new Promise((resolve, reject) => {
         elevator.getElevationForLocations(
           { locations: [location] },
@@ -69,9 +69,8 @@ export const useAltitude = () => {
     } catch (error) {
       console.error("Error fetching altitude data:", error.message);
       setAltitudeError("Error fetching altitude data: " + error.message);
+      setLoadingAltitude(false);
     }
-
-    setLoadingAltitude(false);
   };
 
   return { fetchAltitude, loadingAltitude, altitudeError };
