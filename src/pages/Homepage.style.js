@@ -25,6 +25,7 @@ export const Container = styled.div`
   }
   @media (max-width: 980px) {
     width: 460px;
+    margin-bottom: 10px;
   }
 `;
 
@@ -107,6 +108,9 @@ export const Map = styled.img`
   width: 100%;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
+  @media (max-width: 980px) {
+    margin-bottom: 10px;
+  }
 `;
 
 export const Square = styled.span`

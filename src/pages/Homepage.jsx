@@ -332,8 +332,13 @@ export function Homepage() {
               {weatherData.current && (
                 <Container>
                   <h3>Current Weather conditions:</h3>
-                  <p>Temperature: {weatherData.current.temp}°C</p> <br />
-                  <p>Feels Like: {weatherData.current.feels_like}°C</p>
+                  <p>
+                    Temperature: {Math.round(weatherData.current.temp)}°C
+                  </p>{" "}
+                  <br />
+                  <p>
+                    Feels Like: {Math.round(weatherData.current.feels_like)}°C
+                  </p>
                   <br />
                   <p>
                     UV index: {weatherData.current.uvi} -
@@ -473,7 +478,8 @@ export function Homepage() {
                           })}
                           :{" "}
                         </b>
-                        {hour.temp}°C, pop: {Math.round(hour.pop * 100)}
+                        {Math.round(hour.temp)}°C, pop:{" "}
+                        {Math.round(hour.pop * 100)}
                         %, {hour.weather[0].description}
                         <AnimatedIcon
                           src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
@@ -508,7 +514,8 @@ export function Homepage() {
                       return (
                         <li key={index}>
                           <b>{displayDate}:</b>
-                          <br /> Min: {day.temp.min}°C - Max: {day.temp.max}°C
+                          <br /> Min: {Math.round(day.temp.min)}°C - Max:{" "}
+                          {Math.round(day.temp.max)}°C
                           <br />
                           Probability of precipitation:{" "}
                           {parseInt(day.pop * 100)}%
