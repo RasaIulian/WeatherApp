@@ -85,7 +85,7 @@ export function Homepage() {
       let img_url =
         "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/" +
         latlon +
-        ",13/460x250?access_token=" +
+        ",13,0,45/460x250@2x?access_token=" +
         mapApiToken +
         "&logo=false";
 
