@@ -16,6 +16,7 @@ export const Container = styled.div`
   p {
     margin: 5px 0;
     display: inline-flex;
+    flex-wrap: wrap;
   }
   h3 {
     margin-bottom: 0;
@@ -24,7 +25,7 @@ export const Container = styled.div`
     margin: 5px 0;
   }
   @media (max-width: 980px) {
-    width: 460px;
+    width: 100%;
     margin-bottom: 10px;
   }
 `;
@@ -38,7 +39,7 @@ export const ErrorMessage = styled.div`
   margin-bottom: 20px;
   width: 48%;
   @media (max-width: 980px) {
-    width: 460px;
+    width: 100%;
   }
 `;
 

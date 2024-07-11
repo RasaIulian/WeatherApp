@@ -4,6 +4,7 @@ import { useAltitude } from "../hooks/getAltitude/getAltitude";
 import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWind } from "@fortawesome/free-solid-svg-icons";
+
 import {
   Container,
   AnimatedIcon,
@@ -77,14 +78,16 @@ export function Homepage() {
   const showPosition = async (latitude, longitude) => {
     setLatitude(latitude);
     setLongitude(longitude);
-
+    const mapApiToken = process.env.REACT_APP_Map_API_KEY; //Map Box API
     try {
       const altitudeValue = await fetchAltitude(latitude, longitude);
-      let latlon = latitude + "," + longitude;
+      let latlon = longitude + "," + latitude;
       let img_url =
-        "https://maps.googleapis.com/maps/api/staticmap?center=" +
+        "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/" +
         latlon +
-        "&zoom=15&size=460x250&sensor=false&key=AIzaSyDOkBlOAJdoASnvwDn38G0mU9TJo5dcjXI";
+        ",13/460x250?access_token=" +
+        mapApiToken +
+        "&logo=false";
 
       const locationElement = document.getElementById("location");
       const mapElement = document.getElementById("mapholder");
