@@ -12,8 +12,10 @@ export const useAltitude = () => {
       const response = await fetch(
         `https://api.open-elevation.com/api/v1/lookup?locations=${latitude},${longitude}`
       );
-
       setLoadingAltitude(false);
+      if (!response.ok) {
+        throw new Error(`status: ${response.status}`);
+      }
       const data = await response.json();
       return data.results[0].elevation;
     } catch (error) {

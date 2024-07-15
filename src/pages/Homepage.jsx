@@ -95,7 +95,15 @@ export function Homepage() {
       if (locationElement && mapElement) {
         locationElement.innerHTML = `Latitude: ${latitude.toFixed(1)}°<br>
         Longitude: ${longitude.toFixed(1)}°<br>
-        Altitude: ${altitudeValue}m`;
+        Altitude: `;
+
+        // Check if altitudeValue is defined
+        if (altitudeValue !== undefined) {
+          locationElement.innerHTML += `${altitudeValue}m`;
+        } else {
+          locationElement.innerHTML += `N/A`;
+        }
+
         mapElement.src = img_url;
       }
     } catch (error) {
