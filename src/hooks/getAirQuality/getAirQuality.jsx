@@ -26,10 +26,10 @@ export const useAirQuality = (latitude, longitude) => {
   };
 
   const pollutantRanges = {
-    no2: [0, 50, 100, 200, 400, Infinity], // Very Low, Low, Medium, High, Very High
-    pm10: [0, 25, 50, 90, 180, Infinity], // Very Low, Low, Medium, High, Very High
-    o3: [0, 60, 120, 180, 240, Infinity], // Very Low, Low, Medium, High, Very High
-    pm2_5: [0, 15, 30, 55, 110, Infinity], // Very Low, Low, Medium, High, Very High
+    no2: [0, 40, 70, 150, 200, Infinity], // Very Low, Low, Medium, High, Very High
+    pm10: [0, 20, 50, 100, 200, Infinity], // Very Low, Low, Medium, High, Very High
+    o3: [0, 60, 100, 140, 180, Infinity], // Very Low, Low, Medium, High, Very High
+    pm2_5: [0, 10, 25, 50, 75, Infinity], // Very Low, Low, Medium, High, Very High
     so2: [0, 20, 80, 250, 350, Infinity],
     co: [0, 4400, 9400, 12400, 15400, Infinity],
     nh3: [0.1, 40, 80, 120, 200], // Custom range for NH3
