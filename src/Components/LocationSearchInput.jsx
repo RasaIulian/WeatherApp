@@ -82,7 +82,7 @@ const LocationSearchInput = ({ onSelectLocation }) => {
   };
 
   return (
-    <>
+    <div>
       <Input
         type="text"
         value={searchInput}
@@ -101,7 +101,7 @@ const LocationSearchInput = ({ onSelectLocation }) => {
         </List>
       )}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-    </>
+    </div>
   );
 };
 
