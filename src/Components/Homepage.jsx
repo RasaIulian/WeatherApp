@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { getWeatherData } from "../hooks/getWeatherData/getWeatherData";
 import { useAltitude } from "../hooks/getAltitude/getAltitude";
 import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
+import LocationSearchInput from "./LocationSearchInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWind } from "@fortawesome/free-solid-svg-icons";
 
 import {
   Container,
+  SearchContainer,
   AnimatedIcon,
   Button,
   Map,
@@ -19,6 +21,7 @@ import {
 } from "./Homepage.style";
 
 export function Homepage() {
+  const locationElement = document.getElementById("location");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
@@ -27,7 +30,7 @@ export function Homepage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
-
+  const [showComponents, setShowComponents] = useState(false);
   const { fetchAltitude, loadingAltitude, altitudeError } = useAltitude(); // Destructure the custom hook
   const {
     aqi,
@@ -38,10 +41,23 @@ export function Homepage() {
     getAQIColor,
     categorizeComponent,
   } = useAirQuality(latitude, longitude);
-  const [showComponents, setShowComponents] = useState(false);
 
   const toggleShowComponents = () => {
     setShowComponents(!showComponents);
+  };
+
+  const selectLocation = (location) => {
+    const { lat, lon, name, country, state } = location;
+    setLatitude(lat);
+    setLongitude(lon);
+    setSelectedLocation(`${name}, ${state || ""} ${country}`);
+    showPosition(lat, lon);
+
+    if (locationElement) {
+      locationElement.innerHTML = `Location: ${name}, ${
+        state || ""
+      } ${country}<br>`;
+    }
   };
 
   // useEffect(() => {
@@ -82,28 +98,15 @@ export function Homepage() {
     try {
       const altitudeValue = await fetchAltitude(latitude, longitude);
       let latlon = longitude + "," + latitude;
-      let img_url =
-        "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/" +
-        latlon +
-        ",13,0,45/460x250@2x?access_token=" +
-        mapApiToken +
-        "&logo=false";
+      let img_url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${latlon},13,0,45/460x250@2x?access_token=${mapApiToken}&logo=false`;
 
-      const locationElement = document.getElementById("location");
       const mapElement = document.getElementById("mapholder");
+      const locationElement = document.getElementById("location");
 
       if (locationElement && mapElement) {
-        locationElement.innerHTML = `Latitude: ${latitude.toFixed(1)}°<br>
+        locationElement.innerHTML += `Latitude: ${latitude.toFixed(1)}°<br>
         Longitude: ${longitude.toFixed(1)}°<br>
-        Altitude: `;
-
-        // Check if altitudeValue is defined
-        if (altitudeValue !== undefined) {
-          locationElement.innerHTML += `${altitudeValue}m`;
-        } else {
-          locationElement.innerHTML += `N/A`;
-        }
-
+        Altitude: ${altitudeValue !== undefined ? altitudeValue + "m" : "N/A"}`;
         mapElement.src = img_url;
       }
     } catch (error) {
@@ -206,59 +209,66 @@ export function Homepage() {
       <Button onClick={getLocation} className="toHide">
         Try It
       </Button>
+
       {loadingLocation && <p>Loading location data...</p>}
       {loadingAltitude && !altitudeError && <p>Loading altitude data...</p>}
       {loadingAQI && <p>Loading air quality...</p>}
       {loadingWeather && <p>Loading weather data...</p>}
       {!loadingLocation && !loadingAltitude && !loadingAQI && selectVisible && (
-        <Select
-          value={selectedLocation}
-          onChange={(e) => {
-            const selectedIndex = e.target.selectedIndex;
-            const selectedOption = e.target.options[selectedIndex];
-            const selectedLatitude = selectedOption.getAttribute("latitude");
-            const selectedLongitude = selectedOption.getAttribute("longitude");
-            setSelectedLocation(selectedOption.text);
-            if (
-              selectedLatitude === "current" &&
-              selectedLongitude === "current"
-            ) {
-              // Get current location using getLocation function
-              getLocation();
-            } else {
-              showPosition(
-                parseFloat(selectedLatitude),
-                parseFloat(selectedLongitude)
-              );
-            }
-          }}
-        >
-          {selectedLocation === "" && (
-            <option value="">Select favorite location</option>
-          )}
-          <option latitude="current" longitude="current">
-            Current Location
-          </option>
-          <option latitude="45.768739" longitude="23.641838">
-            Dobra, RO
-          </option>
-          <option latitude="45.806776" longitude="24.146329">
-            Sibiu, RO
-          </option>
-          <option latitude="45.871873" longitude="24.064956">
-            Ocna Sb, RO
-          </option>
-          <option latitude="44.4268" longitude="26.1025">
-            Bucharest, RO
-          </option>
+        <SearchContainer>
+          <LocationSearchInput onSelectLocation={selectLocation} />
+          <Select
+            value={selectedLocation}
+            onChange={(e) => {
+              const selectedIndex = e.target.selectedIndex;
+              const selectedOption = e.target.options[selectedIndex];
+              const selectedLatitude = selectedOption.getAttribute("latitude");
+              const selectedLongitude =
+                selectedOption.getAttribute("longitude");
+              setSelectedLocation(selectedOption.text);
+              if (
+                selectedLatitude === "current" &&
+                selectedLongitude === "current"
+              ) {
+                // Get current location using getLocation function
+                locationElement.innerHTML = "";
+                getLocation();
+              } else {
+                locationElement.innerHTML = "";
+                showPosition(
+                  parseFloat(selectedLatitude),
+                  parseFloat(selectedLongitude)
+                );
+              }
+            }}
+          >
+            {selectedLocation === "" && (
+              <option value="">Select favorite location</option>
+            )}
+            <option latitude="current" longitude="current">
+              Current Location
+            </option>
+            <option latitude="45.768739" longitude="23.641838">
+              Dobra, RO
+            </option>
+            <option latitude="45.806776" longitude="24.146329">
+              Sibiu, RO
+            </option>
+            <option latitude="45.871873" longitude="24.064956">
+              Ocna Sb, RO
+            </option>
+            <option latitude="44.4268" longitude="26.1025">
+              Bucharest, RO
+            </option>
 
-          <option latitude="52.5200" longitude="13.4050">
-            Berlin, DE
-          </option>
-          <option latitude="42.836948" longitude="-84.605148">
-            Dewitt, USA
-          </option>
-        </Select>
+            <option latitude="52.5200" longitude="13.4050">
+              Berlin, DE
+            </option>
+            <option latitude="42.836948" longitude="-84.605148">
+              Dewitt, USA
+            </option>
+          </Select>
+        </SearchContainer>
       )}
 
       <div>

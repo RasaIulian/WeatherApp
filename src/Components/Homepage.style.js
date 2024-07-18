@@ -74,7 +74,22 @@ export const Button = styled.button`
   }
 `;
 
+export const SearchContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  width: 73%;
+
+  @media (max-width: 980px) {
+    width: 100%;
+  }
+  @media (max-width: 515px) {
+    margin-bottom: 1rem;
+  }
+`;
+
 export const Select = styled.select`
+  width: 15rem;
+  height: 2.5rem;
   padding: 5px;
   border: 1px solid #eaeaea;
   border-radius: 3px;
