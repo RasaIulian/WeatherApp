@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getWeatherData } from "../hooks/getWeatherData/getWeatherData";
 import { useAltitude } from "../hooks/getAltitude/getAltitude";
 import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
-import LocationSearchInput from "./LocationSearchInput";
+import LocationSearchInput from "../Components/LocationSearchInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWind } from "@fortawesome/free-solid-svg-icons";
 
@@ -18,7 +18,7 @@ import {
   ErrorMessage,
   WindArrow,
   ContainerWrapper,
-} from "./Homepage.style";
+} from "../Pages/Homepage.style";
 
 export function Homepage() {
   const locationElement = document.getElementById("location");

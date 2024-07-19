@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { ErrorMessage } from "./Homepage.style";
+import { ErrorMessage } from "../Pages/Homepage.style";
 import styled from "styled-components";
 
 const Input = styled.input`
   padding: 8px;
   margin-right: 0.5rem;
+  margin-bottom: 1rem;
   border: 1px solid #eaeaea;
   border-radius: 3px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -14,9 +15,6 @@ const Input = styled.input`
   &:focus {
     outline: none;
     border-color: #aaa;
-  }
-  @media (max-width: 515px) {
-    margin-bottom: 1rem;
   }
 `;
 const List = styled.ul`
@@ -56,17 +54,21 @@ const LocationSearchInput = ({ onSelectLocation }) => {
       searchLocation(debouncedSearchInput);
     } else {
       setSearchResults([]);
+      setErrorMessage("");
     }
   }, [debouncedSearchInput]);
 
   const searchLocation = async (input) => {
     const apiKey = process.env.REACT_APP_Weather_API_KEY;
-    const url = `http://api.openweathermap.org/geo/1.0/direct?q=${input}&limit=5&appid=${apiKey}`;
+    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${input}&limit=5&appid=${apiKey}`;
 
     try {
       const response = await fetch(url);
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(`Location HTTP error! status: ${response.status}`);
+      }
 
+      const data = await response.json();
       if (data.length > 0) {
         setSearchResults(data);
         setErrorMessage("");
@@ -76,7 +78,7 @@ const LocationSearchInput = ({ onSelectLocation }) => {
       }
     } catch (error) {
       console.error("Error searching location:", error);
-      setErrorMessage("Error searching location. Please try again.");
+      setErrorMessage(`Error searching location: ${error.message}`);
       setSearchResults([]);
     }
   };
