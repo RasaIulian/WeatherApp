@@ -242,9 +242,7 @@ export function Homepage() {
               }
             }}
           >
-            {selectedLocation === "" && (
-              <option value="">Select favorite location</option>
-            )}
+            <option value="">Select favorite location</option>
             <option latitude="current" longitude="current">
               Current Location
             </option>

@@ -3,6 +3,7 @@ import { ErrorMessage } from "../Pages/Homepage.style";
 import styled from "styled-components";
 
 const Input = styled.input`
+  width: 15rem;
   padding: 8px;
   margin-right: 0.5rem;
   margin-bottom: 1rem;
