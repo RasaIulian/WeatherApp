@@ -46,7 +46,7 @@ export function Homepage() {
     setShowComponents(!showComponents);
   };
 
-  const selectLocation = (location) => {
+  const selectFoundLocation = (location) => {
     const { lat, lon, name, country, state } = location;
     setLatitude(lat);
     setLongitude(lon);
@@ -54,9 +54,11 @@ export function Homepage() {
     showPosition(lat, lon);
 
     if (locationElement) {
-      locationElement.innerHTML = `Location: ${name}, ${
-        state || ""
-      } ${country}<br>`;
+      if (name && country) {
+        locationElement.innerHTML = `Location: ${name}, ${
+          state || ""
+        } ${country}<br>`;
+      }
     }
   };
 
@@ -201,11 +203,11 @@ export function Homepage() {
 
   return (
     <div>
-      <h2>Geolocation Weather App</h2>
+      <h2 className="toHide">Welcome to the Geolocation Weather App</h2>
       <p className="toHide">
-        Click the button to get your coordinates and weather.
+        Please click the button to get your coordinates, weather and more...
       </p>
-      <p className="toHide">Location permission must be accepted.</p>
+      <p className="toHide">Location permission must be granted.</p>
       <Button onClick={getLocation} className="toHide">
         Try It
       </Button>
@@ -216,7 +218,7 @@ export function Homepage() {
       {loadingWeather && <p>Loading weather data...</p>}
       {!loadingLocation && !loadingAltitude && !loadingAQI && selectVisible && (
         <SearchContainer>
-          <LocationSearchInput onSelectLocation={selectLocation} />
+          <LocationSearchInput onSelectLocation={selectFoundLocation} />
           <Select
             value={selectedLocation}
             onChange={(e) => {
@@ -242,7 +244,9 @@ export function Homepage() {
               }
             }}
           >
-            <option value="">Select favorite location</option>
+            <option hidden value="">
+              Select favorite location
+            </option>
             <option latitude="current" longitude="current">
               Current Location
             </option>
