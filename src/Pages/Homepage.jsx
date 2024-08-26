@@ -220,6 +220,7 @@ export function Homepage() {
         <SearchContainer>
           <LocationSearchInput onSelectLocation={selectFoundLocation} />
           <Select
+            id="select"
             value={selectedLocation}
             onChange={(e) => {
               const selectedIndex = e.target.selectedIndex;

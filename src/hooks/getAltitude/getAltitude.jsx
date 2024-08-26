@@ -14,7 +14,7 @@ export const useAltitude = () => {
       );
       setLoadingAltitude(false);
       if (!response.ok) {
-        throw new Error(`status: ${response.status}`);
+        throw new Error(`status ${response.status}`);
       }
       const data = await response.json();
       return data.results[0].elevation;

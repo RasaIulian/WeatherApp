@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 const Input = styled.input`
   width: 15rem;
+  height: 2.5rem;
   padding: 8px;
   margin-right: 0.5rem;
   margin-bottom: 1rem;
@@ -89,6 +90,7 @@ const LocationSearchInput = ({ onSelectLocation }) => {
       <Input
         type="text"
         value={searchInput}
+        id="search"
         onChange={(e) => setSearchInput(e.target.value)}
         placeholder="Search location"
       />
