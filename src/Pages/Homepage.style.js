@@ -37,9 +37,9 @@ export const ErrorMessage = styled.div`
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
-  width: 48%;
+  max-width: 950px;
   @media (max-width: 980px) {
-    width: 100%;
+    max-width: 460px;
   }
 `;
 
