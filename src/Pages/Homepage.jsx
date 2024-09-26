@@ -4,7 +4,11 @@ import { useAltitude } from "../hooks/getAltitude/getAltitude";
 import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
 import LocationSearchInput from "../Components/LocationSearchInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWind } from "@fortawesome/free-solid-svg-icons";
+import {
+  faWind,
+  faChevronUp,
+  faChevronDown,
+} from "@fortawesome/free-solid-svg-icons";
 
 import {
   Container,
@@ -25,6 +29,8 @@ export function Homepage() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
+  const [showMoreHours, setShowMoreHours] = useState(false);
+  const [showMoreDays, setShowMoreDays] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectVisible, setSelectVisible] = useState(false);
   const [geoLocationError, setGeoLocationError] = useState("");
@@ -75,24 +81,52 @@ export function Homepage() {
     const elementsToHide = document.getElementsByClassName("toHide");
 
     if (navigator.geolocation) {
-      // setTimeout(() => {
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      };
+
       navigator.geolocation.getCurrentPosition(
-        (position) =>
-          showPosition(position.coords.latitude, position.coords.longitude),
-        showError
+        (position) => {
+          showPosition(position.coords.latitude, position.coords.longitude);
+          setLoadingLocation(false);
+        },
+        (error) => {
+          showError(error);
+          setLoadingLocation(false);
+        },
+        options
       );
+
       for (let i = 0; i < elementsToHide.length; i++) {
         elementsToHide[i].style.display = "none";
       }
       setSelectVisible(true);
-      setLoadingLocation(false);
-      // }, 5000);
     } else {
       setGeoLocationError("Geolocation is not supported by this browser.");
       setLoadingLocation(false);
     }
   };
 
+  const showError = (error) => {
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        setGeoLocationError(
+          "User denied the request for Geolocation. Please enable location access in your browser settings."
+        );
+        break;
+      case error.POSITION_UNAVAILABLE:
+        setGeoLocationError("Location information is unavailable.");
+        break;
+      case error.TIMEOUT:
+        setGeoLocationError("The request to get user location timed out.");
+        break;
+      default:
+        setGeoLocationError("An unknown error occurred.");
+        break;
+    }
+  };
   const showPosition = async (latitude, longitude) => {
     setLatitude(latitude);
     setLongitude(longitude);
@@ -116,33 +150,14 @@ export function Homepage() {
     }
   };
 
-  const showError = (error) => {
-    switch (error.code) {
-      default:
-        setGeoLocationError("Unknown error");
-        break;
-      case error.PERMISSION_DENIED:
-        setGeoLocationError(
-          "You denied the request for GeoLocation. Please enable for feature to work"
-        );
-        break;
-      case error.POSITION_UNAVAILABLE:
-        setGeoLocationError(
-          "Location information is unavailable. Please try again later."
-        );
-        break;
-      case error.TIMEOUT:
-        setGeoLocationError(
-          "The request to get user location timed out. Please try again later."
-        );
-        break;
-      case error.UNKNOWN_ERROR:
-        setGeoLocationError(
-          "An unknown error occurred. Please try again later."
-        );
-        break;
-    }
-    setLoadingLocation(false);
+  // Handle toggling more/less for hourly forecast
+  const toggleShowMoreHours = () => {
+    setShowMoreHours((prevState) => !prevState);
+  };
+
+  //  Handle toggling more/less for daily forecast
+  const toggleShowMoreDays = () => {
+    setShowMoreDays((prevState) => !prevState);
   };
 
   useEffect(() => {
@@ -294,13 +309,6 @@ export function Homepage() {
               AQI (Air Quality Index): {aqi} - {getAQICategory(aqi)}
             </p>
             <br />
-            <Button onClick={toggleShowComponents}>
-              <FontAwesomeIcon
-                icon={faWind}
-                style={{ color: getAQIColor(aqi) }}
-              />{" "}
-              {!showComponents && " more"}
-            </Button>
 
             {showComponents && (
               <div>
@@ -345,6 +353,21 @@ export function Homepage() {
                 </p>
               </div>
             )}
+            <Button onClick={toggleShowComponents}>
+              <FontAwesomeIcon
+                icon={faWind}
+                style={{ color: getAQIColor(aqi) }}
+              />{" "}
+              {!showComponents ? (
+                <>
+                  more <FontAwesomeIcon icon={faChevronDown} />
+                </>
+              ) : (
+                <>
+                  less <FontAwesomeIcon icon={faChevronUp} />
+                </>
+              )}
+            </Button>
           </Container>
         )}
 
@@ -481,71 +504,94 @@ export function Homepage() {
               </Container>
             )}
             <br />
+
             {weatherData.hourly && (
               <Container>
                 <h3>Hourly Forecast:</h3>
                 <p>*pop = probability of precipitation</p>
                 <ul>
-                  {weatherData.hourly.slice(0, 10).map((hour, index) => (
-                    <li key={index}>
-                      <b>
-                        {new Date(hour.dt * 1000).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                        :{" "}
-                      </b>
-                      {Math.round(hour.temp)}°C, pop:{" "}
-                      {Math.round(hour.pop * 100)}
-                      %, {hour.weather[0].description}
-                      <AnimatedIcon
-                        src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
-                        alt="Hourly Weather Icon"
-                      />
-                    </li>
-                  ))}
+                  {weatherData.hourly
+                    .slice(0, showMoreHours ? 10 : 5) // Show 5 or 24 hours
+                    .map((hour, index) => (
+                      <li key={index}>
+                        <b>
+                          {new Date(hour.dt * 1000).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                          :{" "}
+                        </b>
+                        {Math.round(hour.temp)}°C, pop:{" "}
+                        {Math.round(hour.pop * 100)}%,{" "}
+                        {hour.weather[0].description}
+                        <AnimatedIcon
+                          src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
+                          alt="Hourly Weather Icon"
+                        />
+                      </li>
+                    ))}
                 </ul>
+                <Button onClick={toggleShowMoreHours}>
+                  {showMoreHours ? (
+                    <>
+                      show less <FontAwesomeIcon icon={faChevronUp} />
+                    </>
+                  ) : (
+                    <>
+                      show more <FontAwesomeIcon icon={faChevronDown} />
+                    </>
+                  )}
+                </Button>
               </Container>
             )}
+
             <br />
             {weatherData.daily && (
               <Container>
                 <h3>Daily Forecast:</h3>
                 <ul>
-                  {weatherData.daily.slice(0, 5).map((day, index) => {
-                    const date = new Date(day.dt * 1000);
-                    const dateString = date.toLocaleDateString("en-US", {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                    });
+                  {weatherData.daily
+                    .slice(0, showMoreDays ? 10 : 3) // Show 3 or 10 days
+                    .map((day, index) => {
+                      const date = new Date(day.dt * 1000).toLocaleDateString(
+                        "en-US",
+                        {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      );
 
-                    let displayDate;
-                    if (index === 0) {
-                      displayDate = "Today - " + dateString;
-                    } else if (index === 1) {
-                      displayDate = "Tomorrow - " + dateString;
-                    } else {
-                      displayDate = dateString;
-                    }
-                    return (
-                      <li key={index}>
-                        <b>{displayDate}:</b>
-                        <br /> Min: {Math.round(day.temp.min)}°C - Max:{" "}
-                        {Math.round(day.temp.max)}°C
-                        <br />
-                        Probability of precipitation: {parseInt(day.pop * 100)}%
-                        <br />
-                        {day.summary}
-                        <br />
-                        <AnimatedIcon
-                          src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                          alt="Weather Icon"
-                        ></AnimatedIcon>
-                      </li>
-                    );
-                  })}
+                      return (
+                        <li key={index}>
+                          <b>{index === 0 ? "Today" : date}:</b>
+                          <br /> Min: {Math.round(day.temp.min)}°C - Max:{" "}
+                          {Math.round(day.temp.max)}°C
+                          <br />
+                          Probability of precipitation:{" "}
+                          {parseInt(day.pop * 100)}%
+                          <br />
+                          {day.summary}
+                          <br />
+                          <AnimatedIcon
+                            src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                            alt="Weather Icon"
+                          />
+                        </li>
+                      );
+                    })}
                 </ul>
+                <Button onClick={toggleShowMoreDays}>
+                  {showMoreDays ? (
+                    <>
+                      show less <FontAwesomeIcon icon={faChevronUp} />
+                    </>
+                  ) : (
+                    <>
+                      show more <FontAwesomeIcon icon={faChevronDown} />
+                    </>
+                  )}
+                </Button>
               </Container>
             )}
 
