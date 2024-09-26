@@ -21,6 +21,11 @@ export const Container = styled.div`
   h3 {
     margin-bottom: 0;
   }
+
+  ul {
+    margin-bottom: 0;
+  }
+
   li {
     margin: 5px 0;
   }
@@ -56,7 +61,7 @@ const moveLeftRightZoom = keyframes`
 `;
 
 export const AnimatedIcon = styled.img`
-  animation: ${moveLeftRightZoom} 6s infinite alternate ease-in-out;
+  animation: ${moveLeftRightZoom} 3s infinite alternate ease-in-out;
   padding-top: 0;
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.05);
 `;
@@ -162,14 +167,14 @@ export const WindArrow = styled.span.attrs((props) => ({
   border-bottom: 20px solid #aaaaaa;
   border-radius: 6px;
   transform-origin: center;
-  animation: ${(props) => rotateAnimation(props.$deg)} 2s infinite alternate
+  animation: ${(props) => rotateAnimation(props.$deg)} 1s infinite alternate
     ease-in-out;
 
   &::after {
     content: "";
     position: absolute;
-    left: -2.5px;
-    top: 12px;
+    left: -3px;
+    top: 9px;
     width: 5px;
     height: 5px;
     background: linear-gradient(
