@@ -224,7 +224,7 @@ export function Homepage() {
       <p className="toHide">
         Please click the button to get your coordinates, weather and more...
       </p>
-      <p className="toHide">Location permission must be granted.</p>
+      <p className="toHide">Location permission must be granted at request.</p>
       <Button onClick={getLocation} className="toHide">
         Try It
       </Button>
@@ -304,12 +304,18 @@ export function Homepage() {
         <br />
         {!errorAQI && !loadingAQI && aqi && (
           <Container>
-            <h3>Air Quality:</h3>
+            <h3>
+              Air Quality:{" "}
+              <FontAwesomeIcon
+                icon={faWind}
+                style={{ color: getAQIColor(aqi) }}
+              />
+            </h3>
+
             <p>
-              AQI (Air Quality Index): {aqi} - {getAQICategory(aqi)}
+              Air Quality Index: {aqi} - {getAQICategory(aqi)}{" "}
             </p>
             <br />
-
             {showComponents && (
               <div>
                 <p>
@@ -354,17 +360,13 @@ export function Homepage() {
               </div>
             )}
             <Button onClick={toggleShowComponents}>
-              <FontAwesomeIcon
-                icon={faWind}
-                style={{ color: getAQIColor(aqi) }}
-              />{" "}
               {!showComponents ? (
                 <>
-                  more <FontAwesomeIcon icon={faChevronDown} />
+                  more details <FontAwesomeIcon icon={faChevronDown} />
                 </>
               ) : (
                 <>
-                  less <FontAwesomeIcon icon={faChevronUp} />
+                  less details <FontAwesomeIcon icon={faChevronUp} />
                 </>
               )}
             </Button>
@@ -511,7 +513,7 @@ export function Homepage() {
                 <p>*pop = probability of precipitation</p>
                 <ul>
                   {weatherData.hourly
-                    .slice(0, showMoreHours ? 10 : 5) // Show 5 or 24 hours
+                    .slice(0, showMoreHours ? 12 : 5) // Show 5 or 12 hours
                     .map((hour, index) => (
                       <li key={index}>
                         <b>
@@ -551,7 +553,7 @@ export function Homepage() {
                 <h3>Daily Forecast:</h3>
                 <ul>
                   {weatherData.daily
-                    .slice(0, showMoreDays ? 10 : 3) // Show 3 or 10 days
+                    .slice(0, showMoreDays ? 8 : 3) // Show 3 or 8 days
                     .map((day, index) => {
                       const date = new Date(day.dt * 1000).toLocaleDateString(
                         "en-US",

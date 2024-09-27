@@ -67,8 +67,8 @@ export const AnimatedIcon = styled.img`
 `;
 
 export const Button = styled.button`
-  padding: 10px;
-  font-size: 1.2rem;
+  padding: 5px;
+  font-size: 1.1rem;
   border: 1px solid #eaeaea;
   border-radius: 3px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
