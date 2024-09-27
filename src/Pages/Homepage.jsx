@@ -362,11 +362,11 @@ export function Homepage() {
             <Button onClick={toggleShowComponents}>
               {!showComponents ? (
                 <>
-                  more details <FontAwesomeIcon icon={faChevronDown} />
+                  show details <FontAwesomeIcon icon={faChevronDown} />
                 </>
               ) : (
                 <>
-                  less details <FontAwesomeIcon icon={faChevronUp} />
+                  hide details <FontAwesomeIcon icon={faChevronUp} />
                 </>
               )}
             </Button>
@@ -513,7 +513,7 @@ export function Homepage() {
                 <p>*pop = probability of precipitation</p>
                 <ul>
                   {weatherData.hourly
-                    .slice(0, showMoreHours ? 12 : 5) // Show 5 or 12 hours
+                    .slice(0, showMoreHours ? 12 : 6) // Show 6 or 12 hours
                     .map((hour, index) => (
                       <li key={index}>
                         <b>
