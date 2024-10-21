@@ -34,6 +34,9 @@ export const Container = styled.div`
     margin-bottom: 10px;
   }
 `;
+export const Header = styled.h2`
+  line-height: 1.5rem;
+`;
 
 export const ErrorMessage = styled.div`
   background-color: #ffcdd2;

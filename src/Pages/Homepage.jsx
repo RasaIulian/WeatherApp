@@ -20,6 +20,7 @@ import {
   Select,
   Alert,
   ErrorMessage,
+  Header,
   WindArrow,
   ContainerWrapper,
 } from "../Pages/Homepage.style";
@@ -220,7 +221,7 @@ export function Homepage() {
 
   return (
     <div>
-      <h2 className="toHide">Welcome to the Geolocation Weather App</h2>
+      <Header className="toHide">Welcome to the Geolocation Weather App</Header>
       <p className="toHide">
         Please click the button to get your coordinates, weather and more...
       </p>
