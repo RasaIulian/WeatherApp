@@ -13,6 +13,7 @@ export const Container = styled.div`
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   width: 48%; //  will create two columns with a small gap
   margin-bottom: 20px; // vertical space between rows
+  overflow: auto;
   p {
     margin: 5px 0;
     display: inline-flex;
@@ -24,10 +25,21 @@ export const Container = styled.div`
 
   ul {
     margin-bottom: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
 
   li {
-    margin: 5px 0;
+    margin: 5px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 1rem 5px;
+    width: 10em;
+    text-align: center;
+    justify-content: center;
+    line-height: 1.5rem;
+    flex-wrap: wrap;
   }
   @media (max-width: 980px) {
     width: 100%;
@@ -70,7 +82,7 @@ export const AnimatedIcon = styled.img`
 `;
 
 export const Button = styled.button`
-  padding: 5px;
+  padding: 10px;
   font-size: 1.1rem;
   border: 1px solid #eaeaea;
   border-radius: 3px;
@@ -80,6 +92,28 @@ export const Button = styled.button`
   &:hover {
     background-color: #eaeaea;
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+  }
+`;
+export const ListWithArrowsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+`;
+export const ArrowsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  min-width: 100%;
+  & * {
+    border: none;
+    background-color: rgba(240, 240, 240, 0.5);
+    box-shadow: none;
+    padding: 0;
+  }
+  & *:hover {
+    background: none;
+    box-shadow: none;
   }
 `;
 

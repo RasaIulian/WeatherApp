@@ -6,8 +6,10 @@ import LocationSearchInput from "../Components/LocationSearchInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWind,
-  faChevronUp,
   faChevronDown,
+  faChevronUp,
+  faChevronLeft,
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -15,6 +17,8 @@ import {
   SearchContainer,
   AnimatedIcon,
   Button,
+  ArrowsContainer,
+  ListWithArrowsWrapper,
   Map,
   Square,
   Select,
@@ -30,8 +34,6 @@ export function Homepage() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
-  const [showMoreHours, setShowMoreHours] = useState(false);
-  const [showMoreDays, setShowMoreDays] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectVisible, setSelectVisible] = useState(false);
   const [geoLocationError, setGeoLocationError] = useState("");
@@ -51,6 +53,29 @@ export function Homepage() {
 
   const toggleShowComponents = () => {
     setShowComponents(!showComponents);
+  };
+
+  const [hourIndex, setHourIndex] = useState(0); // For hourly forecast
+  const [dayIndex, setDayIndex] = useState(0); // For daily forecast
+
+  const hoursToShow = 4; // Number of hours to display at a time
+  const daysToShow = 3; // Number of days to display at a time
+
+  const scrollHours = (direction) => {
+    setHourIndex((prevIndex) => {
+      const newIndex = prevIndex + direction * hoursToShow;
+      return Math.max(0, Math.min(newIndex, 24 - hoursToShow));
+    });
+  };
+
+  const scrollDays = (direction) => {
+    setDayIndex((prevIndex) => {
+      const newIndex = prevIndex + direction * daysToShow;
+      return Math.max(
+        0,
+        Math.min(newIndex, weatherData.daily.length - daysToShow)
+      );
+    });
   };
 
   const selectFoundLocation = (location) => {
@@ -149,16 +174,6 @@ export function Homepage() {
     } catch (error) {
       // no aCTION SINCE altitudeError is already handled in the getAltitude hook
     }
-  };
-
-  // Handle toggling more/less for hourly forecast
-  const toggleShowMoreHours = () => {
-    setShowMoreHours((prevState) => !prevState);
-  };
-
-  //  Handle toggling more/less for daily forecast
-  const toggleShowMoreDays = () => {
-    setShowMoreDays((prevState) => !prevState);
   };
 
   useEffect(() => {
@@ -312,7 +327,6 @@ export function Homepage() {
                 style={{ color: getAQIColor(aqi) }}
               />
             </h3>
-
             <p>
               Air Quality Index: {aqi} - {getAQICategory(aqi)}{" "}
             </p>
@@ -510,91 +524,105 @@ export function Homepage() {
 
             {weatherData.hourly && (
               <Container>
-                <h3>Hourly Forecast:</h3>
+                <h3>Hourly Weather Forecast:</h3>
                 <p>*pop = probability of precipitation</p>
-                <ul>
-                  {weatherData.hourly
-                    .slice(0, showMoreHours ? 12 : 6) // Show 6 or 12 hours
-                    .map((hour, index) => (
-                      <li key={index}>
-                        <b>
-                          {new Date(hour.dt * 1000).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                          :{" "}
-                        </b>
-                        {Math.round(hour.temp)}°C, pop:{" "}
-                        {Math.round(hour.pop * 100)}%,{" "}
-                        {hour.weather[0].description}
-                        <AnimatedIcon
-                          src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
-                          alt="Hourly Weather Icon"
-                        />
-                      </li>
-                    ))}
-                </ul>
-                <Button onClick={toggleShowMoreHours}>
-                  {showMoreHours ? (
-                    <>
-                      show less <FontAwesomeIcon icon={faChevronUp} />
-                    </>
-                  ) : (
-                    <>
-                      show more <FontAwesomeIcon icon={faChevronDown} />
-                    </>
-                  )}
-                </Button>
+                <ListWithArrowsWrapper>
+                  <ul>
+                    {weatherData.hourly
+                      .slice(hourIndex, hourIndex + hoursToShow) // Display based on hourIndex
+                      .map((hour, index) => (
+                        <li key={index}>
+                          <b>
+                            {new Date(hour.dt * 1000).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </b>
+                          <br />
+                          {Math.round(hour.temp)}°C <br />
+                          pop: {Math.round(hour.pop * 100)}% <br />
+                          <AnimatedIcon
+                            src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
+                            alt="Hourly Weather Icon"
+                          />
+                          <br />
+                          {hour.weather[0].description}
+                        </li>
+                      ))}
+                  </ul>
+                  <ArrowsContainer>
+                    <Button
+                      onClick={() => scrollHours(-1)}
+                      disabled={hourIndex === 0}
+                    >
+                      <FontAwesomeIcon icon={faChevronLeft} />
+                    </Button>
+                    <Button
+                      onClick={() => scrollHours(1)}
+                      disabled={hourIndex + hoursToShow >= 24}
+                    >
+                      <FontAwesomeIcon icon={faChevronRight} />
+                    </Button>
+                  </ArrowsContainer>
+                </ListWithArrowsWrapper>
               </Container>
             )}
 
             <br />
             {weatherData.daily && (
               <Container>
-                <h3>Daily Forecast:</h3>
-                <ul>
-                  {weatherData.daily
-                    .slice(0, showMoreDays ? 8 : 3) // Show 3 or 8 days
-                    .map((day, index) => {
-                      const date = new Date(day.dt * 1000).toLocaleDateString(
-                        "en-US",
-                        {
-                          weekday: "short",
-                          month: "short",
-                          day: "numeric",
-                        }
-                      );
+                <h3>Daily Weather Forecast:</h3>
+                <ListWithArrowsWrapper>
+                  <ul>
+                    {weatherData.daily
+                      .slice(dayIndex, dayIndex + daysToShow) // Display based on dayIndex
+                      .map((day, index) => {
+                        const date = new Date(day.dt * 1000).toLocaleDateString(
+                          "en-US",
+                          {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        );
 
-                      return (
-                        <li key={index}>
-                          <b>{index === 0 ? "Today" : date}:</b>
-                          <br /> Min: {Math.round(day.temp.min)}°C - Max:{" "}
-                          {Math.round(day.temp.max)}°C
-                          <br />
-                          Probability of precipitation:{" "}
-                          {parseInt(day.pop * 100)}%
-                          <br />
-                          {day.summary}
-                          <br />
-                          <AnimatedIcon
-                            src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                            alt="Weather Icon"
-                          />
-                        </li>
-                      );
-                    })}
-                </ul>
-                <Button onClick={toggleShowMoreDays}>
-                  {showMoreDays ? (
-                    <>
-                      show less <FontAwesomeIcon icon={faChevronUp} />
-                    </>
-                  ) : (
-                    <>
-                      show more <FontAwesomeIcon icon={faChevronDown} />
-                    </>
-                  )}
-                </Button>
+                        return (
+                          <li key={index}>
+                            <b>
+                              {index === 0 && dayIndex === 0 ? "Today" : date}
+                            </b>
+                            <br /> {Math.round(day.temp.min)}°C -{" "}
+                            {Math.round(day.temp.max)}°C
+                            <br />
+                            Precipitation: {parseInt(day.pop * 100)}%
+                            <br />
+                            <AnimatedIcon
+                              src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                              alt="Weather Icon"
+                            />
+                            <br />
+                            {day.summary}
+                          </li>
+                        );
+                      })}
+                  </ul>
+                  <ArrowsContainer>
+                    <Button
+                      onClick={() => scrollDays(-1)}
+                      disabled={dayIndex === 0}
+                    >
+                      <FontAwesomeIcon icon={faChevronLeft} />
+                    </Button>{" "}
+                    <Button
+                      onClick={() => scrollDays(1)}
+                      disabled={
+                        dayIndex + daysToShow >= weatherData.daily.length
+                      }
+                    >
+                      <FontAwesomeIcon icon={faChevronRight} />
+                    </Button>
+                  </ArrowsContainer>
+                </ListWithArrowsWrapper>
               </Container>
             )}
 
