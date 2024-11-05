@@ -64,7 +64,7 @@ export function Homepage() {
   const scrollHours = (direction) => {
     setHourIndex((prevIndex) => {
       const newIndex = prevIndex + direction * hoursToShow;
-      return Math.max(0, Math.min(newIndex, 24 - hoursToShow));
+      return Math.max(0, Math.min(newIndex, 20 - hoursToShow));
     });
   };
 
@@ -427,7 +427,9 @@ export function Homepage() {
                   <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
                 </p>
                 <br />
-                <p>Wind Speed: {weatherData.current.wind_speed} m/s</p>
+                <p>
+                  Wind Speed: {Math.round(weatherData.current.wind_speed)} m/s
+                </p>
                 <br />
                 <p>
                   Wind Direction:{" "}
@@ -526,6 +528,11 @@ export function Homepage() {
               <Container>
                 <h3>Hourly Weather Forecast:</h3>
                 <p>*pop = probability of precipitation</p>
+                <p>
+                  Timezone {weatherData.timezone}: GMT{" "}
+                  {weatherData.timezone_offset > 0 && "+"}
+                  {weatherData.timezone_offset / 3600}h
+                </p>
                 <ListWithArrowsWrapper>
                   <ul>
                     {weatherData.hourly
@@ -533,14 +540,18 @@ export function Homepage() {
                       .map((hour, index) => (
                         <li key={index}>
                           <b>
-                            {new Date(hour.dt * 1000).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {new Date(
+                              (hour.dt + weatherData.timezone_offset) * 1000
+                            )
+                              .toISOString()
+                              .substring(11, 16)}
                           </b>
                           <br />
                           {Math.round(hour.temp)}°C <br />
                           pop: {Math.round(hour.pop * 100)}% <br />
+                          Humidity: {hour.humidity}%<br />
+                          Wind Speed: {Math.round(hour.wind_speed)} m/s
+                          <br />
                           <AnimatedIcon
                             src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
                             alt="Hourly Weather Icon"
@@ -559,7 +570,7 @@ export function Homepage() {
                     </Button>
                     <Button
                       onClick={() => scrollHours(1)}
-                      disabled={hourIndex + hoursToShow >= 24}
+                      disabled={hourIndex + hoursToShow >= 20}
                     >
                       <FontAwesomeIcon icon={faChevronRight} />
                     </Button>
