@@ -92,6 +92,9 @@ export function Homepage() {
         } ${country}<br>`;
       }
     }
+    // Reset the hourIndex and dayIndex when a new location is selected
+    setHourIndex(0);
+    setDayIndex(0);
   };
 
   // useEffect(() => {
@@ -262,6 +265,9 @@ export function Homepage() {
               const selectedLongitude =
                 selectedOption.getAttribute("longitude");
               setSelectedLocation(selectedOption.text);
+              // Reset the hourIndex and dayIndex when a new location is selected
+              setHourIndex(0);
+              setDayIndex(0);
               if (
                 selectedLatitude === "current" &&
                 selectedLongitude === "current"
@@ -320,16 +326,12 @@ export function Homepage() {
         <br />
         {!errorAQI && !loadingAQI && aqi && (
           <Container>
-            <h3>
-              Air Quality:{" "}
-              <FontAwesomeIcon
-                icon={faWind}
-                style={{ color: getAQIColor(aqi) }}
-              />
-            </h3>
-            <p>
-              Air Quality Index: {aqi} - {getAQICategory(aqi)}{" "}
-            </p>
+            <h3>Air Quality: </h3>
+            <p>{getAQICategory(aqi)} </p>
+            <FontAwesomeIcon
+              icon={faWind}
+              style={{ color: getAQIColor(aqi), marginLeft: "5px" }}
+            />
             <br />
             {showComponents && (
               <div>
@@ -393,9 +395,13 @@ export function Homepage() {
             <br />
             {weatherData.current && (
               <Container>
-                <h3>Current Weather conditions:</h3>
+                <h3>Current Weather:</h3>
                 <p>
-                  Temperature: {Math.round(weatherData.current.temp)}°C
+                  {" "}
+                  <span role="img" aria-label="temperature">
+                    🌡️
+                  </span>
+                  : {Math.round(weatherData.current.temp)}°C
                 </p>{" "}
                 <br />
                 <p>
@@ -428,11 +434,7 @@ export function Homepage() {
                 </p>
                 <br />
                 <p>
-                  Wind Speed: {Math.round(weatherData.current.wind_speed)} m/s
-                </p>
-                <br />
-                <p>
-                  Wind Direction:{" "}
+                  Wind: {Math.round(weatherData.current.wind_speed)} m/s {"/ "}
                   {degreesToDirection(weatherData.current.wind_deg)}{" "}
                   <WindArrow $deg={weatherData.current.wind_deg} />
                 </p>
@@ -447,29 +449,30 @@ export function Homepage() {
                 <p>
                   Sunrise:{" "}
                   {new Date(
-                    weatherData.current.sunrise * 1000
-                  ).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                    (weatherData.current.sunrise +
+                      weatherData.timezone_offset) *
+                      1000
+                  )
+                    .toISOString()
+                    .substring(11, 16)}
                 </p>
                 <br />
                 <p>
                   Sunset:{" "}
                   {new Date(
-                    weatherData.current.sunset * 1000
-                  ).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                    (weatherData.current.sunset + weatherData.timezone_offset) *
+                      1000
+                  )
+                    .toISOString()
+                    .substring(11, 16)}
                 </p>
-                <br />
-                <p>Description: {weatherData.current.weather[0].description}</p>
                 <br />
                 <AnimatedIcon
                   src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
                   alt="Weather Icon"
                 />
+                <br />
+                <p>{weatherData.current.weather[0].description}</p>
                 {weatherData.alerts && weatherData.alerts.length > 0 && (
                   <div>
                     {weatherData.alerts.map((alert, index) => (
@@ -526,8 +529,9 @@ export function Homepage() {
 
             {weatherData.hourly && (
               <Container>
-                <h3>Hourly Weather Forecast:</h3>
+                <h3>Hourly Weather:</h3>
                 <p>*pop = probability of precipitation</p>
+                <br />
                 <p>
                   Timezone {weatherData.timezone}: GMT{" "}
                   {weatherData.timezone_offset > 0 && "+"}
@@ -547,10 +551,14 @@ export function Homepage() {
                               .substring(11, 16)}
                           </b>
                           <br />
+                          <span role="img" aria-label="temperature">
+                            🌡️
+                          </span>{" "}
                           {Math.round(hour.temp)}°C <br />
+                          Feels like: {Math.round(hour.feels_like)}°C <br />
                           pop: {Math.round(hour.pop * 100)}% <br />
                           Humidity: {hour.humidity}%<br />
-                          Wind Speed: {Math.round(hour.wind_speed)} m/s
+                          Wind: {Math.round(hour.wind_speed)} m/s
                           <br />
                           <AnimatedIcon
                             src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
@@ -582,7 +590,7 @@ export function Homepage() {
             <br />
             {weatherData.daily && (
               <Container>
-                <h3>Daily Weather Forecast:</h3>
+                <h3>Daily Weather:</h3>
                 <ListWithArrowsWrapper>
                   <ul>
                     {weatherData.daily
@@ -602,7 +610,10 @@ export function Homepage() {
                             <b>
                               {index === 0 && dayIndex === 0 ? "Today" : date}
                             </b>
-                            <br /> {Math.round(day.temp.min)}°C -{" "}
+                            <br /> {Math.round(day.temp.min)}{" "}
+                            <span role="img" aria-label="temperature">
+                              🌡️
+                            </span>{" "}
                             {Math.round(day.temp.max)}°C
                             <br />
                             Precipitation: {parseInt(day.pop * 100)}%

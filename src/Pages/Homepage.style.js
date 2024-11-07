@@ -94,6 +94,7 @@ export const Button = styled.button`
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
   }
 `;
+
 export const ListWithArrowsWrapper = styled.div`
   display: flex;
   align-items: center;
