@@ -34,7 +34,7 @@ export const Container = styled.div`
     margin: 5px;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    padding: 1rem 5px;
+    padding: 1rem;
     width: 10em;
     text-align: center;
     justify-content: center;
@@ -105,15 +105,17 @@ export const ArrowsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   position: absolute;
-  min-width: 100%;
+  min-width: 98%;
   & * {
     border: none;
-    background-color: rgba(240, 240, 240, 0.5);
+    background-color: rgba(250, 250, 250, 0.5);
     box-shadow: none;
-    padding: 0;
+    padding: 3px;
+    border-radius: 50%;
   }
   & *:hover {
-    background: none;
+    background-color: rgba(250, 250, 250, 1);
+
     box-shadow: none;
   }
 `;

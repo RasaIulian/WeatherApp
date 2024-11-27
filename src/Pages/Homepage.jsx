@@ -434,7 +434,7 @@ export function Homepage() {
                 </p>
                 <br />
                 <p>
-                  Wind: {Math.round(weatherData.current.wind_speed)} m/s {"/ "}
+                  Wind: {Math.round(weatherData.current.wind_speed)} m/s {"- "}
                   {degreesToDirection(weatherData.current.wind_deg)}{" "}
                   <WindArrow $deg={weatherData.current.wind_deg} />
                 </p>
