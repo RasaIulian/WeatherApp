@@ -8,7 +8,7 @@ export const ContainerWrapper = styled.div`
 `;
 
 export const Container = styled.div`
-  padding: 5px;
+  padding: 5px 10px;
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   width: 48%; //  will create two columns with a small gap
@@ -34,7 +34,7 @@ export const Container = styled.div`
     margin: 5px;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    padding: 1rem;
+    padding: 0 0.2rem;
     width: 10em;
     text-align: center;
     justify-content: center;
@@ -105,7 +105,7 @@ export const ArrowsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   position: absolute;
-  min-width: 98%;
+  min-width: 100%;
   & * {
     border: none;
     background-color: rgba(250, 250, 250, 0.5);
