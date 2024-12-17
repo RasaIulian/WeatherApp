@@ -327,14 +327,17 @@ export function Homepage() {
         {!errorAQI && !loadingAQI && aqi && (
           <Container>
             <h3>Air Quality: </h3>
-            <p>{getAQICategory(aqi)} </p>
+            <p>{getAQICategory(aqi)}</p>
             <FontAwesomeIcon
               icon={faWind}
               style={{ color: getAQIColor(aqi), marginLeft: "5px" }}
             />
+
             <br />
             {showComponents && (
               <div>
+                <p>(Air quality index: {aqi})</p>
+                <br />
                 <p>
                   SO₂ - Sulphur dioxide: {components.so2} μg/m3 (
                   {categorizeComponent("so2", components.so2)})
@@ -434,7 +437,8 @@ export function Homepage() {
                 </p>
                 <br />
                 <p>
-                  Wind: {Math.round(weatherData.current.wind_speed)} m/s {"- "}
+                  Wind: {Math.round(weatherData.current.wind_speed) * 3.6} Km/h{" "}
+                  {"- "}
                   {degreesToDirection(weatherData.current.wind_deg)}{" "}
                   <WindArrow $deg={weatherData.current.wind_deg} />
                 </p>
@@ -558,7 +562,7 @@ export function Homepage() {
                           Feels like: {Math.round(hour.feels_like)}°C <br />
                           pop: {Math.round(hour.pop * 100)}% <br />
                           Humidity: {hour.humidity}%<br />
-                          Wind: {Math.round(hour.wind_speed)} m/s
+                          Wind: {Math.round(hour.wind_speed) * 3.6} Km/h
                           <br />
                           <AnimatedIcon
                             src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
