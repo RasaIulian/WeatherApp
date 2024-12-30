@@ -437,7 +437,7 @@ export function Homepage() {
                 </p>
                 <br />
                 <p>
-                  Wind: {Math.round(weatherData.current.wind_speed) * 3.6} Km/h{" "}
+                  Wind: {Math.round(weatherData.current.wind_speed * 3.6)} Km/h{" "}
                   {"- "}
                   {degreesToDirection(weatherData.current.wind_deg)}{" "}
                   <WindArrow $deg={weatherData.current.wind_deg} />
@@ -562,7 +562,7 @@ export function Homepage() {
                           Feels like: {Math.round(hour.feels_like)}°C <br />
                           pop: {Math.round(hour.pop * 100)}% <br />
                           Humidity: {hour.humidity}%<br />
-                          Wind: {Math.round(hour.wind_speed) * 3.6} Km/h
+                          Wind: {Math.round(hour.wind_speed * 3.6)} Km/h
                           <br />
                           <AnimatedIcon
                             src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
