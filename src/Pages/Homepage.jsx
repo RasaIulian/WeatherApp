@@ -29,6 +29,8 @@ import {
   ContainerWrapper,
 } from "../Pages/Homepage.style";
 
+import { ScrollDots } from "../Components/ScrollDots/ScrollDots";
+
 export function Homepage() {
   const locationElement = document.getElementById("location");
   const [latitude, setLatitude] = useState(null);
@@ -236,6 +238,12 @@ export function Homepage() {
     const index = Math.round(degrees / 45) % 8;
     return directions[index];
   }
+
+  // calculations for the scroll dots
+  const totalHourPages = Math.ceil(20 / hoursToShow);
+  const totalDayPages = Math.ceil(weatherData?.daily?.length / daysToShow);
+  const currentHourPage = Math.floor(hourIndex / hoursToShow);
+  const currentDayPage = Math.floor((dayIndex + 1) / daysToShow);
 
   return (
     <div>
@@ -537,9 +545,9 @@ export function Homepage() {
                 <p>*pop = probability of precipitation</p>
                 <br />
                 <p>
-                  Timezone {weatherData.timezone}: GMT{" "}
+                  Timezone {weatherData.timezone}: GMT
                   {weatherData.timezone_offset > 0 && "+"}
-                  {weatherData.timezone_offset / 3600}h
+                  {weatherData.timezone_offset / 3600}
                 </p>
                 <ListWithArrowsWrapper>
                   <ul>
@@ -588,6 +596,10 @@ export function Homepage() {
                     </Button>
                   </ArrowsContainer>
                 </ListWithArrowsWrapper>
+                <ScrollDots
+                  totalPages={totalHourPages}
+                  currentPage={currentHourPage}
+                />
               </Container>
             )}
 
@@ -649,6 +661,11 @@ export function Homepage() {
                     </Button>
                   </ArrowsContainer>
                 </ListWithArrowsWrapper>
+
+                <ScrollDots
+                  totalPages={totalDayPages}
+                  currentPage={currentDayPage}
+                />
               </Container>
             )}
 
