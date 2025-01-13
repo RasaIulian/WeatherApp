@@ -14,10 +14,12 @@ const Dot = styled.div`
   height: 8px;
   border-radius: 50%;
   background-color: #b9bcc1;
+  border: 1px solid #b9bcc1;
   transition: all 0.2s ease-in-out;
 
   &.active {
     background-color: #000000;
+    border: 1px solid #000000;
   }
 `;
 
