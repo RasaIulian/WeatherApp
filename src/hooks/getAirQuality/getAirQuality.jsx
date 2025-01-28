@@ -57,6 +57,8 @@ export const useAirQuality = (latitude, longitude) => {
       const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
 
       try {
+        // Introduce an artificial delay to check loading state
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`Server responded with status: ${response.status}`);

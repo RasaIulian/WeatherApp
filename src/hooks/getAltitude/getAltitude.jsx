@@ -9,6 +9,8 @@ export const useAltitude = () => {
     try {
       setLoadingAltitude(true);
       setAltitudeError("");
+      // Introduce an artificial delay to check loading state
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
       const response = await fetch(
         `https://api.open-elevation.com/api/v1/lookup?locations=${latitude},${longitude}`
       );

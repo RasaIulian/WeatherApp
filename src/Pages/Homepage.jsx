@@ -107,8 +107,10 @@ export function Homepage() {
   //   console.log(`Loading location data: ${loadingLocation}`);
   // }, [loadingLocation]);
 
-  const getLocation = () => {
+  const getLocation = async () => {
     setLoadingLocation(true);
+    // Introduce an artificial delay to check loading state
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
     const elementsToHide = document.getElementsByClassName("toHide");
 
     if (navigator.geolocation) {
@@ -186,7 +188,7 @@ export function Homepage() {
       setLoadingWeather(true); // Start loading
       try {
         // Introduce an artificial delay to check loading state
-        // await new Promise((resolve) => setTimeout(resolve, 5000));
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
 
         const data = await getWeatherData(latitude, longitude);
         setWeatherData(data);
@@ -256,11 +258,16 @@ export function Homepage() {
         Try It
       </Button>
 
-      {loadingLocation && <p>Loading location data...</p>}
-      {loadingAltitude && !altitudeError && <p>Loading altitude data...</p>}
-      {loadingAQI && <p>Loading air quality...</p>}
-      {loadingWeather && <p>Loading weather data...</p>}
-      {!loadingLocation && !loadingAQI && selectVisible && (
+      {(loadingAltitude || loadingLocation || loadingAQI || loadingWeather) && (
+        <p>
+          Loading
+          {loadingLocation && <span> location data...</span>}
+          {loadingAltitude && !altitudeError && <span> altitude data...</span>}
+          {loadingAQI && <span> air quality data...</span>}
+          {loadingWeather && <span> weather data...</span>}
+        </p>
+      )}
+      {!loadingAQI && !loadingLocation && selectVisible && (
         <SearchContainer>
           <LocationSearchInput onSelectLocation={selectFoundLocation} />
           <Select
@@ -410,9 +417,9 @@ export function Homepage() {
                 <p>
                   {" "}
                   <span role="img" aria-label="temperature">
-                    🌡️
+                    🌡️&nbsp;
                   </span>
-                  : {Math.round(weatherData.current.temp)}°C
+                  {Math.round(weatherData.current.temp)}°C
                 </p>{" "}
                 <br />
                 <p>
