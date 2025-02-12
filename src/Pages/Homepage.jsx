@@ -560,7 +560,7 @@ export function Homepage() {
                 <ListWithArrowsWrapper>
                   <ul>
                     {weatherData.hourly
-                       // Display based on hourIndex
+                    .slice(hourIndex, hourIndex + hoursToShow) // Display based on hourIndex
                                   .map((hour, index) => (
                                   <li key={index}>
                                     <b>
