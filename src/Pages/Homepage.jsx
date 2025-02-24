@@ -4,7 +4,7 @@ import { useAltitude } from "../hooks/getAltitude/getAltitude";
 import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
 import LocationSearchInput from "../Components/LocationSearchInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThermometerHalf } from '@fortawesome/free-solid-svg-icons';
+import { faThermometerHalf } from "@fortawesome/free-solid-svg-icons";
 import {
   faWind,
   faChevronDown,
@@ -164,23 +164,42 @@ export function Homepage() {
   const showPosition = async (latitude, longitude) => {
     setLatitude(latitude);
     setLongitude(longitude);
-    const mapApiToken = process.env.REACT_APP_Map_API_KEY; //Map Box API
+    const mapApiToken = process.env.REACT_APP_Map_API_KEY; // Mapbox API token
+
     try {
       const altitudeValue = await fetchAltitude(latitude, longitude);
-      let latlon = longitude + "," + latitude;
-      let img_url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${latlon},13,0,45/460x250@2x?access_token=${mapApiToken}&logo=false`;
+      let longlat = `${longitude},${latitude}`;
+      let geojson = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [longitude, latitude],
+            },
+            properties: {
+              "marker-color": "#FF0000", // Change this to your desired color
+            },
+          },
+        ],
+      };
+      let encodedGeojson = encodeURIComponent(JSON.stringify(geojson));
+      let img_url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/geojson(${encodedGeojson})/${longlat},13,0,45/460x250@2x?access_token=${mapApiToken}&logo=false`;
 
       const mapElement = document.getElementById("mapholder");
       const locationElement = document.getElementById("location");
 
       if (locationElement && mapElement && !loadingLocation) {
         locationElement.innerHTML += `Latitude: ${latitude.toFixed(1)}°<br>
-        Longitude: ${longitude.toFixed(1)}°<br>
-        Altitude: ${altitudeValue !== undefined ? altitudeValue + "m" : "N/A"}`;
+      Longitude: ${longitude.toFixed(1)}°<br>
+      Altitude: ${altitudeValue !== undefined ? altitudeValue + "m" : "N/A"}`;
         mapElement.src = img_url;
-      }
+      } else if (loadingLocation) {
+        mapElement.src = ""; // Clear the map image while loading location
+      } //
     } catch (error) {
-      // no aCTION SINCE altitudeError is already handled in the getAltitude hook
+      console.error("Error fetching altitude or setting map image:", error); // Log the error for debugging
     }
   };
 
@@ -418,7 +437,8 @@ export function Homepage() {
                 <p>
                   {" "}
                   <span role="img" aria-label="temperature">
-                  <FontAwesomeIcon icon={faThermometerHalf} />&nbsp;
+                    <FontAwesomeIcon icon={faThermometerHalf} />
+                    &nbsp;
                   </span>
                   {Math.round(weatherData.current.temp)}°C
                 </p>{" "}
@@ -560,63 +580,63 @@ export function Homepage() {
                 <ListWithArrowsWrapper>
                   <ul>
                     {weatherData.hourly
-                    .slice(hourIndex, hourIndex + hoursToShow) // Display based on hourIndex
-                                  .map((hour, index) => (
-                                  <li key={index}>
-                                    <b>
-                                    {new Date(
-                                      (hour.dt + weatherData.timezone_offset) * 1000
-                                    )
-                                      .toISOString()
-                                      .substring(11, 16)}
-                                    </b>
-                                    <br />
-                                    <FontAwesomeIcon icon={faThermometerHalf} />{" "}
-                                    {Math.round(hour.temp)}°C <br />
-                                    Feels like: {Math.round(hour.feels_like)}°C <br />
-                                    pop: {Math.round(hour.pop * 100)}% <br />
-                                    Humidity: {hour.humidity}%<br />
-                                    Wind: {Math.round(hour.wind_speed * 3.6)} Km/h
-                                    <br />
-                                    <AnimatedIcon
-                                    src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
-                                    alt="Hourly Weather Icon"
-                                    />
-                                    <br />
-                                    {hour.weather[0].description}
-                                  </li>
-                                  ))}
-                                </ul>
-                                <ArrowsContainer>
-                                <Button
-                                  onClick={() => scrollHours(-1)}
-                                  disabled={hourIndex === 0}
-                                >
-                                  <FontAwesomeIcon icon={faChevronLeft} />
-                                </Button>
-                                <Button
-                                  onClick={() => scrollHours(1)}
-                                  disabled={hourIndex + hoursToShow >= 20}
-                                >
-                                  <FontAwesomeIcon icon={faChevronRight} />
-                                </Button>
-                                </ArrowsContainer>
-                              </ListWithArrowsWrapper>
-                              <ScrollDots
-                                totalPages={totalHourPages}
-                                currentPage={currentHourPage}
-                              />
-                              </Container>
-                            )}
+                      .slice(hourIndex, hourIndex + hoursToShow) // Display based on hourIndex
+                      .map((hour, index) => (
+                        <li key={index}>
+                          <b>
+                            {new Date(
+                              (hour.dt + weatherData.timezone_offset) * 1000
+                            )
+                              .toISOString()
+                              .substring(11, 16)}
+                          </b>
+                          <br />
+                          <FontAwesomeIcon icon={faThermometerHalf} />{" "}
+                          {Math.round(hour.temp)}°C <br />
+                          Feels like: {Math.round(hour.feels_like)}°C <br />
+                          pop: {Math.round(hour.pop * 100)}% <br />
+                          Humidity: {hour.humidity}%<br />
+                          Wind: {Math.round(hour.wind_speed * 3.6)} Km/h
+                          <br />
+                          <AnimatedIcon
+                            src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
+                            alt="Hourly Weather Icon"
+                          />
+                          <br />
+                          {hour.weather[0].description}
+                        </li>
+                      ))}
+                  </ul>
+                  <ArrowsContainer>
+                    <Button
+                      onClick={() => scrollHours(-1)}
+                      disabled={hourIndex === 0}
+                    >
+                      <FontAwesomeIcon icon={faChevronLeft} />
+                    </Button>
+                    <Button
+                      onClick={() => scrollHours(1)}
+                      disabled={hourIndex + hoursToShow >= 20}
+                    >
+                      <FontAwesomeIcon icon={faChevronRight} />
+                    </Button>
+                  </ArrowsContainer>
+                </ListWithArrowsWrapper>
+                <ScrollDots
+                  totalPages={totalHourPages}
+                  currentPage={currentHourPage}
+                />
+              </Container>
+            )}
 
-                            <br />
-                            {weatherData.daily && (
-                              <Container>
-                              <h3>Daily Weather:</h3>
-                              <ListWithArrowsWrapper>
-                                <ul>
-                                {weatherData.daily
-                                  .slice(dayIndex, dayIndex + daysToShow) // Display based on dayIndex
+            <br />
+            {weatherData.daily && (
+              <Container>
+                <h3>Daily Weather:</h3>
+                <ListWithArrowsWrapper>
+                  <ul>
+                    {weatherData.daily
+                      .slice(dayIndex, dayIndex + daysToShow) // Display based on dayIndex
                       .map((day, index) => {
                         const date = new Date(day.dt * 1000).toLocaleDateString(
                           "en-US",
@@ -629,21 +649,21 @@ export function Homepage() {
 
                         return (
                           <li key={index}>
-                          <b>
-                            {index === 0 && dayIndex === 0 ? "Today" : date}
-                          </b>
-                          <br /> {Math.round(day.temp.min)}{" "}
-                          <FontAwesomeIcon icon={faThermometerHalf} />{" "}
-                          {Math.round(day.temp.max)}°C
-                          <br />
-                          Precipitation: {parseInt(day.pop * 100)}%
-                          <br />
-                          <AnimatedIcon
-                            src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                            alt="Weather Icon"
-                          />
-                          <br />
-                          {day.summary}
+                            <b>
+                              {index === 0 && dayIndex === 0 ? "Today" : date}
+                            </b>
+                            <br /> {Math.round(day.temp.min)}{" "}
+                            <FontAwesomeIcon icon={faThermometerHalf} />{" "}
+                            {Math.round(day.temp.max)}°C
+                            <br />
+                            Precipitation: {parseInt(day.pop * 100)}%
+                            <br />
+                            <AnimatedIcon
+                              src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                              alt="Weather Icon"
+                            />
+                            <br />
+                            {day.summary}
                           </li>
                         );
                       })}
