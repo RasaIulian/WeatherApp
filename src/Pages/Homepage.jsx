@@ -25,6 +25,7 @@ import {
   Select,
   Alert,
   ErrorMessage,
+  LoadingMessage,
   Header,
   WindArrow,
   ContainerWrapper,
@@ -111,7 +112,7 @@ export function Homepage() {
   const getLocation = async () => {
     setLoadingLocation(true);
     // Introduce an artificial delay to check loading state
-    // await new Promise((resolve) => setTimeout(resolve, 1000));
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
     const elementsToHide = document.getElementsByClassName("toHide");
 
     if (navigator.geolocation) {
@@ -192,12 +193,12 @@ export function Homepage() {
 
       if (locationElement && mapElement && !loadingLocation) {
         locationElement.innerHTML += `Latitude: ${latitude.toFixed(1)}°<br>
-      Longitude: ${longitude.toFixed(1)}°<br>
-      Altitude: ${altitudeValue !== undefined ? altitudeValue + "m" : "N/A"}`;
+      Longitude: ${longitude.toFixed(1)}°<br>`;
+        !loadingAltitude &&
+          (locationElement.innerHTML += `
+      Altitude: ${altitudeValue !== undefined ? altitudeValue + "m" : "N/A"}`);
         mapElement.src = img_url;
-      } else if (loadingLocation) {
-        mapElement.src = ""; // Clear the map image while loading location
-      } //
+      }
     } catch (error) {
       console.error("Error fetching altitude or setting map image:", error); // Log the error for debugging
     }
@@ -279,13 +280,13 @@ export function Homepage() {
       </Button>
 
       {(loadingAltitude || loadingLocation || loadingAQI || loadingWeather) && (
-        <p>
+        <LoadingMessage>
           Loading
           {loadingLocation && <span> location data...</span>}
           {loadingAltitude && !altitudeError && <span> altitude data...</span>}
           {loadingAQI && <span> air quality data...</span>}
           {loadingWeather && <span> weather data...</span>}
-        </p>
+        </LoadingMessage>
       )}
       {!loadingAQI && !loadingLocation && selectVisible && (
         <SearchContainer>

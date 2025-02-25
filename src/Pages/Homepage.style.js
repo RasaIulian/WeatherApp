@@ -51,8 +51,21 @@ export const Header = styled.h2`
 `;
 
 export const ErrorMessage = styled.div`
-  background-color: #ffcdd2;
+  // background-color: #ffcdd2;
   color: #c63737;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+  max-width: 950px;
+  @media (max-width: 980px) {
+    max-width: 460px;
+  }
+`;
+
+export const LoadingMessage = styled.div`
+  // background-color: #ffcdd2;
+  color: #f88700;
   padding: 5px;
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
