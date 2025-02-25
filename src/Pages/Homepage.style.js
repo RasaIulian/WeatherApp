@@ -63,6 +63,16 @@ export const ErrorMessage = styled.div`
   }
 `;
 
+// Define the opacity animation
+const textOpacityAnimation = keyframes`
+  0% {
+    opacity: 0.5; // 50% opacity
+  }
+  100% {
+    opacity: 1; // 100% opacity
+  }
+`;
+
 export const LoadingMessage = styled.div`
   // background-color: #ffcdd2;
   color: #f88700;
@@ -73,6 +83,11 @@ export const LoadingMessage = styled.div`
   max-width: 950px;
   @media (max-width: 980px) {
     max-width: 460px;
+  }
+
+  // Apply the animation to text elements
+  span {
+    animation: ${textOpacityAnimation} 1s infinite alternate;
   }
 `;
 

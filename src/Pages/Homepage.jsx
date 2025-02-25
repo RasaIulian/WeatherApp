@@ -112,7 +112,7 @@ export function Homepage() {
   const getLocation = async () => {
     setLoadingLocation(true);
     // Introduce an artificial delay to check loading state
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    // await new Promise((resolve) => setTimeout(resolve, 5000));
     const elementsToHide = document.getElementsByClassName("toHide");
 
     if (navigator.geolocation) {

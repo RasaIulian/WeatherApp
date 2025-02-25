@@ -58,7 +58,7 @@ export const useAirQuality = (latitude, longitude) => {
 
       try {
         // Introduce an artificial delay to check loading state
-        // await new Promise((resolve) => setTimeout(resolve, 1000));
+        // await new Promise((resolve) => setTimeout(resolve, 3000));
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`Server responded with status: ${response.status}`);
