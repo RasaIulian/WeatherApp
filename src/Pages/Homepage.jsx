@@ -87,8 +87,6 @@ export function Homepage() {
     setLatitude(lat);
     setLongitude(lon);
     setSelectedLocation(`${name}, ${state || ""} ${country}`);
-    showPosition(lat, lon);
-
     if (locationElement) {
       if (name && country) {
         locationElement.innerHTML = `Location: ${name}, ${
@@ -96,6 +94,8 @@ export function Homepage() {
         } ${country}<br>`;
       }
     }
+    showPosition(lat, lon);
+
     // Reset the hourIndex and dayIndex when a new location is selected
     setHourIndex(0);
     setDayIndex(0);
@@ -162,42 +162,46 @@ export function Homepage() {
         break;
     }
   };
+
   const showPosition = async (latitude, longitude) => {
     setLatitude(latitude);
     setLongitude(longitude);
     const mapApiToken = process.env.REACT_APP_Map_API_KEY; // Mapbox API token
 
+    let longlat = `${longitude},${latitude}`;
+    let geojson = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          properties: {
+            "marker-color": "#FF0000", // Change this to your desired color
+          },
+        },
+      ],
+    };
+    let encodedGeojson = encodeURIComponent(JSON.stringify(geojson));
+    let img_url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/geojson(${encodedGeojson})/${longlat},13,0,45/460x250@2x?access_token=${mapApiToken}&logo=false`;
+
+    const mapElement = document.getElementById("mapholder");
+    const locationElement = document.getElementById("location");
+
+    if (locationElement && mapElement && !loadingLocation) {
+      locationElement.innerHTML += `Latitude: ${latitude.toFixed(1)}°<br>
+      Longitude: ${longitude.toFixed(1)}°<br>`;
+      mapElement.src = img_url;
+    }
+
     try {
       const altitudeValue = await fetchAltitude(latitude, longitude);
-      let longlat = `${longitude},${latitude}`;
-      let geojson = {
-        type: "FeatureCollection",
-        features: [
-          {
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [longitude, latitude],
-            },
-            properties: {
-              "marker-color": "#FF0000", // Change this to your desired color
-            },
-          },
-        ],
-      };
-      let encodedGeojson = encodeURIComponent(JSON.stringify(geojson));
-      let img_url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/geojson(${encodedGeojson})/${longlat},13,0,45/460x250@2x?access_token=${mapApiToken}&logo=false`;
-
-      const mapElement = document.getElementById("mapholder");
-      const locationElement = document.getElementById("location");
-
-      if (locationElement && mapElement && !loadingLocation) {
-        locationElement.innerHTML += `Latitude: ${latitude.toFixed(1)}°<br>
-      Longitude: ${longitude.toFixed(1)}°<br>`;
-        !loadingAltitude &&
-          (locationElement.innerHTML += `
-      Altitude: ${altitudeValue !== undefined ? altitudeValue + "m" : "N/A"}`);
-        mapElement.src = img_url;
+      if (locationElement && !loadingAltitude) {
+        locationElement.innerHTML += `Altitude: ${
+          altitudeValue !== undefined ? altitudeValue + "m" : "N/A"
+        }`;
       }
     } catch (error) {
       console.error("Error fetching altitude or setting map image:", error); // Log the error for debugging
