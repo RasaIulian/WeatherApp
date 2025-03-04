@@ -116,7 +116,12 @@ export const Button = styled.button`
   border-radius: 3px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  transition: background-color, box-shadow 0.3s ease;
+  transition: all 0.3s ease-out;
+
+  &:disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
   &:hover {
     background-color: #eaeaea;
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);

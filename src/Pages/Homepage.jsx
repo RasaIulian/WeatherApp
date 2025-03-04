@@ -5,6 +5,7 @@ import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
 import LocationSearchInput from "../Components/LocationSearchInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThermometerHalf } from "@fortawesome/free-solid-svg-icons";
+import { ScrollDots } from "../Components/ScrollDots/ScrollDots";
 import {
   faWind,
   faChevronDown,
@@ -30,8 +31,6 @@ import {
   WindArrow,
   ContainerWrapper,
 } from "../Pages/Homepage.style";
-
-import { ScrollDots } from "../Components/ScrollDots/ScrollDots";
 
 export function Homepage() {
   const locationElement = document.getElementById("location");
@@ -616,12 +615,16 @@ export function Homepage() {
                     <Button
                       onClick={() => scrollHours(-1)}
                       disabled={hourIndex === 0}
+                      className={hourIndex === 0 ? "disabled" : ""}
                     >
                       <FontAwesomeIcon icon={faChevronLeft} />
                     </Button>
                     <Button
                       onClick={() => scrollHours(1)}
                       disabled={hourIndex + hoursToShow >= 20}
+                      className={
+                        hourIndex + hoursToShow >= 20 ? "disabled" : ""
+                      }
                     >
                       <FontAwesomeIcon icon={faChevronRight} />
                     </Button>
