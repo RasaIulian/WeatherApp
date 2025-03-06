@@ -180,9 +180,10 @@ export const Select = styled.select`
   &:hover {
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
   }
-  &:focus {
+  &:focus, &:active {
     border: none;
     outline: none;
+   
   }
 
   /* Styles for active (selected) option */

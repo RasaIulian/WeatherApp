@@ -52,6 +52,7 @@ export function Homepage() {
     getAQICategory,
     getAQIColor,
     categorizeComponent,
+    getComponentColor,
   } = useAirQuality(latitude, longitude);
 
   const toggleShowComponents = () => {
@@ -94,7 +95,7 @@ export function Homepage() {
       }
     }
     showPosition(lat, lon);
-
+    setShowComponents(false);
     // Reset the hourIndex and dayIndex when a new location is selected
     setHourIndex(0);
     setDayIndex(0);
@@ -314,12 +315,14 @@ export function Homepage() {
                 // Get current location using getLocation function
                 locationElement.innerHTML = "";
                 getLocation();
+                setShowComponents(false);
               } else {
                 locationElement.innerHTML = "";
                 showPosition(
                   parseFloat(selectedLatitude),
                   parseFloat(selectedLongitude)
                 );
+                setShowComponents(false);
               }
             }}
           >
@@ -329,24 +332,14 @@ export function Homepage() {
             <option latitude="current" longitude="current">
               Current Location
             </option>
-            <option latitude="45.768739" longitude="23.641838">
-              Dobra, RO
-            </option>
-            <option latitude="45.806776" longitude="24.146329">
-              Sibiu, RO
-            </option>
             <option latitude="45.871873" longitude="24.064956">
               Ocna Sb, RO
             </option>
             <option latitude="44.4268" longitude="26.1025">
               Bucharest, RO
             </option>
-
             <option latitude="52.5200" longitude="13.4050">
               Berlin, DE
-            </option>
-            <option latitude="42.836948" longitude="-84.605148">
-              Dewitt, USA
             </option>
           </Select>
         </SearchContainer>
@@ -375,46 +368,98 @@ export function Homepage() {
             <br />
             {showComponents && (
               <div>
-                <p>(Air quality index: {aqi})</p>
+                <p>Air quality index: {aqi} (1-5)</p>
                 <br />
                 <p>
-                  SO₂ - Sulphur dioxide: {components.so2} μg/m3 (
-                  {categorizeComponent("so2", components.so2)})
+                  PM2.5 - Fine particles matter: {components.pm2_5} μg/m3
+                  -&nbsp;
+                  <span
+                    style={{
+                      color: getComponentColor("pm2_5", components.pm2_5),
+                    }}
+                  >
+                    ({categorizeComponent("pm2_5", components.pm2_5)})
+                  </span>{" "}
                 </p>
                 <br />
                 <p>
-                  NO₂ - Nitrogen dioxide: {components.no2} μg/m3 (
-                  {categorizeComponent("no2", components.no2)})
+                  PM10 - Coarse particulate matter: {components.pm10} μg/m3
+                  -&nbsp;
+                  <span
+                    style={{
+                      color: getComponentColor("pm10", components.pm10),
+                    }}
+                  >
+                    ({categorizeComponent("pm10", components.pm10)})
+                  </span>{" "}
+                </p>
+                <br />
+
+                <p>
+                  O₃ - Ozone: {components.o3} μg/m3 -&nbsp;
+                  <span
+                    style={{
+                      color: getComponentColor("o3", components.o3),
+                    }}
+                  >
+                    ({categorizeComponent("o3", components.o3)})
+                  </span>{" "}
                 </p>
                 <br />
                 <p>
-                  PM10 - Coarse particulate matter: {components.pm10} μg/m3 (
-                  {categorizeComponent("pm10", components.pm10)})
+                  SO₂ - Sulphur dioxide: {components.so2} μg/m3 -&nbsp;
+                  <span
+                    style={{
+                      color: getComponentColor("so2", components.so2),
+                    }}
+                  >
+                    ({categorizeComponent("so2", components.so2)})
+                  </span>{" "}
                 </p>
                 <br />
                 <p>
-                  PM2.5 - Fine particles matter: {components.pm2_5} μg/m3 (
-                  {categorizeComponent("pm2_5", components.pm2_5)})
+                  NO₂ - Nitrogen dioxide: {components.no2} μg/m3 -&nbsp;
+                  <span
+                    style={{
+                      color: getComponentColor("no2", components.no2),
+                    }}
+                  >
+                    ({categorizeComponent("no2", components.no2)})
+                  </span>{" "}
+                </p>
+                <br />
+
+                <p>
+                  CO - Carbon monoxide: {components.co} μg/m3 -&nbsp;
+                  <span
+                    style={{
+                      color: getComponentColor("co", components.co),
+                    }}
+                  >
+                    ({categorizeComponent("co", components.co)})
+                  </span>{" "}
                 </p>
                 <br />
                 <p>
-                  O₃ - Ozone: {components.o3} μg/m3 (
-                  {categorizeComponent("o3", components.o3)})
+                  NO - Nitrogen monoxide: {components.no} μg/m3 -&nbsp;
+                  <span
+                    style={{
+                      color: getComponentColor("no", components.no),
+                    }}
+                  >
+                    ({categorizeComponent("no", components.no)})
+                  </span>{" "}
                 </p>
                 <br />
                 <p>
-                  CO - Carbon monoxide: {components.co} μg/m3 (
-                  {categorizeComponent("co", components.co)})
-                </p>
-                <br />
-                <p>
-                  NO - Nitrogen monoxide: {components.no} μg/m3 (
-                  {categorizeComponent("no", components.no)})
-                </p>
-                <br />
-                <p>
-                  NH3 - Ammonia: {components.nh3} μg/m3 (
-                  {categorizeComponent("nh3", components.nh3)})
+                  NH3 - Ammonia: {components.nh3} μg/m3 -&nbsp;
+                  <span
+                    style={{
+                      color: getComponentColor("nh3", components.nh3),
+                    }}
+                  >
+                    ({categorizeComponent("nh3", components.nh3)})
+                  </span>{" "}
                 </p>
               </div>
             )}

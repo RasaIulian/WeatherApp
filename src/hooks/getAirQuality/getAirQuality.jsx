@@ -46,6 +46,16 @@ export const useAirQuality = (latitude, longitude) => {
     return "Very High";
   };
 
+  const getComponentColor = (component, value) => {
+    const ranges = pollutantRanges[component];
+    if (value <= ranges[0]) return "#008040"; // Very Low - Dark Green
+    if (value <= ranges[1]) return "#3ac600"; // Low - Lighter Green
+    if (value <= ranges[2]) return "#ff6600"; // Medium - Dark Orange
+    if (value <= ranges[3]) return "#cc0000"; // High - Dark Red
+    if (value > ranges[3]) return "#9900cc"; // Very High - Dark Purple
+    return "#333333"; // Unknown - Dark Grey
+  };
+
   useEffect(() => {
     const fetchAirQuality = async () => {
       if (!latitude || !longitude) return;
@@ -90,5 +100,6 @@ export const useAirQuality = (latitude, longitude) => {
     getAQICategory,
     getAQIColor,
     categorizeComponent,
+    getComponentColor,
   };
 };
