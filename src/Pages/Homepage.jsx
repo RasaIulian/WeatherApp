@@ -44,6 +44,108 @@ export function Homepage() {
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [showComponents, setShowComponents] = useState(false);
   const { fetchAltitude, loadingAltitude, altitudeError } = useAltitude(); // Destructure the custom hook
+  const [favorites, setFavorites] = useState(() => {
+    const savedFavorites = localStorage.getItem("favoriteLocations");
+    if (savedFavorites) {
+      try {
+        return JSON.parse(savedFavorites);
+      } catch (error) {
+        console.error("Failed to parse favorites from localStorage:", error);
+        return []; // Fallback to empty array if parsing fails
+      }
+    }
+    return []; // Default to empty array if no data is found
+  });
+  const [currentLocationData, setCurrentLocationData] = useState(null); // Track current location data
+
+  // Determine if current location is already in favorites
+  const isAlreadyInFavorites = currentLocationData
+    ? favorites.some(
+        (fav) =>
+          fav.lat === currentLocationData.lat &&
+          fav.lon === currentLocationData.lon
+      )
+    : false;
+
+  // Function to add current location to favorites
+  const addToFavorites = () => {
+    if (currentLocationData && !isAlreadyInFavorites) {
+      const newFavorites = [...favorites, currentLocationData];
+      console.log("Adding to favorites:", newFavorites);
+      setFavorites(newFavorites);
+    }
+  };
+
+  // Function to remove current location from favorites
+  const removeFromFavorites = () => {
+    if (currentLocationData) {
+      const newFavorites = favorites.filter(
+        (fav) =>
+          fav.lat !== currentLocationData.lat &&
+          fav.lon !== currentLocationData.lon
+      );
+      console.log("Removing from favorites:", newFavorites);
+      setFavorites(newFavorites);
+    }
+  };
+
+  // Save favorites to localStorage whenever the `favorites` state changes
+  useEffect(() => {
+    console.log("Saving favorites to localStorage:", favorites);
+    localStorage.setItem("favoriteLocations", JSON.stringify(favorites));
+  }, [favorites]);
+
+  // Retrieve favorites from localStorage on component mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem("favoriteLocations");
+    console.log("Retrieved favorites from localStorage:", savedFavorites);
+    if (savedFavorites) {
+      try {
+        const parsedFavorites = JSON.parse(savedFavorites);
+        console.log("Parsed favorites:", parsedFavorites);
+        setFavorites(parsedFavorites);
+      } catch (error) {
+        console.error("Failed to parse favorites from localStorage:", error);
+      }
+    }
+  }, []);
+
+  // Update Select's onChange handler to clear current location data
+  const handleSelectChange = (e) => {
+    const selectedIndex = e.target.selectedIndex;
+    const selectedOption = e.target.options[selectedIndex];
+    const selectedLatitude = selectedOption.getAttribute("latitude");
+    const selectedLongitude = selectedOption.getAttribute("longitude");
+    const selectedName = selectedOption.text.split(",")[0]; // Extract location name
+    const selectedCountry = selectedOption.text.split(",")[2]?.trim(); // Extract country
+    const selectedState = selectedOption.text.split(",")[1]?.trim(); // Extract state (if available)
+    setSelectedLocation(selectedOption.text);
+    setHourIndex(0);
+    setDayIndex(0);
+
+    if (selectedLatitude === "current" && selectedLongitude === "current") {
+      // Get current location using getLocation function
+      locationElement.innerHTML = "";
+
+      getLocation();
+      setCurrentLocationData(null);
+      setShowComponents(false);
+    } else {
+      locationElement.innerHTML = "";
+      showPosition(parseFloat(selectedLatitude), parseFloat(selectedLongitude));
+      setShowComponents(false);
+
+      // Set currentLocationData for the selected favorite location
+      setCurrentLocationData({
+        lat: parseFloat(selectedLatitude),
+        lon: parseFloat(selectedLongitude),
+        name: selectedName,
+        country: selectedCountry,
+        state: selectedState,
+      });
+    }
+  };
+
   const {
     aqi,
     components,
@@ -87,18 +189,18 @@ export function Homepage() {
     setLatitude(lat);
     setLongitude(lon);
     setSelectedLocation(`${name}, ${state || ""} ${country}`);
-    if (locationElement) {
-      if (name && country) {
-        locationElement.innerHTML = `Location: ${name}, ${
-          state || ""
-        } ${country}<br>`;
-      }
+    if (locationElement && name && country) {
+      locationElement.innerHTML = `Location: ${name}, ${
+        state || ""
+      } ${country}<br>`;
     }
+
     showPosition(lat, lon);
     setShowComponents(false);
     // Reset the hourIndex and dayIndex when a new location is selected
     setHourIndex(0);
     setDayIndex(0);
+    setCurrentLocationData(location); // Store location data when selected via search
   };
 
   // useEffect(() => {
@@ -298,33 +400,7 @@ export function Homepage() {
           <Select
             id="select"
             value={selectedLocation}
-            onChange={(e) => {
-              const selectedIndex = e.target.selectedIndex;
-              const selectedOption = e.target.options[selectedIndex];
-              const selectedLatitude = selectedOption.getAttribute("latitude");
-              const selectedLongitude =
-                selectedOption.getAttribute("longitude");
-              setSelectedLocation(selectedOption.text);
-              // Reset the hourIndex and dayIndex when a new location is selected
-              setHourIndex(0);
-              setDayIndex(0);
-              if (
-                selectedLatitude === "current" &&
-                selectedLongitude === "current"
-              ) {
-                // Get current location using getLocation function
-                locationElement.innerHTML = "";
-                getLocation();
-                setShowComponents(false);
-              } else {
-                locationElement.innerHTML = "";
-                showPosition(
-                  parseFloat(selectedLatitude),
-                  parseFloat(selectedLongitude)
-                );
-                setShowComponents(false);
-              }
-            }}
+            onChange={handleSelectChange}
           >
             <option hidden value="">
               Select favorite location
@@ -332,22 +408,27 @@ export function Homepage() {
             <option latitude="current" longitude="current">
               Current Location
             </option>
-            <option latitude="45.871873" longitude="24.064956">
-              Ocna Sb, RO
-            </option>
-            <option latitude="44.4268" longitude="26.1025">
-              Bucharest, RO
-            </option>
-            <option latitude="52.5200" longitude="13.4050">
-              Berlin, DE
-            </option>
+            {/* Dynamically generate options from favorites */}
+            {favorites.map((fav, index) => (
+              <option key={index} latitude={fav.lat} longitude={fav.lon}>
+                {`${fav.name}, ${fav.state || ""} ${fav.country}`}
+              </option>
+            ))}
           </Select>
         </SearchContainer>
       )}
 
-      <div>
-        <p id="location"></p>
-      </div>
+      <p id="location"></p>
+
+      {/* Toggle between Add and Remove button */}
+      {currentLocationData && (
+        <Button
+          onClick={isAlreadyInFavorites ? removeFromFavorites : addToFavorites}
+        >
+          {isAlreadyInFavorites ? "Remove from Favorites" : "Add to Favorites"}
+        </Button>
+      )}
+
       {geoLocationError && <ErrorMessage>{geoLocationError}</ErrorMessage>}
       {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
       {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}

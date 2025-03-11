@@ -204,9 +204,9 @@ export const Map = styled.img`
   max-width: 460px;
   width: 100%;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  margin-bottom: 20px;
+  margin: 20px 0;
   @media (max-width: 980px) {
-    margin-bottom: 10px;
+    margin: 10px 0;
   }
 `;
 
