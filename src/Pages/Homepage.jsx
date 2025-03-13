@@ -71,7 +71,6 @@ export function Homepage() {
   const addToFavorites = () => {
     if (currentLocationData && !isAlreadyInFavorites) {
       const newFavorites = [...favorites, currentLocationData];
-      console.log("Adding to favorites:", newFavorites);
       setFavorites(newFavorites);
     }
   };
@@ -84,29 +83,23 @@ export function Homepage() {
           fav.lat !== currentLocationData.lat &&
           fav.lon !== currentLocationData.lon
       );
-      console.log("Removing from favorites:", newFavorites);
       setFavorites(newFavorites);
     }
   };
 
   // Save favorites to localStorage whenever the `favorites` state changes
   useEffect(() => {
-    console.log("Saving favorites to localStorage:", favorites);
     localStorage.setItem("favoriteLocations", JSON.stringify(favorites));
   }, [favorites]);
 
   // Retrieve favorites from localStorage on component mount
   useEffect(() => {
     const savedFavorites = localStorage.getItem("favoriteLocations");
-    console.log("Retrieved favorites from localStorage:", savedFavorites);
     if (savedFavorites) {
       try {
         const parsedFavorites = JSON.parse(savedFavorites);
-        console.log("Parsed favorites:", parsedFavorites);
         setFavorites(parsedFavorites);
-      } catch (error) {
-        console.error("Failed to parse favorites from localStorage:", error);
-      }
+      } catch (error) {}
     }
   }, []);
 
@@ -604,9 +597,11 @@ export function Homepage() {
                 <br />
                 <p>
                   Wind: {Math.round(weatherData.current.wind_speed * 3.6)} Km/h{" "}
-                  {"- "}
-                  {degreesToDirection(weatherData.current.wind_deg)}{" "}
-                  <WindArrow $deg={weatherData.current.wind_deg} />
+                  from {degreesToDirection(weatherData.current.wind_deg)}{" "}
+                  <WindArrow
+                    $deg={weatherData.current.wind_deg}
+                    $windspeed={weatherData.current.wind_speed * 3.6}
+                  />
                 </p>
                 <br />
                 <p>Humidity: {weatherData.current.humidity}%</p>

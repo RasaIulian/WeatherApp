@@ -232,25 +232,48 @@ const rotateAnimation = ($deg) => keyframes`
   }
 `;
 
+// Linear interpolation (lerp) function
+const lerp = (start, end, t) => start * (1 - t) + end * t;
+
+// Function to generate animation speed based on wind speed
+const getAnimationDuration = (windSpeedKmH) => {
+  const minSpeed = 0; // Km/h
+  const maxSpeed = 100; // Km/h
+  const minDuration = 1.5; // seconds (slowest)
+  const maxDuration = 0.05; // seconds (fastest)
+
+  // Clamp the wind speed to the defined range
+  const clampedSpeed = Math.max(minSpeed, Math.min(windSpeedKmH, maxSpeed));
+
+  // Normalize the clamped speed to a 0-1 range
+  const normalizedSpeed = (clampedSpeed - minSpeed) / (maxSpeed - minSpeed);
+
+  // Use lerp for linear interpolation of the duration
+  const duration = lerp(minDuration, maxDuration, normalizedSpeed);
+
+  return `${duration}s`;
+};
+
 export const WindArrow = styled.span.attrs((props) => ({
   $deg: props.$deg, // Use $deg as transient prop
+   $windspeed: props.$windspeed, // Add wind speed as a transient prop
 }))`
   margin-left: 10px;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-bottom: 20px solid #aaaaaa;
-  border-radius: 6px;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 18px solid #aaaaaa;
+  border-radius: 50%;
   transform-origin: center;
-  animation: ${(props) => rotateAnimation(props.$deg)} 1s infinite alternate
+  animation: ${(props) => rotateAnimation(props.$deg)} ${(props) => getAnimationDuration(props.$windspeed)} infinite alternate
     ease-in-out;
 
   &::after {
     content: "";
     position: absolute;
     left: -3px;
-    top: 9px;
-    width: 5px;
-    height: 5px;
+    top: 7px;
+    width: 6px;
+    height: 6px;
     background: linear-gradient(
       ${(props) => props.$deg + 180}deg,
       #ffff00,

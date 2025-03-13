@@ -76,7 +76,11 @@ const LocationSearchInput = ({ onSelectLocation }) => {
         setSearchResults(data);
         setErrorMessage("");
       } else {
-        setErrorMessage("Location not found. Please try again.");
+        setErrorMessage(
+          input
+            ? `Sorry, "${input}" not found. Please try again.`
+            : "Sorry, location not found. Please try again."
+        );
         setSearchResults([]);
       }
     } catch (error) {
