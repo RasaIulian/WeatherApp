@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ErrorMessage } from "../Pages/Homepage.style";
+import { ErrorMessage } from "../../Pages/Homepage.style";
 import styled from "styled-components";
 
 const Input = styled.input`
@@ -18,6 +18,9 @@ const Input = styled.input`
   &:focus {
     outline: none;
     border-color: #aaa;
+  }
+  @media (max-width: 980px) {
+    margin-bottom: 10px;
   }
 `;
 const List = styled.ul`

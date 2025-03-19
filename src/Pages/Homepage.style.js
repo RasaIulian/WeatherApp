@@ -44,6 +44,7 @@ export const Container = styled.div`
   @media (max-width: 980px) {
     width: 100%;
     margin-bottom: 10px;
+    padding: 5px;
   }
 `;
 export const Header = styled.h2`
@@ -158,7 +159,7 @@ export const SearchContainer = styled.div`
     width: 100%;
   }
   @media (max-width: 515px) {
-    margin-bottom: 1rem;
+    margin-bottom: 10px;
   }
 `;
 

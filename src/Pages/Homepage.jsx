@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getWeatherData } from "../hooks/getWeatherData/getWeatherData";
 import { useAltitude } from "../hooks/getAltitude/getAltitude";
 import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
-import LocationSearchInput from "../Components/LocationSearchInput";
+import LocationSearchInput from "../Components/LocationSearch/LocationSearchInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThermometerHalf } from "@fortawesome/free-solid-svg-icons";
 import { ScrollDots } from "../Components/ScrollDots/ScrollDots";
@@ -371,15 +371,15 @@ export function Homepage() {
 
   return (
     <div>
-      <Header className="toHide">Welcome to the Geolocation Weather App</Header>
-      <p className="toHide">
-        Please click the button to get your coordinates, weather and more...
-      </p>
-      <p className="toHide">Location permission must be granted at request.</p>
-      <Button onClick={getLocation} className="toHide">
-        Try It
-      </Button>
-
+      <Container className="toHide">
+        <Header>Welcome to the Geolocation Weather App</Header>
+        <p>
+          Please click the button to get your coordinates, weather and more...
+        </p>
+        <p>Location permission must be granted at request.</p>
+        <br />
+        <Button onClick={getLocation}>Try It</Button>
+      </Container>
       {(loadingAltitude || loadingLocation || loadingAQI || loadingWeather) && (
         <LoadingMessage>
           Loading
@@ -432,7 +432,6 @@ export function Homepage() {
           </Container>
         </ContainerWrapper>
       )}
-
       {geoLocationError && <ErrorMessage>{geoLocationError}</ErrorMessage>}
       {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
       {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
