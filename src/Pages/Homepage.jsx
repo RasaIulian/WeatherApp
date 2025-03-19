@@ -6,6 +6,7 @@ import LocationSearchInput from "../Components/LocationSearchInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThermometerHalf } from "@fortawesome/free-solid-svg-icons";
 import { ScrollDots } from "../Components/ScrollDots/ScrollDots";
+import { WeatherMap } from "../Components/Map/Map";
 import {
   faWind,
   faChevronDown,
@@ -21,7 +22,7 @@ import {
   Button,
   ArrowsContainer,
   ListWithArrowsWrapper,
-  Map,
+  // Map,
   Square,
   Select,
   Alert,
@@ -121,6 +122,7 @@ export function Homepage() {
       locationElement.innerHTML = "";
 
       getLocation();
+
       setCurrentLocationData(null);
       setShowComponents(false);
     } else {
@@ -206,7 +208,7 @@ export function Homepage() {
 
   const getLocation = async () => {
     setLoadingLocation(true);
-    // Introduce an artificial delay to check loading state
+    // Introduce an artificial delay to test the loading state
     // await new Promise((resolve) => setTimeout(resolve, 5000));
     const elementsToHide = document.getElementsByClassName("toHide");
 
@@ -261,34 +263,34 @@ export function Homepage() {
   const showPosition = async (latitude, longitude) => {
     setLatitude(latitude);
     setLongitude(longitude);
-    const mapApiToken = process.env.REACT_APP_Map_API_KEY; // Mapbox API token
+    // const mapApiToken = process.env.REACT_APP_Map_API_KEY; // Mapbox API token
 
-    let longlat = `${longitude},${latitude}`;
-    let geojson = {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [longitude, latitude],
-          },
-          properties: {
-            "marker-color": "#FF0000", // Change this to your desired color
-          },
-        },
-      ],
-    };
-    let encodedGeojson = encodeURIComponent(JSON.stringify(geojson));
-    let img_url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/geojson(${encodedGeojson})/${longlat},13,0,45/460x250@2x?access_token=${mapApiToken}&logo=false`;
+    // let longlat = `${longitude},${latitude}`;
+    // let geojson = {
+    //   type: "FeatureCollection",
+    //   features: [
+    //     {
+    //       type: "Feature",
+    //       geometry: {
+    //         type: "Point",
+    //         coordinates: [longitude, latitude],
+    //       },
+    //       properties: {
+    //         "marker-color": "#FF0000", // Change this to your desired color
+    //       },
+    //     },
+    //   ],
+    // };
+    // let encodedGeojson = encodeURIComponent(JSON.stringify(geojson));
+    // let img_url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/geojson(${encodedGeojson})/${longlat},13,0,45/460x250@2x?access_token=${mapApiToken}&logo=false`;
 
-    const mapElement = document.getElementById("mapholder");
+    // const mapElement = document.getElementById("mapholder");
     const locationElement = document.getElementById("location");
 
-    if (locationElement && mapElement && !loadingLocation) {
+    if (locationElement && !loadingLocation) {
       locationElement.innerHTML += `Latitude: ${latitude.toFixed(1)}°<br>
       Longitude: ${longitude.toFixed(1)}°<br>`;
-      mapElement.src = img_url;
+      // mapElement.src = img_url;
     }
 
     try {
@@ -410,25 +412,38 @@ export function Homepage() {
           </Select>
         </SearchContainer>
       )}
-
-      <p id="location"></p>
-
-      {/* Toggle between Add and Remove button */}
-      {currentLocationData && (
-        <Button
-          onClick={isAlreadyInFavorites ? removeFromFavorites : addToFavorites}
-        >
-          {isAlreadyInFavorites ? "Remove from Favorites" : "Add to Favorites"}
-        </Button>
+      {selectVisible && (
+        <ContainerWrapper>
+          <Container>
+            <p id="location"></p>
+            <br />
+            {/* Toggle between Add and Remove button */}
+            {currentLocationData && (
+              <Button
+                onClick={
+                  isAlreadyInFavorites ? removeFromFavorites : addToFavorites
+                }
+              >
+                {isAlreadyInFavorites
+                  ? "Remove from Favorites"
+                  : "Add to Favorites"}
+              </Button>
+            )}
+          </Container>
+        </ContainerWrapper>
       )}
 
       {geoLocationError && <ErrorMessage>{geoLocationError}</ErrorMessage>}
       {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
       {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
       <ContainerWrapper>
-        <div>
-          <Map id="mapholder"></Map>
-        </div>
+        {!loadingLocation && selectVisible && (
+          <Container>
+            {/* <Map id="mapholder"></Map> */}
+
+            <WeatherMap latitude={latitude} longitude={longitude} />
+          </Container>
+        )}
         <br />
         {!errorAQI && !loadingAQI && aqi && (
           <Container>
