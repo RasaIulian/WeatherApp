@@ -108,6 +108,7 @@ export const AnimatedIcon = styled.img`
 
 export const Button = styled.button`
   padding: 10px;
+  margin: 10px 0;
   font-size: 1.1rem;
   border: 1px solid #eaeaea;
   border-radius: 3px;
@@ -279,4 +280,54 @@ export const WindArrow = styled.span.attrs((props) => ({
     );
     border-radius: 50%;
   }
+`;
+
+// Keyframes for the icon animation (single icon, infinite animation)
+const iconAnimation = keyframes`
+0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  25% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  75% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+`;
+
+export const EmojiContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
+ export const Emoji = styled.p`
+  font-size: 2rem;
+  
+  &.changing {
+    animation: highlight 1.5s ease-in-out;
+  }
+  
+  @keyframes highlight {
+    0% { transform: scale(1); opacity: 0.5; }
+    20% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+`;
+
+export const EmojiWrapper = styled.div`
+  position: relative;
+  width: 3rem;
+  height: 3rem;
 `;

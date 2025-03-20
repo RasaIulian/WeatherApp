@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getWeatherData } from "../hooks/getWeatherData/getWeatherData";
 import { useAltitude } from "../hooks/getAltitude/getAltitude";
 import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
@@ -31,7 +31,29 @@ import {
   Header,
   WindArrow,
   ContainerWrapper,
+  Emoji,
+  EmojiContainer,
+  EmojiWrapper,
 } from "../Pages/Homepage.style";
+
+// Define the emojis and their order
+const emojis = [
+  "🌐",
+  "☀️",
+  "😎",
+  "☁️",
+  "💦",
+  "🌍",
+  "🌞",
+  "⛈️",
+  "🌤️",
+  "🌡️",
+  "📌",
+  "🌧️",
+  "❄️",
+  "🍃",
+  "☔",
+];
 
 export function Homepage() {
   const locationElement = document.getElementById("location");
@@ -45,6 +67,41 @@ export function Homepage() {
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [showComponents, setShowComponents] = useState(false);
   const { fetchAltitude, loadingAltitude, altitudeError } = useAltitude(); // Destructure the custom hook
+
+  // State to track the indices of the currently displayed emojis
+  const [emojiIndices, setEmojiIndices] = useState([0, 1, 2]);
+  // Track which position (0, 1, or 2) is currently changing
+  const [changingPosition, setChangingPosition] = useState(0);
+  const emojiRefs = useRef([null, null, null]);
+
+  useEffect(() => {
+    const changeInterval = setInterval(() => {
+      // First determine which position to change
+      const positionToChange = (changingPosition + 1) % 3;
+
+      // Set the changing position first
+      setChangingPosition(positionToChange);
+
+      // Then immediately update the emoji at that position
+      setEmojiIndices((prevIndices) => {
+        const newIndices = [...prevIndices];
+        const currentIndex = prevIndices[positionToChange];
+
+        // Find a new emoji that isn't currently displayed
+        let nextIndex = (currentIndex + 3) % emojis.length;
+        while (prevIndices.includes(nextIndex)) {
+          nextIndex = (nextIndex + 1) % emojis.length;
+        }
+
+        // Update the emoji at the changing position
+        newIndices[positionToChange] = nextIndex;
+        return newIndices;
+      });
+    }, 1500); // Change every 1.5 seconds
+
+    return () => clearInterval(changeInterval);
+  }, [changingPosition]);
+
   const [favorites, setFavorites] = useState(() => {
     const savedFavorites = localStorage.getItem("favoriteLocations");
     if (savedFavorites) {
@@ -58,6 +115,9 @@ export function Homepage() {
     return []; // Default to empty array if no data is found
   });
   const [currentLocationData, setCurrentLocationData] = useState(null); // Track current location data
+
+  // New state for emoji animation
+  const [displayedEmojis, setDisplayedEmojis] = useState([]);
 
   // Determine if current location is already in favorites
   const isAlreadyInFavorites = currentLocationData
@@ -369,10 +429,36 @@ export function Homepage() {
   const currentHourPage = Math.floor(hourIndex / hoursToShow);
   const currentDayPage = Math.floor((dayIndex + 1) / daysToShow);
 
+  // Emoji animation effect
+  useEffect(() => {
+    let timeout;
+    if (displayedEmojis.length < emojis.length) {
+      timeout = setTimeout(() => {
+        setDisplayedEmojis([
+          ...displayedEmojis,
+          emojis[displayedEmojis.length],
+        ]);
+      }, 300); // Adjust the delay (in milliseconds) between each emoji
+    }
+    return () => clearTimeout(timeout);
+  }, [displayedEmojis]);
+
   return (
     <div>
       <Container className="toHide">
         <Header>Welcome to the Geolocation Weather App</Header>
+        <EmojiContainer>
+          {emojiIndices.map((emojiIndex, index) => (
+            <EmojiWrapper key={index}>
+              <Emoji
+                ref={(el) => (emojiRefs.current[index] = el)}
+                className={changingPosition === index ? "changing" : ""}
+              >
+                {emojis[emojiIndex]}
+              </Emoji>
+            </EmojiWrapper>
+          ))}
+        </EmojiContainer>
         <p>
           Please click the button to get your coordinates, weather and more...
         </p>
