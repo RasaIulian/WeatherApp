@@ -462,6 +462,7 @@ export function Homepage() {
         <p>
           Please click the button to get your coordinates, weather and more...
         </p>
+        <br />
         <p>Location permission must be granted at request.</p>
         <br />
         <Button onClick={getLocation}>Try It</Button>

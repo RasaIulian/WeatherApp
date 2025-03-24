@@ -21,8 +21,8 @@ export const useAltitude = () => {
       const data = await response.json();
       return data.results[0].elevation;
     } catch (error) {
-      console.error("Error fetching altitude data:", error.message);
-      setAltitudeError("Error fetching altitude data: " + error.message);
+      console.error("Error fetching altitude:", error.message);
+      setAltitudeError("Error fetching altitude: " + error.message);
       setLoadingAltitude(false);
     }
   };

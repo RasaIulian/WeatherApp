@@ -3,14 +3,27 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FullscreenControl } from "mapbox-gl";
 import useFetchMapData from "../../hooks/getMapData/useFetchMapData";
-
+import { Select } from "../../Pages/Homepage.style";
+import {
+  MapContainer,
+  MapControlsContainer,
+  ControlRow,
+  ForecastTime,
+  OpacityInput,
+  OpacityValue,
+} from "./Map.style"; // Import the styled components
 mapboxgl.accessToken = process.env.REACT_APP_Map_API_KEY;
 
 export const WeatherMap = ({ latitude, longitude }) => {
+  // ... (rest of your code is the same)
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [cloudsOpacity, setCloudsOpacity] = useState(0.8);
+  const [layerOpacity, setLayerOpacity] = useState(0.8);
+  const [selectedMapType, setSelectedMapType] = useState("none"); // Default to "none"
+  const [mapStyle, setMapStyle] = useState(
+    "mapbox://styles/mapbox/satellite-streets-v12"
+  );
 
   // Use the custom hook
   const { forecastTimes, currentStep } = useFetchMapData(
@@ -18,7 +31,8 @@ export const WeatherMap = ({ latitude, longitude }) => {
     longitude,
     mapRef,
     mapLoaded,
-    cloudsOpacity
+    layerOpacity,
+    selectedMapType
   );
 
   // Clean up function to handle map and interval cleanup
@@ -40,18 +54,18 @@ export const WeatherMap = ({ latitude, longitude }) => {
     // Initialize Mapbox
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/satellite-streets-v12",
+      style: mapStyle, // Use the mapStyle state variable
       center: [longitude, latitude],
       zoom: 10,
       minZoom: 2,
-      maxZoom: 14,
+      maxZoom: 15,
     });
     // Add fullscreen control
     mapRef.current.addControl(new FullscreenControl());
 
     mapRef.current.on("load", () => {
       setMapLoaded(true);
-      // Add the location marker
+      //  location marker
       new mapboxgl.Marker({ color: "#FF0000" })
         .setLngLat([longitude, latitude])
         .addTo(mapRef.current);
@@ -59,7 +73,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
 
     // Return cleanup function
     return cleanUp;
-  }, [latitude, longitude]);
+  }, [latitude, longitude, mapStyle]);
 
   const formatForecastTime = (timestamp) => {
     const date = new Date(timestamp * 1000);
@@ -74,45 +88,80 @@ export const WeatherMap = ({ latitude, longitude }) => {
 
   const handleOpacityChange = (e) => {
     const opacity = parseFloat(e.target.value);
-    setCloudsOpacity(opacity);
+    setLayerOpacity(opacity);
 
-    if (mapRef.current && mapRef.current.getLayer("clouds-layer")) {
+    if (mapRef.current && mapRef.current.getLayer("weather-layer")) {
       mapRef.current.setPaintProperty(
-        "clouds-layer",
+        "weather-layer",
         "raster-opacity",
         opacity
       );
     }
   };
 
+  const handleMapTypeChange = (e) => {
+    const newSelectedMapType = e.target.value;
+    setSelectedMapType(newSelectedMapType);
+
+    // Change map style only if "None" not selected
+    if (newSelectedMapType === "none") {
+      setMapStyle("mapbox://styles/mapbox/satellite-streets-v12"); // Revert to default style
+    } else {
+      setMapStyle("mapbox://styles/mapbox/dark-v11");
+
+      //    Map style   Options:
+      // mapbox://styles/mapbox/streets-v12: A standard street map style.
+      // mapbox://styles/mapbox/light-v11: A light-colored map style.
+      // mapbox://styles/mapbox/dark-v11: A dark-colored map style.
+      // mapbox://styles/mapbox/outdoors-v12: A map style designed for outdoor activities.
+      // mapbox://styles/mapbox/satellite-streets-v12: A map style designed for satellite imagery with streets.
+    }
+  };
+
   return (
     <div>
-      <div
-        ref={mapContainerRef}
-        style={{ width: "100%", height: "330px", borderRadius: "5px" }}
-      />
+      <MapContainer ref={mapContainerRef} />
       {mapLoaded && (
-        <div style={{ marginTop: "10px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <label htmlFor="opacity">Clouds Opacity:</label>
-            <input
+        <MapControlsContainer>
+          <ControlRow>
+            <label htmlFor="mapType">Radar Type:</label>
+            <Select
+              id="mapType"
+              value={selectedMapType}
+              onChange={handleMapTypeChange}
+            >
+              <option value="none">None</option>
+              <option value="clouds">Clouds</option>
+              <option value="precipitation">Precipitation</option>
+              <option value="temperature">Temperature</option>
+              <option value="wind">Wind</option>
+              <option value="pressure">Pressure</option>
+            </Select>
+          </ControlRow>
+          <ControlRow
+            style={{ display: selectedMapType === "none" ? "none" : "flex" }}
+          >
+            <label htmlFor="opacity">Radar Opacity:</label>
+            <OpacityInput
               type="range"
               id="opacity"
-              min="0"
+              min="0.5"
               max="1"
               step="0.1"
-              value={cloudsOpacity}
+              value={layerOpacity}
               onChange={handleOpacityChange}
             />
-            <span>{cloudsOpacity.toFixed(1)}</span>
-          </div>
-          <p>
+            <OpacityValue>{layerOpacity.toFixed(1)}</OpacityValue>
+          </ControlRow>
+          <ForecastTime
+            style={{ display: selectedMapType === "none" ? "none" : "block" }}
+          >
             Forecast Time:{" "}
             {forecastTimes.length > 0 && currentStep < forecastTimes.length
               ? formatForecastTime(forecastTimes[currentStep])
               : "Loading..."}
-          </p>
-        </div>
+          </ForecastTime>
+        </MapControlsContainer>
       )}
     </div>
   );

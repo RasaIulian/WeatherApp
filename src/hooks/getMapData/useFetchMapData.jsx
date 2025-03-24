@@ -5,35 +5,22 @@ const useFetchMapData = (
   longitude,
   mapRef,
   mapLoaded,
-  cloudsOpacity
+  layerOpacity,
+  selectedMapType
 ) => {
   const [forecastTimes, setForecastTimes] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
   const intervalRef = useRef(null);
   const weatherApiKey = process.env.REACT_APP_Weather_API_KEY;
 
-  const interpolateHourlyData = (data) => {
-    const hourlyData = [];
-
-    for (let i = 0; i < data.length - 1; i++) {
-      const current = data[i];
-      const next = data[i + 1];
-
-      for (let h = 0; h < 3; h++) {
-        const interpolatedTimestamp = current.dt + h * 3600;
-        const weight = h / 3;
-
-        const interpolatedClouds =
-          current.clouds.all * (1 - weight) + next.clouds.all * weight;
-
-        hourlyData.push({
-          dt: interpolatedTimestamp,
-          clouds: { all: interpolatedClouds },
-        });
-      }
-    }
-
-    return hourlyData;
+  // Map layer options
+  const mapLayerOptions = {
+    none: null, //  no layer
+    clouds: "clouds_new",
+    precipitation: "precipitation_new",
+    temperature: "temp_new",
+    wind: "wind_new",
+    pressure: "pressure_new",
   };
 
   useEffect(() => {
@@ -46,18 +33,14 @@ const useFetchMapData = (
         );
         const data = await response.json();
 
-        if (!data.list || data.list.length < 2) {
-          console.error("Insufficient data points for interpolation");
+        if (!data.list || data.list.length === 0) {
+          console.error("No forecast data available");
           return;
         }
 
-        const interpolatedData = interpolateHourlyData(data.list);
-
-        const now = Math.floor(Date.now() / 1000);
-        const hoursToShow = now + 8 * 3600;
-
-        const filteredData = interpolatedData.filter(
-          (item) => item.dt <= hoursToShow
+        // Filter forecast data for the next 24 hours
+        const filteredData = data.list.filter(
+          (item) => item.dt <= Math.floor(Date.now() / 1000) + 24 * 3600
         );
 
         if (filteredData.length === 0) {
@@ -71,49 +54,58 @@ const useFetchMapData = (
 
         if (!mapRef.current) return;
 
-        if (mapRef.current.getSource("clouds-layer")) {
-          mapRef.current.removeLayer("clouds-layer");
-          mapRef.current.removeSource("clouds-layer");
+        const layerId = "weather-layer";
+        const sourceId = "weather-source";
+
+        if (mapRef.current.getSource(sourceId)) {
+          mapRef.current.removeLayer(layerId);
+          mapRef.current.removeSource(sourceId);
         }
 
-        mapRef.current.addSource("clouds-layer", {
-          type: "raster",
-          tiles: [
-            `https://tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png?appid=${weatherApiKey}&date=${filteredData[0].dt}`,
-          ],
-          tileSize: 256,
-        });
+        // Get the correct layer name from the options
+        const layerName = mapLayerOptions[selectedMapType];
 
-        mapRef.current.addLayer({
-          id: "clouds-layer",
-          type: "raster",
-          source: "clouds-layer",
-          paint: {
-            "raster-opacity": cloudsOpacity,
-            "raster-opacity-transition": { duration: 1500 },
-          },
-        });
+        if (layerName) {
+          // Only add the layer if a valid layerName is selected
+          mapRef.current.addSource(sourceId, {
+            type: "raster",
+            tiles: [
+              `https://tile.openweathermap.org/map/${layerName}/{z}/{x}/{y}.png?appid=${weatherApiKey}&date=${filteredData[0].dt}`,
+            ],
+            tileSize: 256,
+          });
 
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
+          mapRef.current.addLayer({
+            id: layerId,
+            type: "raster",
+            source: sourceId,
+            paint: {
+              "raster-opacity": layerOpacity,
+              "raster-opacity-transition": { duration: 1500 },
+            },
+          });
 
-        let step = 0;
-        intervalRef.current = setInterval(() => {
-          if (!mapRef.current || !mapRef.current.getSource("clouds-layer")) {
+          if (intervalRef.current) {
             clearInterval(intervalRef.current);
-            return;
           }
 
-          step = (step + 1) % filteredData.length;
-          setCurrentStep(step);
+          let step = 0;
+          intervalRef.current = setInterval(() => {
+            if (!mapRef.current || !mapRef.current.getSource(sourceId)) {
+              clearInterval(intervalRef.current);
+              return;
+            }
 
-          mapRef.current
-            .getSource("clouds-layer")
-            .setTiles([
-              `https://tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png?appid=${weatherApiKey}&date=${filteredData[step].dt}`,
-            ]);
-        }, 2000);
+            step = (step + 1) % filteredData.length;
+            setCurrentStep(step);
+
+            mapRef.current
+              .getSource(sourceId)
+              .setTiles([
+                `https://tile.openweathermap.org/map/${layerName}/{z}/{x}/{y}.png?appid=${weatherApiKey}&date=${filteredData[step].dt}`,
+              ]);
+          }, 2000);
+        }
       } catch (error) {
         console.error("Error fetching map data:", error);
       }
@@ -127,7 +119,7 @@ const useFetchMapData = (
         intervalRef.current = null;
       }
     };
-  }, [latitude, longitude, mapLoaded, mapRef, cloudsOpacity]);
+  }, [latitude, longitude, mapLoaded, mapRef, layerOpacity, selectedMapType]);
 
   return { forecastTimes, currentStep };
 };
