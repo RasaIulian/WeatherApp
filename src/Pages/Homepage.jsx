@@ -530,7 +530,6 @@ export function Homepage() {
             <WeatherMap latitude={latitude} longitude={longitude} />
           </Container>
         )}
-        <br />
         {!errorAQI && !loadingAQI && aqi && (
           <Container>
             <h3>Air Quality: </h3>
@@ -641,11 +640,11 @@ export function Homepage() {
             <Button onClick={toggleShowComponents}>
               {!showComponents ? (
                 <>
-                  show details <FontAwesomeIcon icon={faChevronDown} />
+                  more <FontAwesomeIcon icon={faChevronDown} />
                 </>
               ) : (
                 <>
-                  hide details <FontAwesomeIcon icon={faChevronUp} />
+                  less <FontAwesomeIcon icon={faChevronUp} />
                 </>
               )}
             </Button>
@@ -654,7 +653,6 @@ export function Homepage() {
 
         {!loadingWeather && !loadingLocation && !loadingAQI && weatherData && (
           <>
-            <br />
             {weatherData.current && (
               <Container>
                 <h3>Current Weather:</h3>
@@ -739,59 +737,55 @@ export function Homepage() {
                 />
                 <br />
                 <p>{weatherData.current.weather[0].description}</p>
-                {weatherData.alerts && weatherData.alerts.length > 0 && (
-                  <div>
-                    {weatherData.alerts.map((alert, index) => (
-                      <Alert key={index}>
-                        <h3>
-                          Weather Alert
-                          {weatherData.alerts.length >= 2 && " "}
-                          {weatherData.alerts.length >= 2 && index + 1}:
-                        </h3>
-                        <p>
-                          <strong>Sender:&nbsp;</strong> {alert.sender_name}
-                        </p>
-                        <br />
-                        <p>
-                          <strong>Start:&nbsp;</strong>
-                          {new Date(alert.start * 1000).toLocaleString(
-                            "en-US",
-                            {
-                              weekday: "long",
-                              month: "long",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )}
-                        </p>
-                        <br />
-                        <p>
-                          <strong>End:&nbsp;</strong>
-                          {new Date(alert.end * 1000).toLocaleString("en-US", {
-                            weekday: "long",
-                            month: "long",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                        <br />
-                        <p>
-                          <strong>Event:&nbsp;</strong> {alert.event}
-                        </p>
-                        <br />
-                        <p>
-                          <strong>Description:&nbsp;</strong>
-                          {alert.description}
-                        </p>
-                      </Alert>
-                    ))}
-                  </div>
-                )}
               </Container>
             )}
-            <br />
+            {weatherData.alerts && weatherData.alerts.length > 0 && (
+              <Container>
+                {weatherData.alerts.map((alert, index) => (
+                  <Alert key={index}>
+                    <h3>
+                      Weather Alert
+                      {weatherData.alerts.length >= 2 && " "}
+                      {weatherData.alerts.length >= 2 && index + 1}:
+                    </h3>
+                    <p>
+                      <strong>Sender:&nbsp;</strong> {alert.sender_name}
+                    </p>
+                    <br />
+                    <p>
+                      <strong>Start:&nbsp;</strong>
+                      {new Date(alert.start * 1000).toLocaleString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    <br />
+                    <p>
+                      <strong>End:&nbsp;</strong>
+                      {new Date(alert.end * 1000).toLocaleString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    <br />
+                    <p>
+                      <strong>Event:&nbsp;</strong> {alert.event}
+                    </p>
+                    <br />
+                    <p>
+                      <strong>Description:&nbsp;</strong>
+                      {alert.description}
+                    </p>
+                  </Alert>
+                ))}
+              </Container>
+            )}
 
             {weatherData.hourly && (
               <Container>
@@ -859,7 +853,6 @@ export function Homepage() {
               </Container>
             )}
 
-            <br />
             {weatherData.daily && (
               <Container>
                 <h3>Daily Weather:</h3>
@@ -922,8 +915,6 @@ export function Homepage() {
                 />
               </Container>
             )}
-
-            <br />
           </>
         )}
       </ContainerWrapper>

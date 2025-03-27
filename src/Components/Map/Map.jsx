@@ -122,46 +122,52 @@ export const WeatherMap = ({ latitude, longitude }) => {
     <div>
       <MapContainer ref={mapContainerRef} />
       {mapLoaded && (
-        <MapControlsContainer>
-          <ControlRow>
-            <label htmlFor="mapType">Radar Type:</label>
-            <Select
-              id="mapType"
-              value={selectedMapType}
-              onChange={handleMapTypeChange}
+        <>
+          <MapControlsContainer>
+            <ControlRow
+              style={{
+                marginBottom: selectedMapType === "none" ? "1.1rem" : "",
+              }}
             >
-              <option value="none">None</option>
-              <option value="clouds">Clouds</option>
-              <option value="precipitation">Precipitation</option>
-              <option value="temperature">Temperature</option>
-              <option value="wind">Wind</option>
-              <option value="pressure">Pressure</option>
-            </Select>
-          </ControlRow>
-          <ControlRow
-            style={{ display: selectedMapType === "none" ? "none" : "flex" }}
-          >
-            <label htmlFor="opacity">Radar Opacity:</label>
-            <OpacityInput
-              type="range"
-              id="opacity"
-              min="0.5"
-              max="1"
-              step="0.1"
-              value={layerOpacity}
-              onChange={handleOpacityChange}
-            />
-            <OpacityValue>{layerOpacity.toFixed(1)}</OpacityValue>
-          </ControlRow>
-          <ForecastTime
-            style={{ display: selectedMapType === "none" ? "none" : "block" }}
-          >
-            Forecast Time:{" "}
-            {forecastTimes.length > 0 && currentStep < forecastTimes.length
-              ? formatForecastTime(forecastTimes[currentStep])
-              : "Loading..."}
-          </ForecastTime>
-        </MapControlsContainer>
+              <label htmlFor="mapType">Radar Type:</label>
+              <Select
+                id="mapType"
+                value={selectedMapType}
+                onChange={handleMapTypeChange}
+              >
+                <option value="none">None</option>
+                <option value="clouds">Clouds</option>
+                <option value="precipitation">Precipitation</option>
+                <option value="temperature">Temperature</option>
+                <option value="wind">Wind</option>
+                <option value="pressure">Pressure</option>
+              </Select>
+            </ControlRow>
+            <ControlRow
+              style={{ display: selectedMapType === "none" ? "none" : "flex" }}
+            >
+              <label htmlFor="opacity">Radar Opacity:</label>
+              <OpacityInput
+                type="range"
+                id="opacity"
+                min="0.5"
+                max="1"
+                step="0.1"
+                value={layerOpacity}
+                onChange={handleOpacityChange}
+              />
+              <OpacityValue>{layerOpacity.toFixed(1)}</OpacityValue>
+            </ControlRow>
+            <ForecastTime
+              style={{ display: selectedMapType === "none" ? "none" : "block" }}
+            >
+              Forecast Time:{" "}
+              {forecastTimes.length > 0 && currentStep < forecastTimes.length
+                ? formatForecastTime(forecastTimes[currentStep])
+                : "Loading..."}
+            </ForecastTime>
+          </MapControlsContainer>
+        </>
       )}
     </div>
   );

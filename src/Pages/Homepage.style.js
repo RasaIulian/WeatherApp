@@ -3,7 +3,8 @@ import styled, { keyframes } from "styled-components";
 export const ContainerWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  // 
+  gap: 1rem;
   max-width: 960px;
 `;
 
@@ -19,10 +20,7 @@ export const Container = styled.div`
     display: inline-flex;
     flex-wrap: wrap;
   }
-  h3 {
-    margin-bottom: 0;
-  }
-
+ 
   ul {
     margin-bottom: 0;
     display: flex;
@@ -117,8 +115,7 @@ export const Button = styled.button`
   transition: all 0.3s ease-out;
 
   &:disabled {
-  opacity: 0.7;
-  pointer-events: none;
+  opacity: 0;
 }
   &:hover {
     background-color: #eaeaea;
