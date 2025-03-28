@@ -116,6 +116,8 @@ export const Button = styled.button`
 
   &:disabled {
   opacity: 0;
+  cursor: default;
+  pointer-events: none;
 }
   &:hover {
     background-color: #eaeaea;
