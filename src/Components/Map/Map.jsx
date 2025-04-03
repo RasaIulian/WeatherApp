@@ -11,6 +11,7 @@ import {
   ForecastTime,
   OpacityInput,
   OpacityValue,
+  Label,
 } from "./Map.style"; // Import the styled components
 mapboxgl.accessToken = process.env.REACT_APP_Map_API_KEY;
 
@@ -129,7 +130,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
                 marginBottom: selectedMapType === "none" ? "1.1rem" : "",
               }}
             >
-              <label htmlFor="mapType">Radar Type:</label>
+              <Label htmlFor="mapType">Radar Type:</Label>
               <Select
                 id="mapType"
                 value={selectedMapType}
@@ -146,7 +147,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
             <ControlRow
               style={{ display: selectedMapType === "none" ? "none" : "flex" }}
             >
-              <label htmlFor="opacity">Radar Opacity:</label>
+              <Label htmlFor="opacity">Radar Opacity:</Label>
               <OpacityInput
                 type="range"
                 id="opacity"

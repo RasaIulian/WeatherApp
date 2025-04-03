@@ -1,4 +1,3 @@
-// Map.style.js
 import styled from "styled-components";
 
 export const MapContainer = styled.div`
@@ -13,11 +12,17 @@ export const MapControlsContainer = styled.div`
   flex-direction: column;
   gap: 10px;
 `;
-
+export const Label = styled.label`
+  font-size: 1.1rem;
+`;
 export const ControlRow = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+
+  & @media (max-width: 980px) {
+    margin-bottom: 0;
+  }
 `;
 
 export const OpacityInput = styled.input`

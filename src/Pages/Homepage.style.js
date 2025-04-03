@@ -3,22 +3,23 @@ import styled, { keyframes } from "styled-components";
 export const ContainerWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  // 
-  gap: 1rem;
   max-width: 960px;
 `;
 
 export const Container = styled.div`
+  background-color: #fafafa;
   padding: 5px 10px;
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  width: 48%; //  will create two columns with a small gap
-  margin-bottom: 20px; // vertical space between rows
+  width: 47%; 
+  margin: 20px 20px 0 0 ; 
   overflow: auto;
   p {
     margin: 5px 0;
     display: inline-flex;
     flex-wrap: wrap;
+    font-size: 1.1rem;
+  
   }
  
   ul {
@@ -42,6 +43,7 @@ export const Container = styled.div`
   @media (max-width: 980px) {
     width: 100%;
     margin-bottom: 10px;
+    margin-right: 0;
     padding: 5px;
   }
 `;
@@ -196,17 +198,6 @@ export const Select = styled.select`
   }
 `;
 
-export const Map = styled.img`
-  border-radius: 5px;
-  max-width: 460px;
-  width: 100%;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  margin: 20px 0;
-  @media (max-width: 980px) {
-    margin: 10px 0;
-  }
-`;
-
 export const Square = styled.span`
   display: inline-block;
   width: 14px;
@@ -311,7 +302,7 @@ export const EmojiContainer = styled.div`
   gap: 10px;
 `;
 
- export const Emoji = styled.p`
+ export const Emoji = styled.span`
   font-size: 2rem;
   
   &.changing {
