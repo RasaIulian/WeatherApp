@@ -789,9 +789,7 @@ export function Homepage() {
 
             {weatherData.hourly && (
               <Container>
-                <h3>Hourly Weather:</h3>
-                <p>*pop = probability of precipitation</p>
-                <br />
+                <h3>Hourly:</h3>
                 <p>
                   Timezone {weatherData.timezone}: GMT
                   {weatherData.timezone_offset > 0 && "+"}
@@ -813,10 +811,12 @@ export function Homepage() {
                           <br />
                           <FontAwesomeIcon icon={faThermometerHalf} />{" "}
                           {Math.round(hour.temp)}°C <br />
-                          Feels like: {Math.round(hour.feels_like)}°C <br />
-                          pop: {Math.round(hour.pop * 100)}% <br />
+                          Feels like:
+                          <br /> {Math.round(hour.feels_like)}°C <br />
+                          precipitation: {Math.round(hour.pop * 100)}% <br />
                           Humidity: {hour.humidity}%<br />
-                          Wind: {Math.round(hour.wind_speed * 3.6)} Km/h
+                          Wind:{" "}
+                          <div>{Math.round(hour.wind_speed * 3.6)} Km/h</div>
                           <br />
                           <AnimatedIcon
                             src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
@@ -855,7 +855,7 @@ export function Homepage() {
 
             {weatherData.daily && (
               <Container>
-                <h3>Daily Weather:</h3>
+                <h3>Daily:</h3>
                 <ListWithArrowsWrapper>
                   <ul>
                     {weatherData.daily
@@ -875,11 +875,12 @@ export function Homepage() {
                             <b>
                               {index === 0 && dayIndex === 0 ? "Today" : date}
                             </b>
-                            <br /> {Math.round(day.temp.min)}{" "}
+                            <br />
                             <FontAwesomeIcon icon={faThermometerHalf} />{" "}
+                            {Math.round(day.temp.min)} -{" "}
                             {Math.round(day.temp.max)}°C
                             <br />
-                            Precipitation: {parseInt(day.pop * 100)}%
+                            Precipitation: <div>{parseInt(day.pop * 100)}%</div>
                             <br />
                             <AnimatedIcon
                               src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
