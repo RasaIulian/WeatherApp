@@ -219,23 +219,27 @@ export function Homepage() {
   const [hourIndex, setHourIndex] = useState(0); // For hourly forecast
   const [dayIndex, setDayIndex] = useState(0); // For daily forecast
 
-  const hoursToShow = 4; // Number of hours to display at a time
+  const hoursToShow = 3; // Number of hours to display at a time
   const daysToShow = 3; // Number of days to display at a time
+  const hourlyDataLength = 12;
+  const dailyDataLength = weatherData?.daily?.length || 0;
 
   const scrollHours = (direction) => {
     setHourIndex((prevIndex) => {
       const newIndex = prevIndex + direction * hoursToShow;
-      return Math.max(0, Math.min(newIndex, 20 - hoursToShow));
+      // Calculate the maximum valid starting index
+      const maxIndex =
+        hourlyDataLength > 0 ? Math.max(0, hourlyDataLength - hoursToShow) : 0;
+      // Clamp the new index between 0 and the maxIndex
+      return Math.max(0, Math.min(newIndex, maxIndex));
     });
   };
 
   const scrollDays = (direction) => {
     setDayIndex((prevIndex) => {
       const newIndex = prevIndex + direction * daysToShow;
-      return Math.max(
-        0,
-        Math.min(newIndex, weatherData.daily.length - daysToShow)
-      );
+      const maxIndex = dailyDataLength > 0 ? dailyDataLength - hoursToShow : 0;
+      return Math.max(0, Math.min(newIndex, maxIndex));
     });
   };
 
@@ -424,7 +428,8 @@ export function Homepage() {
   }
 
   // calculations for the scroll dots
-  const totalHourPages = Math.ceil(20 / hoursToShow);
+  const totalHourPages =
+    hourlyDataLength > 0 ? Math.ceil(hourlyDataLength / hoursToShow) : 0;
   const totalDayPages = Math.ceil(weatherData?.daily?.length / daysToShow);
   const currentHourPage = Math.floor(hourIndex / hoursToShow);
   const currentDayPage = Math.floor((dayIndex + 1) / daysToShow);
@@ -665,9 +670,7 @@ export function Homepage() {
                   {Math.round(weatherData.current.temp)}°C
                 </p>{" "}
                 <br />
-                <p>
-                  Feels Like: {Math.round(weatherData.current.feels_like)}°C
-                </p>
+                <p>Feels Like:</p>
                 <br />
                 <p>
                   UV index: {weatherData.current.uvi} -
@@ -790,6 +793,7 @@ export function Homepage() {
             {weatherData.hourly && (
               <Container>
                 <h3>Hourly:</h3>
+                <br />
                 <p>
                   Timezone {weatherData.timezone}: GMT
                   {weatherData.timezone_offset > 0 && "+"}
@@ -809,12 +813,18 @@ export function Homepage() {
                               .substring(11, 16)}
                           </b>
                           <br />
-                          <FontAwesomeIcon icon={faThermometerHalf} />{" "}
-                          {Math.round(hour.temp)}°C <br />
+                          <br />
+                          <div>
+                            <FontAwesomeIcon icon={faThermometerHalf} />{" "}
+                            {Math.round(hour.temp)}°C{" "}
+                          </div>
+                          <br />
                           Feels like:
-                          <br /> {Math.round(hour.feels_like)}°C <br />
-                          precipitation: {Math.round(hour.pop * 100)}% <br />
-                          Humidity: {hour.humidity}%<br />
+                          <div>{Math.round(hour.feels_like)}°C </div> <br />
+                          precipitation:{" "}
+                          <div>{Math.round(hour.pop * 100)}%</div> <br />
+                          Humidity: <div>{hour.humidity}%</div>
+                          <br />
                           Wind:{" "}
                           <div>{Math.round(hour.wind_speed * 3.6)} Km/h</div>
                           <br />
@@ -828,18 +838,24 @@ export function Homepage() {
                       ))}
                   </ul>
                   <ArrowsContainer>
+                    {/* Left Arrow Button */}
                     <Button
-                      onClick={() => scrollHours(-1)}
-                      disabled={hourIndex === 0}
-                      className={hourIndex === 0 ? "disabled" : ""}
+                      onClick={() => scrollHours(-1)} // Corrected: Scroll left
+                      disabled={hourIndex === 0} // Corrected: Disable only at the start
+                      className={hourIndex === 0 ? "disabled" : ""} // Corrected: Disable only at the start
                     >
                       <FontAwesomeIcon icon={faChevronLeft} />
                     </Button>
+
+                    {/* Right Arrow Button */}
                     <Button
                       onClick={() => scrollHours(1)}
-                      disabled={hourIndex + hoursToShow >= 20}
+                      // Corrected: Use hourlyDataLength and check if NEXT step is out of bounds
+                      disabled={hourIndex + hoursToShow >= hourlyDataLength}
                       className={
-                        hourIndex + hoursToShow >= 20 ? "disabled" : ""
+                        hourIndex + hoursToShow >= hourlyDataLength
+                          ? "disabled"
+                          : ""
                       }
                     >
                       <FontAwesomeIcon icon={faChevronRight} />
@@ -875,11 +891,11 @@ export function Homepage() {
                             <b>
                               {index === 0 && dayIndex === 0 ? "Today" : date}
                             </b>
-                            <br />
+                            <br /> <br />
                             <FontAwesomeIcon icon={faThermometerHalf} />{" "}
                             {Math.round(day.temp.min)} -{" "}
                             {Math.round(day.temp.max)}°C
-                            <br />
+                            <br /> <br />
                             Precipitation: <div>{parseInt(day.pop * 100)}%</div>
                             <br />
                             <AnimatedIcon
