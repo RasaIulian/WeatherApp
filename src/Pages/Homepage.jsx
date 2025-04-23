@@ -670,7 +670,9 @@ export function Homepage() {
                   {Math.round(weatherData.current.temp)}°C
                 </p>{" "}
                 <br />
-                <p>Feels Like:</p>
+                <p>
+                  Feels Like: {Math.round(weatherData.current.feels_like)}°C
+                </p>
                 <br />
                 <p>
                   UV index: {weatherData.current.uvi} -
@@ -793,7 +795,6 @@ export function Homepage() {
             {weatherData.hourly && (
               <Container>
                 <h3>Hourly:</h3>
-                <br />
                 <p>
                   Timezone {weatherData.timezone}: GMT
                   {weatherData.timezone_offset > 0 && "+"}
@@ -820,7 +821,7 @@ export function Homepage() {
                           </div>
                           <br />
                           Feels like:
-                          <div>{Math.round(hour.feels_like)}°C </div> <br />
+                          <div>{Math.round(hour.feels_like)}°C</div> <br />
                           precipitation:{" "}
                           <div>{Math.round(hour.pop * 100)}%</div> <br />
                           Humidity: <div>{hour.humidity}%</div>
