@@ -22,7 +22,6 @@ import {
   Button,
   ArrowsContainer,
   ListWithArrowsWrapper,
-  // Map,
   Square,
   Select,
   Alert,
@@ -59,6 +58,11 @@ export function Homepage() {
   const locationElement = document.getElementById("location");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
+  const [locationInfo, setLocationInfo] = useState({
+    latitude: null,
+    longitude: null,
+    altitude: null,
+  });
   const [weatherData, setWeatherData] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectVisible, setSelectVisible] = useState(false);
@@ -179,14 +183,12 @@ export function Homepage() {
 
     if (selectedLatitude === "current" && selectedLongitude === "current") {
       // Get current location using getLocation function
-      locationElement.innerHTML = "";
 
       getLocation();
 
       setCurrentLocationData(null);
       setShowComponents(false);
     } else {
-      locationElement.innerHTML = "";
       showPosition(parseFloat(selectedLatitude), parseFloat(selectedLongitude));
       setShowComponents(false);
 
@@ -327,7 +329,6 @@ export function Homepage() {
   const showPosition = async (latitude, longitude) => {
     setLatitude(latitude);
     setLongitude(longitude);
-    // const mapApiToken = process.env.REACT_APP_Map_API_KEY; // Mapbox API token
 
     // let longlat = `${longitude},${latitude}`;
     // let geojson = {
@@ -348,24 +349,23 @@ export function Homepage() {
     // let encodedGeojson = encodeURIComponent(JSON.stringify(geojson));
     // let img_url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/geojson(${encodedGeojson})/${longlat},13,0,45/460x250@2x?access_token=${mapApiToken}&logo=false`;
 
-    // const mapElement = document.getElementById("mapholder");
-    const locationElement = document.getElementById("location");
-
-    if (locationElement && !loadingLocation) {
-      locationElement.innerHTML += `Latitude: ${latitude.toFixed(1)}°<br>
-      Longitude: ${longitude.toFixed(1)}°<br>`;
-      // mapElement.src = img_url;
-    }
+    // Update location info state
+    setLocationInfo((prev) => ({
+      ...prev,
+      latitude: latitude.toFixed(1),
+      longitude: longitude.toFixed(1),
+    }));
 
     try {
       const altitudeValue = await fetchAltitude(latitude, longitude);
-      if (locationElement && !loadingAltitude) {
-        locationElement.innerHTML += `Altitude: ${
-          altitudeValue !== undefined ? altitudeValue + "m" : "N/A"
-        }`;
+      if (!loadingAltitude) {
+        setLocationInfo((prev) => ({
+          ...prev,
+          altitude: altitudeValue !== undefined ? altitudeValue + "m" : "N/A",
+        }));
       }
     } catch (error) {
-      console.error("Error fetching altitude or setting map image:", error); // Log the error for debugging
+      console.error("Error fetching altitude:", error);
     }
   };
 
@@ -504,10 +504,14 @@ export function Homepage() {
           </Select>
         </SearchContainer>
       )}
-      {selectVisible && (
+      {!loadingLocation && selectVisible && (
         <ContainerWrapper>
           <Container>
-            <p id="location"></p>
+            <p id="location">
+              Latitude: {locationInfo.latitude}°<br />
+              Longitude: {locationInfo.longitude}°<br />
+              {locationInfo.altitude && `Altitude: ${locationInfo.altitude}`}
+            </p>
             <br />
             {/* Toggle between Add and Remove button */}
             {currentLocationData && (
@@ -530,12 +534,10 @@ export function Homepage() {
       <ContainerWrapper>
         {!loadingLocation && selectVisible && (
           <Container>
-            {/* <Map id="mapholder"></Map> */}
-
             <WeatherMap latitude={latitude} longitude={longitude} />
           </Container>
         )}
-        {!errorAQI && !loadingAQI && aqi && (
+        {!loadingLocation && !errorAQI && !loadingAQI && aqi && (
           <Container>
             <h3>Air Quality: </h3>
             <p>{getAQICategory(aqi)}</p>
@@ -822,7 +824,7 @@ export function Homepage() {
                           <br />
                           Feels like:
                           <div>{Math.round(hour.feels_like)}°C</div> <br />
-                          precipitation:{" "}
+                          Precipitation:{" "}
                           <div>{Math.round(hour.pop * 100)}%</div> <br />
                           Humidity: <div>{hour.humidity}%</div>
                           <br />
