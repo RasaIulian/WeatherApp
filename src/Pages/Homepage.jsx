@@ -245,15 +245,24 @@ export function Homepage() {
     });
   };
 
-  const selectFoundLocation = (location) => {
+  const selectFoundLocation = async (location) => {
     const { lat, lon, name, country, state } = location;
     setLatitude(lat);
     setLongitude(lon);
     setSelectedLocation(`${name}, ${state || ""} ${country}`);
+
+    // Fetch the altitude first to ensure the display is updated immediately.
+    const altitudeValue = await fetchAltitude(lat, lon);
+    const altitudeString =
+      altitudeValue !== undefined ? `${altitudeValue}m` : "N/A";
+
     if (locationElement && name && country) {
       locationElement.innerHTML = `Location: ${name}, ${
         state || ""
-      } ${country}<br>`;
+      } ${country}<br>
+      Latitude: ${lat.toFixed(1)}°<br>
+      Longitude: ${lon.toFixed(1)}°<br>
+      Altitude: ${altitudeString}`;
     }
 
     showPosition(lat, lon);
@@ -282,6 +291,7 @@ export function Homepage() {
       const options = {
         enableHighAccuracy: true,
         timeout: 5000,
+        // timeout: 1, // Temporarily set to 1ms to force a timeout for testing
         maximumAge: 0,
       };
 
@@ -504,7 +514,7 @@ export function Homepage() {
           </Select>
         </SearchContainer>
       )}
-      {!loadingLocation && selectVisible && (
+      {!loadingLocation && selectVisible && !geoLocationError && (
         <ContainerWrapper>
           <Container>
             <p id="location">
@@ -531,413 +541,433 @@ export function Homepage() {
       {geoLocationError && <ErrorMessage>{geoLocationError}</ErrorMessage>}
       {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
       {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
-      <ContainerWrapper>
-        {!loadingLocation && selectVisible && (
-          <Container>
-            <WeatherMap latitude={latitude} longitude={longitude} />
-          </Container>
-        )}
-        {!loadingLocation && !errorAQI && !loadingAQI && aqi && (
-          <Container>
-            <h3>Air Quality: </h3>
-            <p>{getAQICategory(aqi)}</p>
-            <FontAwesomeIcon
-              icon={faWind}
-              style={{ color: getAQIColor(aqi), marginLeft: "5px" }}
-            />
+      {!geoLocationError && (
+        <ContainerWrapper>
+          {!loadingLocation && selectVisible && !geoLocationError && (
+            <Container>
+              <WeatherMap latitude={latitude} longitude={longitude} />
+            </Container>
+          )}
+          {!loadingLocation && !errorAQI && !loadingAQI && aqi && (
+            <Container>
+              <h3>Air Quality: </h3>
+              <p>{getAQICategory(aqi)}</p>
+              <FontAwesomeIcon
+                icon={faWind}
+                style={{ color: getAQIColor(aqi), marginLeft: "5px" }}
+              />
 
-            <br />
-            {showComponents && (
-              <div>
-                <p>Air quality index: {aqi} (1-5)</p>
-                <br />
-                <p>
-                  PM2.5 - Fine particles matter: {components.pm2_5} μg/m3
-                  -&nbsp;
-                  <span
-                    style={{
-                      color: getComponentColor("pm2_5", components.pm2_5),
-                    }}
-                  >
-                    ({categorizeComponent("pm2_5", components.pm2_5)})
-                  </span>{" "}
-                </p>
-                <br />
-                <p>
-                  PM10 - Coarse particulate matter: {components.pm10} μg/m3
-                  -&nbsp;
-                  <span
-                    style={{
-                      color: getComponentColor("pm10", components.pm10),
-                    }}
-                  >
-                    ({categorizeComponent("pm10", components.pm10)})
-                  </span>{" "}
-                </p>
-                <br />
+              <br />
+              {showComponents && (
+                <div>
+                  <p>Air quality index: {aqi} (1-5)</p>
+                  <br />
+                  <p>
+                    PM2.5 - Fine particles matter: {components.pm2_5} μg/m3
+                    -&nbsp;
+                    <span
+                      style={{
+                        color: getComponentColor("pm2_5", components.pm2_5),
+                      }}
+                    >
+                      ({categorizeComponent("pm2_5", components.pm2_5)})
+                    </span>{" "}
+                  </p>
+                  <br />
+                  <p>
+                    PM10 - Coarse particulate matter: {components.pm10} μg/m3
+                    -&nbsp;
+                    <span
+                      style={{
+                        color: getComponentColor("pm10", components.pm10),
+                      }}
+                    >
+                      ({categorizeComponent("pm10", components.pm10)})
+                    </span>{" "}
+                  </p>
+                  <br />
 
-                <p>
-                  O₃ - Ozone: {components.o3} μg/m3 -&nbsp;
-                  <span
-                    style={{
-                      color: getComponentColor("o3", components.o3),
-                    }}
-                  >
-                    ({categorizeComponent("o3", components.o3)})
-                  </span>{" "}
-                </p>
-                <br />
-                <p>
-                  SO₂ - Sulphur dioxide: {components.so2} μg/m3 -&nbsp;
-                  <span
-                    style={{
-                      color: getComponentColor("so2", components.so2),
-                    }}
-                  >
-                    ({categorizeComponent("so2", components.so2)})
-                  </span>{" "}
-                </p>
-                <br />
-                <p>
-                  NO₂ - Nitrogen dioxide: {components.no2} μg/m3 -&nbsp;
-                  <span
-                    style={{
-                      color: getComponentColor("no2", components.no2),
-                    }}
-                  >
-                    ({categorizeComponent("no2", components.no2)})
-                  </span>{" "}
-                </p>
-                <br />
+                  <p>
+                    O₃ - Ozone: {components.o3} μg/m3 -&nbsp;
+                    <span
+                      style={{
+                        color: getComponentColor("o3", components.o3),
+                      }}
+                    >
+                      ({categorizeComponent("o3", components.o3)})
+                    </span>{" "}
+                  </p>
+                  <br />
+                  <p>
+                    SO₂ - Sulphur dioxide: {components.so2} μg/m3 -&nbsp;
+                    <span
+                      style={{
+                        color: getComponentColor("so2", components.so2),
+                      }}
+                    >
+                      ({categorizeComponent("so2", components.so2)})
+                    </span>{" "}
+                  </p>
+                  <br />
+                  <p>
+                    NO₂ - Nitrogen dioxide: {components.no2} μg/m3 -&nbsp;
+                    <span
+                      style={{
+                        color: getComponentColor("no2", components.no2),
+                      }}
+                    >
+                      ({categorizeComponent("no2", components.no2)})
+                    </span>{" "}
+                  </p>
+                  <br />
 
-                <p>
-                  CO - Carbon monoxide: {components.co} μg/m3 -&nbsp;
-                  <span
-                    style={{
-                      color: getComponentColor("co", components.co),
-                    }}
-                  >
-                    ({categorizeComponent("co", components.co)})
-                  </span>{" "}
-                </p>
-                <br />
-                <p>
-                  NO - Nitrogen monoxide: {components.no} μg/m3 -&nbsp;
-                  <span
-                    style={{
-                      color: getComponentColor("no", components.no),
-                    }}
-                  >
-                    ({categorizeComponent("no", components.no)})
-                  </span>{" "}
-                </p>
-                <br />
-                <p>
-                  NH3 - Ammonia: {components.nh3} μg/m3 -&nbsp;
-                  <span
-                    style={{
-                      color: getComponentColor("nh3", components.nh3),
-                    }}
-                  >
-                    ({categorizeComponent("nh3", components.nh3)})
-                  </span>{" "}
-                </p>
-              </div>
-            )}
-            <Button onClick={toggleShowComponents}>
-              {!showComponents ? (
-                <>
-                  more <FontAwesomeIcon icon={faChevronDown} />
-                </>
-              ) : (
-                <>
-                  less <FontAwesomeIcon icon={faChevronUp} />
-                </>
+                  <p>
+                    CO - Carbon monoxide: {components.co} μg/m3 -&nbsp;
+                    <span
+                      style={{
+                        color: getComponentColor("co", components.co),
+                      }}
+                    >
+                      ({categorizeComponent("co", components.co)})
+                    </span>{" "}
+                  </p>
+                  <br />
+                  <p>
+                    NO - Nitrogen monoxide: {components.no} μg/m3 -&nbsp;
+                    <span
+                      style={{
+                        color: getComponentColor("no", components.no),
+                      }}
+                    >
+                      ({categorizeComponent("no", components.no)})
+                    </span>{" "}
+                  </p>
+                  <br />
+                  <p>
+                    NH3 - Ammonia: {components.nh3} μg/m3 -&nbsp;
+                    <span
+                      style={{
+                        color: getComponentColor("nh3", components.nh3),
+                      }}
+                    >
+                      ({categorizeComponent("nh3", components.nh3)})
+                    </span>{" "}
+                  </p>
+                </div>
               )}
-            </Button>
-          </Container>
-        )}
+              <Button onClick={toggleShowComponents}>
+                {!showComponents ? (
+                  <>
+                    more <FontAwesomeIcon icon={faChevronDown} />
+                  </>
+                ) : (
+                  <>
+                    less <FontAwesomeIcon icon={faChevronUp} />
+                  </>
+                )}
+              </Button>
+            </Container>
+          )}
 
-        {!loadingWeather && !loadingLocation && !loadingAQI && weatherData && (
-          <>
-            {weatherData.current && (
-              <Container>
-                <h3>Current Weather:</h3>
-                <p>
-                  {" "}
-                  <span role="img" aria-label="temperature">
-                    <FontAwesomeIcon icon={faThermometerHalf} />
-                    &nbsp;
-                  </span>
-                  {Math.round(weatherData.current.temp)}°C
-                </p>{" "}
-                <br />
-                <p>
-                  Feels Like: {Math.round(weatherData.current.feels_like)}°C
-                </p>
-                <br />
-                <p>
-                  UV index: {weatherData.current.uvi} -
-                  <Square
-                    style={{
-                      backgroundColor:
-                        getUVIndexCategory(weatherData.current.uvi) === "Low"
-                          ? "#4eb400" // green
-                          : getUVIndexCategory(weatherData.current.uvi) ===
-                            "Moderate"
-                          ? "#f7e400" // yellow
-                          : getUVIndexCategory(weatherData.current.uvi) ===
-                            "High"
-                          ? "#f88700" // orange
-                          : getUVIndexCategory(weatherData.current.uvi) ===
-                            "Very High"
-                          ? "#d8001d" // red
-                          : getUVIndexCategory(weatherData.current.uvi) ===
-                            "Extreme"
-                          ? "#b54cff" // purple
-                          : "#f0f0f0", // unknown
-                    }}
-                  ></Square>
-                  <span> {getUVIndexCategory(weatherData.current.uvi)}</span>
-                </p>
-                <br />
-                <p>
-                  Wind: {Math.round(weatherData.current.wind_speed * 3.6)} Km/h{" "}
-                  from {degreesToDirection(weatherData.current.wind_deg)}{" "}
-                  <WindArrow
-                    $deg={weatherData.current.wind_deg}
-                    $windspeed={weatherData.current.wind_speed * 3.6}
-                  />
-                </p>
-                <br />
-                <p>Humidity: {weatherData.current.humidity}%</p>
-                <br />
-                <p>
-                  Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
-                  {getPressureCategory(weatherData.current.pressure)}
-                </p>
-                <br />
-                <p>
-                  Sunrise:{" "}
-                  {new Date(
-                    (weatherData.current.sunrise +
-                      weatherData.timezone_offset) *
-                      1000
-                  )
-                    .toISOString()
-                    .substring(11, 16)}
-                </p>
-                <br />
-                <p>
-                  Sunset:{" "}
-                  {new Date(
-                    (weatherData.current.sunset + weatherData.timezone_offset) *
-                      1000
-                  )
-                    .toISOString()
-                    .substring(11, 16)}
-                </p>
-                <br />
-                <AnimatedIcon
-                  src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
-                  alt="Weather Icon"
-                />
-                <br />
-                <p>{weatherData.current.weather[0].description}</p>
-              </Container>
-            )}
-            {weatherData.alerts && weatherData.alerts.length > 0 && (
-              <Container>
-                {weatherData.alerts.map((alert, index) => (
-                  <Alert key={index}>
-                    <h3>
-                      Weather Alert
-                      {weatherData.alerts.length >= 2 && " "}
-                      {weatherData.alerts.length >= 2 && index + 1}:
-                    </h3>
+          {!loadingWeather &&
+            !loadingLocation &&
+            !loadingAQI &&
+            weatherData && (
+              <>
+                {weatherData.current && (
+                  <Container>
+                    <h3>Current Weather:</h3>
                     <p>
-                      <strong>Sender:&nbsp;</strong> {alert.sender_name}
+                      {" "}
+                      <span role="img" aria-label="temperature">
+                        <FontAwesomeIcon icon={faThermometerHalf} />
+                        &nbsp;
+                      </span>
+                      {Math.round(weatherData.current.temp)}°C
+                    </p>{" "}
+                    <br />
+                    <p>
+                      Feels Like: {Math.round(weatherData.current.feels_like)}°C
                     </p>
                     <br />
                     <p>
-                      <strong>Start:&nbsp;</strong>
-                      {new Date(alert.start * 1000).toLocaleString("en-US", {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      UV index: {weatherData.current.uvi} -
+                      <Square
+                        style={{
+                          backgroundColor:
+                            getUVIndexCategory(weatherData.current.uvi) ===
+                            "Low"
+                              ? "#4eb400" // green
+                              : getUVIndexCategory(weatherData.current.uvi) ===
+                                "Moderate"
+                              ? "#f7e400" // yellow
+                              : getUVIndexCategory(weatherData.current.uvi) ===
+                                "High"
+                              ? "#f88700" // orange
+                              : getUVIndexCategory(weatherData.current.uvi) ===
+                                "Very High"
+                              ? "#d8001d" // red
+                              : getUVIndexCategory(weatherData.current.uvi) ===
+                                "Extreme"
+                              ? "#b54cff" // purple
+                              : "#f0f0f0", // unknown
+                        }}
+                      ></Square>
+                      <span>
+                        {" "}
+                        {getUVIndexCategory(weatherData.current.uvi)}
+                      </span>
                     </p>
                     <br />
                     <p>
-                      <strong>End:&nbsp;</strong>
-                      {new Date(alert.end * 1000).toLocaleString("en-US", {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      Wind: {Math.round(weatherData.current.wind_speed * 3.6)}{" "}
+                      Km/h from{" "}
+                      {degreesToDirection(weatherData.current.wind_deg)}{" "}
+                      <WindArrow
+                        $deg={weatherData.current.wind_deg}
+                        $windspeed={weatherData.current.wind_speed * 3.6}
+                      />
+                    </p>
+                    <br />
+                    <p>Humidity: {weatherData.current.humidity}%</p>
+                    <br />
+                    <p>
+                      Atm. Pressure: {weatherData.current.pressure} mbar -{" "}
+                      {getPressureCategory(weatherData.current.pressure)}
                     </p>
                     <br />
                     <p>
-                      <strong>Event:&nbsp;</strong> {alert.event}
+                      Sunrise:{" "}
+                      {new Date(
+                        (weatherData.current.sunrise +
+                          weatherData.timezone_offset) *
+                          1000
+                      )
+                        .toISOString()
+                        .substring(11, 16)}
                     </p>
                     <br />
                     <p>
-                      <strong>Description:&nbsp;</strong>
-                      {alert.description}
+                      Sunset:{" "}
+                      {new Date(
+                        (weatherData.current.sunset +
+                          weatherData.timezone_offset) *
+                          1000
+                      )
+                        .toISOString()
+                        .substring(11, 16)}
                     </p>
-                  </Alert>
-                ))}
-              </Container>
-            )}
-
-            {weatherData.hourly && (
-              <Container>
-                <h3>Hourly:</h3>
-                <p>
-                  Timezone {weatherData.timezone}: GMT
-                  {weatherData.timezone_offset > 0 && "+"}
-                  {weatherData.timezone_offset / 3600}
-                </p>
-                <ListWithArrowsWrapper>
-                  <ul>
-                    {weatherData.hourly
-                      .slice(hourIndex, hourIndex + hoursToShow) // Display based on hourIndex
-                      .map((hour, index) => (
-                        <li key={index}>
-                          <b>
-                            {new Date(
-                              (hour.dt + weatherData.timezone_offset) * 1000
-                            )
-                              .toISOString()
-                              .substring(11, 16)}
-                          </b>
-                          <br />
-                          <br />
-                          <div>
-                            <FontAwesomeIcon icon={faThermometerHalf} />{" "}
-                            {Math.round(hour.temp)}°C{" "}
-                          </div>
-                          <br />
-                          Feels like:
-                          <div>{Math.round(hour.feels_like)}°C</div> <br />
-                          Precipitation:{" "}
-                          <div>{Math.round(hour.pop * 100)}%</div> <br />
-                          Humidity: <div>{hour.humidity}%</div>
-                          <br />
-                          Wind:{" "}
-                          <div>{Math.round(hour.wind_speed * 3.6)} Km/h</div>
-                          <br />
-                          <AnimatedIcon
-                            src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
-                            alt="Hourly Weather Icon"
-                          />
-                          <br />
-                          {hour.weather[0].description}
-                        </li>
-                      ))}
-                  </ul>
-                  <ArrowsContainer>
-                    {/* Left Arrow Button */}
-                    <Button
-                      onClick={() => scrollHours(-1)} // Corrected: Scroll left
-                      disabled={hourIndex === 0} // Corrected: Disable only at the start
-                      className={hourIndex === 0 ? "disabled" : ""} // Corrected: Disable only at the start
-                    >
-                      <FontAwesomeIcon icon={faChevronLeft} />
-                    </Button>
-
-                    {/* Right Arrow Button */}
-                    <Button
-                      onClick={() => scrollHours(1)}
-                      // Corrected: Use hourlyDataLength and check if NEXT step is out of bounds
-                      disabled={hourIndex + hoursToShow >= hourlyDataLength}
-                      className={
-                        hourIndex + hoursToShow >= hourlyDataLength
-                          ? "disabled"
-                          : ""
-                      }
-                    >
-                      <FontAwesomeIcon icon={faChevronRight} />
-                    </Button>
-                  </ArrowsContainer>
-                </ListWithArrowsWrapper>
-                <ScrollDots
-                  totalPages={totalHourPages}
-                  currentPage={currentHourPage}
-                />
-              </Container>
-            )}
-
-            {weatherData.daily && (
-              <Container>
-                <h3>Daily:</h3>
-                <ListWithArrowsWrapper>
-                  <ul>
-                    {weatherData.daily
-                      .slice(dayIndex, dayIndex + daysToShow) // Display based on dayIndex
-                      .map((day, index) => {
-                        const date = new Date(day.dt * 1000).toLocaleDateString(
-                          "en-US",
-                          {
-                            weekday: "short",
-                            month: "short",
+                    <br />
+                    <AnimatedIcon
+                      src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
+                      alt="Weather Icon"
+                    />
+                    <br />
+                    <p>{weatherData.current.weather[0].description}</p>
+                  </Container>
+                )}
+                {weatherData.alerts && weatherData.alerts.length > 0 && (
+                  <Container>
+                    {weatherData.alerts.map((alert, index) => (
+                      <Alert key={index}>
+                        <h3>
+                          Weather Alert
+                          {weatherData.alerts.length >= 2 && " "}
+                          {weatherData.alerts.length >= 2 && index + 1}:
+                        </h3>
+                        <p>
+                          <strong>Sender:&nbsp;</strong> {alert.sender_name}
+                        </p>
+                        <br />
+                        <p>
+                          <strong>Start:&nbsp;</strong>
+                          {new Date(alert.start * 1000).toLocaleString(
+                            "en-US",
+                            {
+                              weekday: "long",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
+                        </p>
+                        <br />
+                        <p>
+                          <strong>End:&nbsp;</strong>
+                          {new Date(alert.end * 1000).toLocaleString("en-US", {
+                            weekday: "long",
+                            month: "long",
                             day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                        <br />
+                        <p>
+                          <strong>Event:&nbsp;</strong> {alert.event}
+                        </p>
+                        <br />
+                        <p>
+                          <strong>Description:&nbsp;</strong>
+                          {alert.description}
+                        </p>
+                      </Alert>
+                    ))}
+                  </Container>
+                )}
+
+                {weatherData.hourly && (
+                  <Container>
+                    <h3>Hourly:</h3>
+                    <p>
+                      Timezone {weatherData.timezone}: GMT
+                      {weatherData.timezone_offset > 0 && "+"}
+                      {weatherData.timezone_offset / 3600}
+                    </p>
+                    <ListWithArrowsWrapper>
+                      <ul>
+                        {weatherData.hourly
+                          .slice(hourIndex, hourIndex + hoursToShow) // Display based on hourIndex
+                          .map((hour, index) => (
+                            <li key={index}>
+                              <b>
+                                {new Date(
+                                  (hour.dt + weatherData.timezone_offset) * 1000
+                                )
+                                  .toISOString()
+                                  .substring(11, 16)}
+                              </b>
+                              <br />
+                              <br />
+                              <div>
+                                <FontAwesomeIcon icon={faThermometerHalf} />{" "}
+                                {Math.round(hour.temp)}°C{" "}
+                              </div>
+                              <br />
+                              Feels like:
+                              <div>{Math.round(hour.feels_like)}°C</div> <br />
+                              Precipitation:{" "}
+                              <div>{Math.round(hour.pop * 100)}%</div> <br />
+                              Humidity: <div>{hour.humidity}%</div>
+                              <br />
+                              Wind:{" "}
+                              <div>
+                                {Math.round(hour.wind_speed * 3.6)} Km/h
+                              </div>
+                              <br />
+                              <AnimatedIcon
+                                src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
+                                alt="Hourly Weather Icon"
+                              />
+                              <br />
+                              {hour.weather[0].description}
+                            </li>
+                          ))}
+                      </ul>
+                      <ArrowsContainer>
+                        {/* Left Arrow Button */}
+                        <Button
+                          onClick={() => scrollHours(-1)} // Corrected: Scroll left
+                          disabled={hourIndex === 0} // Corrected: Disable only at the start
+                          className={hourIndex === 0 ? "disabled" : ""} // Corrected: Disable only at the start
+                        >
+                          <FontAwesomeIcon icon={faChevronLeft} />
+                        </Button>
+
+                        {/* Right Arrow Button */}
+                        <Button
+                          onClick={() => scrollHours(1)}
+                          // Corrected: Use hourlyDataLength and check if NEXT step is out of bounds
+                          disabled={hourIndex + hoursToShow >= hourlyDataLength}
+                          className={
+                            hourIndex + hoursToShow >= hourlyDataLength
+                              ? "disabled"
+                              : ""
                           }
-                        );
+                        >
+                          <FontAwesomeIcon icon={faChevronRight} />
+                        </Button>
+                      </ArrowsContainer>
+                    </ListWithArrowsWrapper>
+                    <ScrollDots
+                      totalPages={totalHourPages}
+                      currentPage={currentHourPage}
+                    />
+                  </Container>
+                )}
 
-                        return (
-                          <li key={index}>
-                            <b>
-                              {index === 0 && dayIndex === 0 ? "Today" : date}
-                            </b>
-                            <br /> <br />
-                            <FontAwesomeIcon icon={faThermometerHalf} />{" "}
-                            {Math.round(day.temp.min)} -{" "}
-                            {Math.round(day.temp.max)}°C
-                            <br /> <br />
-                            Precipitation: <div>{parseInt(day.pop * 100)}%</div>
-                            <br />
-                            <AnimatedIcon
-                              src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                              alt="Weather Icon"
-                            />
-                            <br />
-                            {day.summary}
-                          </li>
-                        );
-                      })}
-                  </ul>
-                  <ArrowsContainer>
-                    <Button
-                      onClick={() => scrollDays(-1)}
-                      disabled={dayIndex === 0}
-                    >
-                      <FontAwesomeIcon icon={faChevronLeft} />
-                    </Button>{" "}
-                    <Button
-                      onClick={() => scrollDays(1)}
-                      disabled={
-                        dayIndex + daysToShow >= weatherData.daily.length
-                      }
-                    >
-                      <FontAwesomeIcon icon={faChevronRight} />
-                    </Button>
-                  </ArrowsContainer>
-                </ListWithArrowsWrapper>
+                {weatherData.daily && (
+                  <Container>
+                    <h3>Daily:</h3>
+                    <ListWithArrowsWrapper>
+                      <ul>
+                        {weatherData.daily
+                          .slice(dayIndex, dayIndex + daysToShow) // Display based on dayIndex
+                          .map((day, index) => {
+                            const date = new Date(
+                              day.dt * 1000
+                            ).toLocaleDateString("en-US", {
+                              weekday: "short",
+                              month: "short",
+                              day: "numeric",
+                            });
 
-                <ScrollDots
-                  totalPages={totalDayPages}
-                  currentPage={currentDayPage}
-                />
-              </Container>
+                            return (
+                              <li key={index}>
+                                <b>
+                                  {index === 0 && dayIndex === 0
+                                    ? "Today"
+                                    : date}
+                                </b>
+                                <br /> <br />
+                                <FontAwesomeIcon
+                                  icon={faThermometerHalf}
+                                />{" "}
+                                {Math.round(day.temp.min)} -{" "}
+                                {Math.round(day.temp.max)}°C
+                                <br /> <br />
+                                Precipitation:{" "}
+                                <div>{parseInt(day.pop * 100)}%</div>
+                                <br />
+                                <AnimatedIcon
+                                  src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                                  alt="Weather Icon"
+                                />
+                                <br />
+                                {day.summary}
+                              </li>
+                            );
+                          })}
+                      </ul>
+                      <ArrowsContainer>
+                        <Button
+                          onClick={() => scrollDays(-1)}
+                          disabled={dayIndex === 0}
+                        >
+                          <FontAwesomeIcon icon={faChevronLeft} />
+                        </Button>{" "}
+                        <Button
+                          onClick={() => scrollDays(1)}
+                          disabled={
+                            dayIndex + daysToShow >= weatherData.daily.length
+                          }
+                        >
+                          <FontAwesomeIcon icon={faChevronRight} />
+                        </Button>
+                      </ArrowsContainer>
+                    </ListWithArrowsWrapper>
+
+                    <ScrollDots
+                      totalPages={totalDayPages}
+                      currentPage={currentDayPage}
+                    />
+                  </Container>
+                )}
+              </>
             )}
-          </>
-        )}
-      </ContainerWrapper>
+        </ContainerWrapper>
+      )}
     </div>
   );
 }
