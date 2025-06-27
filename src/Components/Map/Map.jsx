@@ -20,11 +20,12 @@ export const WeatherMap = ({ latitude, longitude }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [layerOpacity, setLayerOpacity] = useState(0.8);
+  const [layerOpacity, setLayerOpacity] = useState(0.9);
   const [selectedMapType, setSelectedMapType] = useState("none"); // Default to "none"
   const [mapStyle, setMapStyle] = useState(
     "mapbox://styles/mapbox/satellite-streets-v12"
   );
+  const [mapZoom, setMapZoom] = useState(10);
 
   // Use the custom hook
   const { forecastTimes, currentStep } = useFetchMapData(
@@ -57,9 +58,9 @@ export const WeatherMap = ({ latitude, longitude }) => {
       container: mapContainerRef.current,
       style: mapStyle, // Use the mapStyle state variable
       center: [longitude, latitude],
-      zoom: 10,
-      minZoom: 2,
-      maxZoom: 15,
+      zoom: mapZoom,
+      minZoom: 1,
+      maxZoom: 20,
     });
     // Add fullscreen control
     mapRef.current.addControl(new FullscreenControl());
@@ -109,6 +110,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
       setMapStyle("mapbox://styles/mapbox/satellite-streets-v12"); // Revert to default style
     } else {
       setMapStyle("mapbox://styles/mapbox/dark-v11");
+      setMapZoom(6);
 
       //    Map style   Options:
       // mapbox://styles/mapbox/streets-v12: A standard street map style.
