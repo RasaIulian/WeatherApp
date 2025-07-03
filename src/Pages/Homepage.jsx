@@ -312,7 +312,9 @@ export function Homepage() {
       }
       setSelectVisible(true);
     } else {
-      setGeoLocationError("Geolocation is not supported by this browser.");
+      setGeoLocationError(
+        "Sorry, geolocation is not supported by this browser."
+      );
       setLoadingLocation(false);
     }
   };
@@ -321,17 +323,21 @@ export function Homepage() {
     switch (error.code) {
       case error.PERMISSION_DENIED:
         setGeoLocationError(
-          "User denied the request for Geolocation. Please enable location access in your browser settings."
+          "You denied the request for Geolocation. Please enable location access in your browser settings."
         );
         break;
       case error.POSITION_UNAVAILABLE:
-        setGeoLocationError("Location information is unavailable.");
+        setGeoLocationError(
+          "Location information is unavailable. Please try again."
+        );
         break;
       case error.TIMEOUT:
-        setGeoLocationError("The request to get user location timed out.");
+        setGeoLocationError(
+          "The request to get your location timed out. Please try again."
+        );
         break;
       default:
-        setGeoLocationError("An unknown error occurred.");
+        setGeoLocationError("Sorry, an unknown error occurred.");
         break;
     }
   };
