@@ -281,6 +281,41 @@ export function Homepage() {
   //   console.log(`Loading location data: ${loadingLocation}`);
   // }, [loadingLocation]);
 
+  const getLocationByIp = async () => {
+    setGeoLocationError(""); // Clear previous errors
+    try {
+      // Using a free IP geolocation API as a fallback
+      const response = await fetch("https://ipapi.co/json/");
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.reason);
+      }
+
+      const { latitude, longitude, city, region, country_name } = data;
+      showPosition(latitude, longitude);
+
+      // Also update the location name if possible
+      const locationName = `${city}, ${region} ${country_name}`;
+      setSelectedLocation(locationName);
+      setCurrentLocationData({
+        lat: latitude,
+        lon: longitude,
+        name: city,
+        state: region,
+        country: country_name,
+      });
+    } catch (error) {
+      setGeoLocationError(
+        `Could not get location via IP. Please search for a location manually. Error: ${error.message}`
+      );
+    } finally {
+      setLoadingLocation(false);
+    }
+  };
+
   const getLocation = async () => {
     setLoadingLocation(true);
     // Introduce an artificial delay to test the loading state
@@ -289,7 +324,7 @@ export function Homepage() {
 
     if (navigator.geolocation) {
       const options = {
-        enableHighAccuracy: true,
+        enableHighAccuracy: false,
         timeout: 5000,
         // timeout: 1, // Temporarily set to 1ms to force a timeout for testing
         maximumAge: 0,
@@ -301,8 +336,15 @@ export function Homepage() {
           setLoadingLocation(false);
         },
         (error) => {
-          showError(error);
-          setLoadingLocation(false);
+          if (error.code === error.PERMISSION_DENIED) {
+            showError(error);
+            setLoadingLocation(false);
+          } else {
+            console.warn(
+              `Geolocation API failed: ${error.message}. Falling back to IP-based location.`
+            );
+            getLocationByIp();
+          }
         },
         options
       );
@@ -313,9 +355,10 @@ export function Homepage() {
       setSelectVisible(true);
     } else {
       setGeoLocationError(
-        "Sorry, geolocation is not supported by this browser."
+        "Sorry, geolocation is not supported by this browser. Falling back to IP-based location."
       );
-      setLoadingLocation(false);
+      // Fallback if geolocation API is not supported at all
+      getLocationByIp();
     }
   };
 
@@ -328,12 +371,12 @@ export function Homepage() {
         break;
       case error.POSITION_UNAVAILABLE:
         setGeoLocationError(
-          "Location information is unavailable. Please try again."
+          "Sorry, your location information is unavailable. Please try again."
         );
         break;
       case error.TIMEOUT:
         setGeoLocationError(
-          "The request to get your location timed out. Please try again."
+          "Sorry, the request to get your location timed out. Please try again."
         );
         break;
       default:
