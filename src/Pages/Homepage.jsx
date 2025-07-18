@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { getWeatherData } from "../hooks/getWeatherData/getWeatherData";
 import { useAltitude } from "../hooks/getAltitude/getAltitude";
 import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
+import { useFavorites } from "../hooks/useFavorites/useFavorites";
 import LocationSearchInput from "../Components/LocationSearch/LocationSearchInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThermometerHalf } from "@fortawesome/free-solid-svg-icons";
@@ -106,18 +107,7 @@ export function Homepage() {
     return () => clearInterval(changeInterval);
   }, [changingPosition]);
 
-  const [favorites, setFavorites] = useState(() => {
-    const savedFavorites = localStorage.getItem("favoriteLocations");
-    if (savedFavorites) {
-      try {
-        return JSON.parse(savedFavorites);
-      } catch (error) {
-        console.error("Failed to parse favorites from localStorage:", error);
-        return []; // Fallback to empty array if parsing fails
-      }
-    }
-    return []; // Default to empty array if no data is found
-  });
+  const { favorites, addFavorite, removeFavorite } = useFavorites();
   const [currentLocationData, setCurrentLocationData] = useState(null); // Track current location data
 
   // New state for emoji animation
@@ -131,42 +121,6 @@ export function Homepage() {
           fav.lon === currentLocationData.lon
       )
     : false;
-
-  // Function to add current location to favorites
-  const addToFavorites = () => {
-    if (currentLocationData && !isAlreadyInFavorites) {
-      const newFavorites = [...favorites, currentLocationData];
-      setFavorites(newFavorites);
-    }
-  };
-
-  // Function to remove current location from favorites
-  const removeFromFavorites = () => {
-    if (currentLocationData) {
-      const newFavorites = favorites.filter(
-        (fav) =>
-          fav.lat !== currentLocationData.lat &&
-          fav.lon !== currentLocationData.lon
-      );
-      setFavorites(newFavorites);
-    }
-  };
-
-  // Save favorites to localStorage whenever the `favorites` state changes
-  useEffect(() => {
-    localStorage.setItem("favoriteLocations", JSON.stringify(favorites));
-  }, [favorites]);
-
-  // Retrieve favorites from localStorage on component mount
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem("favoriteLocations");
-    if (savedFavorites) {
-      try {
-        const parsedFavorites = JSON.parse(savedFavorites);
-        setFavorites(parsedFavorites);
-      } catch (error) {}
-    }
-  }, []);
 
   // Update Select's onChange handler to clear current location data
   const handleSelectChange = (e) => {
@@ -576,7 +530,9 @@ export function Homepage() {
             {currentLocationData && (
               <Button
                 onClick={
-                  isAlreadyInFavorites ? removeFromFavorites : addToFavorites
+                  isAlreadyInFavorites
+                    ? () => removeFavorite(currentLocationData)
+                    : () => addFavorite(currentLocationData)
                 }
               >
                 {isAlreadyInFavorites
