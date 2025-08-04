@@ -127,12 +127,20 @@ export const WeatherMap = ({ latitude, longitude }) => {
       {mapLoaded && (
         <>
           <MapControlsContainer>
+              <ForecastTime
+              style={{ display: selectedMapType === "none" ? "none" : "block" }}
+            >
+              Time:{" "}
+              {forecastTimes.length > 0 && currentStep < forecastTimes.length
+                ? formatForecastTime(forecastTimes[currentStep])
+                : "Loading..."}
+            </ForecastTime>
             <ControlRow
               style={{
                 marginBottom: selectedMapType === "none" ? "1.1rem" : "",
               }}
             >
-              <Label htmlFor="mapType">Radar Type:</Label>
+              <Label htmlFor="mapType">Radar:</Label>
               <Select
                 id="mapType"
                 value={selectedMapType}
@@ -149,7 +157,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
             <ControlRow
               style={{ display: selectedMapType === "none" ? "none" : "flex" }}
             >
-              <Label htmlFor="opacity">Radar Opacity:</Label>
+              <Label htmlFor="opacity">Opacity:</Label>
               <OpacityInput
                 type="range"
                 id="opacity"
@@ -161,14 +169,6 @@ export const WeatherMap = ({ latitude, longitude }) => {
               />
               <OpacityValue>{layerOpacity.toFixed(1)}</OpacityValue>
             </ControlRow>
-            <ForecastTime
-              style={{ display: selectedMapType === "none" ? "none" : "block" }}
-            >
-              Forecast Time:{" "}
-              {forecastTimes.length > 0 && currentStep < forecastTimes.length
-                ? formatForecastTime(forecastTimes[currentStep])
-                : "Loading..."}
-            </ForecastTime>
           </MapControlsContainer>
         </>
       )}
