@@ -60,10 +60,6 @@ export function Homepage() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [locationInfo, setLocationInfo] = useState({
-    location: null,
-    city: null,
-    state: null,
-    country: null,
     latitude: null,
     longitude: null,
     altitude: null,
@@ -149,14 +145,25 @@ export function Homepage() {
         setShowComponents(false);
 
         // Set currentLocationData for the selected favorite location
-        setCurrentLocationData({
+        const locationData = {
             lat: parseFloat(selectedLatitude),
             lon: parseFloat(selectedLongitude),
             name: selectedName,
             country: selectedCountry,
             state: selectedState,
-        });
+        };
+        setCurrentLocationData(locationData);
 
+        // Fetch and display altitude
+        fetchAltitude(locationData.lat, locationData.lon).then((altitudeValue) => {
+            const altitudeString = altitudeValue !== undefined ? `${altitudeValue}m` : "N/A";
+            if (locationElement) {
+                locationElement.innerHTML = `
+                Latitude: ${locationData.lat.toFixed(1)}°<br>
+                Longitude: ${locationData.lon.toFixed(1)}°<br>
+                Altitude: ${altitudeString}`;
+            }
+        });
     }
   };
 
@@ -216,7 +223,7 @@ export function Homepage() {
     if (locationElement && name && country) {
       locationElement.innerHTML = `Location: ${name}, ${
         state || ""
-      } ${country}<br>
+      }, ${country}<br>
       Latitude: ${lat.toFixed(1)}°<br>
       Longitude: ${lon.toFixed(1)}°<br>
       Altitude: ${altitudeString}`;
