@@ -1,5 +1,3 @@
-// getWeatherData.jsx
-// export const getWeatherData = () => {
 export const getWeatherData = async (lat, lon) => {
   const api_Key = process.env.REACT_APP_Weather_API_KEY;
   const apiUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=minutely&appid=${api_Key}`;

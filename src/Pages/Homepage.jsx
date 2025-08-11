@@ -60,6 +60,10 @@ export function Homepage() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [locationInfo, setLocationInfo] = useState({
+    location: null,
+    city: null,
+    state: null,
+    country: null,
     latitude: null,
     longitude: null,
     altitude: null,
@@ -122,7 +126,7 @@ export function Homepage() {
       )
     : false;
 
-  // Update Select's onChange handler to clear current location data
+  // Reverting the changes made to the handleSelectChange function.
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.selectedIndex;
     const selectedOption = e.target.options[selectedIndex];
@@ -136,24 +140,23 @@ export function Homepage() {
     setDayIndex(0);
 
     if (selectedLatitude === "current" && selectedLongitude === "current") {
-      // Get current location using getLocation function
-
-      getLocation();
-
-      setCurrentLocationData(null);
-      setShowComponents(false);
+        // Get current location using getLocation function
+        getLocation();
+        setCurrentLocationData(null);
+        setShowComponents(false);
     } else {
-      showPosition(parseFloat(selectedLatitude), parseFloat(selectedLongitude));
-      setShowComponents(false);
+        showPosition(parseFloat(selectedLatitude), parseFloat(selectedLongitude));
+        setShowComponents(false);
 
-      // Set currentLocationData for the selected favorite location
-      setCurrentLocationData({
-        lat: parseFloat(selectedLatitude),
-        lon: parseFloat(selectedLongitude),
-        name: selectedName,
-        country: selectedCountry,
-        state: selectedState,
-      });
+        // Set currentLocationData for the selected favorite location
+        setCurrentLocationData({
+            lat: parseFloat(selectedLatitude),
+            lon: parseFloat(selectedLongitude),
+            name: selectedName,
+            country: selectedCountry,
+            state: selectedState,
+        });
+
     }
   };
 
@@ -217,8 +220,7 @@ export function Homepage() {
       Latitude: ${lat.toFixed(1)}°<br>
       Longitude: ${lon.toFixed(1)}°<br>
       Altitude: ${altitudeString}`;
-    }
-
+    } 
     showPosition(lat, lon);
     setShowComponents(false);
     // Reset the hourIndex and dayIndex when a new location is selected
@@ -343,42 +345,22 @@ export function Homepage() {
     setLatitude(latitude);
     setLongitude(longitude);
 
-    // let longlat = `${longitude},${latitude}`;
-    // let geojson = {
-    //   type: "FeatureCollection",
-    //   features: [
-    //     {
-    //       type: "Feature",
-    //       geometry: {
-    //         type: "Point",
-    //         coordinates: [longitude, latitude],
-    //       },
-    //       properties: {
-    //         "marker-color": "#FF0000", // Change this to your desired color
-    //       },
-    //     },
-    //   ],
-    // };
-    // let encodedGeojson = encodeURIComponent(JSON.stringify(geojson));
-    // let img_url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/geojson(${encodedGeojson})/${longlat},13,0,45/460x250@2x?access_token=${mapApiToken}&logo=false`;
-
-    // Update location info state
     setLocationInfo((prev) => ({
-      ...prev,
-      latitude: latitude.toFixed(1),
-      longitude: longitude.toFixed(1),
+        ...prev,
+        latitude: latitude.toFixed(1),
+        longitude: longitude.toFixed(1),
     }));
 
     try {
-      const altitudeValue = await fetchAltitude(latitude, longitude);
-      if (!loadingAltitude) {
-        setLocationInfo((prev) => ({
-          ...prev,
-          altitude: altitudeValue !== undefined ? altitudeValue + "m" : "N/A",
-        }));
-      }
+        const altitudeValue = await fetchAltitude(latitude, longitude);
+        if (!loadingAltitude) {
+            setLocationInfo((prev) => ({
+                ...prev,
+                altitude: altitudeValue !== undefined ? altitudeValue + "m" : "N/A",
+            }));
+        }
     } catch (error) {
-      console.error("Error fetching altitude:", error);
+        console.error("Error fetching altitude:", error);
     }
   };
 
@@ -519,12 +501,21 @@ export function Homepage() {
       )}
       {!loadingLocation && selectVisible && !geoLocationError && (
         <ContainerWrapper>
-          <Container>
-            <p id="location">
-              Latitude: {locationInfo.latitude}°<br />
-              Longitude: {locationInfo.longitude}°<br />
-              {locationInfo.altitude && `Altitude: ${locationInfo.altitude}`}
-            </p>
+       
+        </ContainerWrapper>
+      )}
+      {geoLocationError && <ErrorMessage>{geoLocationError}</ErrorMessage>}
+      {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
+      {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
+      {!geoLocationError && (
+        <ContainerWrapper>
+          {!loadingLocation && selectVisible && !geoLocationError && (
+               <Container>
+                <p id="location">
+                  Latitude: {locationInfo.latitude}°<br />
+                  Longitude: {locationInfo.longitude}°<br />
+                  {locationInfo.altitude && `Altitude: ${locationInfo.altitude}`}
+                </p>
             <br />
             {/* Toggle between Add and Remove button */}
             {currentLocationData && (
@@ -540,16 +531,7 @@ export function Homepage() {
                   : "Add to Favorites"}
               </Button>
             )}
-          </Container>
-        </ContainerWrapper>
-      )}
-      {geoLocationError && <ErrorMessage>{geoLocationError}</ErrorMessage>}
-      {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
-      {altitudeError && <ErrorMessage>{altitudeError}</ErrorMessage>}
-      {!geoLocationError && (
-        <ContainerWrapper>
-          {!loadingLocation && selectVisible && !geoLocationError && (
-            <Container>
+          
               <WeatherMap latitude={latitude} longitude={longitude} />
             </Container>
           )}
