@@ -223,7 +223,7 @@ export function Homepage() {
     if (locationElement && name && country) {
       locationElement.innerHTML = `Location: ${name}, ${
         state || ""
-      }, ${country}<br>
+      } ${country}<br>
       Latitude: ${lat.toFixed(1)}°<br>
       Longitude: ${lon.toFixed(1)}°<br>
       Altitude: ${altitudeString}`;
