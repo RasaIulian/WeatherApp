@@ -11,17 +11,16 @@ export const Container = styled.div`
   padding: 5px 10px;
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  width: 47%; 
-  margin: 20px 20px 0 0 ; 
+  width: 47%;
+  margin: 20px 20px 0 0;
   overflow: auto;
   p {
     margin: 5px 0;
     display: inline-flex;
     flex-wrap: wrap;
     font-size: 1.1rem;
-  
   }
- 
+
   ul {
     margin-bottom: 0;
     display: flex;
@@ -117,10 +116,10 @@ export const Button = styled.button`
   transition: all 0.3s ease-out;
 
   &:disabled {
-  opacity: 0;
-  cursor: default;
-  pointer-events: none;
-}
+    opacity: 0;
+    cursor: default;
+    pointer-events: none;
+  }
   &:hover {
     background-color: #eaeaea;
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
@@ -179,10 +178,10 @@ export const Select = styled.select`
   &:hover {
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
   }
-  &:focus, &:active {
+  &:focus,
+  &:active {
     border: none;
     outline: none;
-   
   }
 
   /* Styles for active (selected) option */
@@ -244,7 +243,7 @@ const getAnimationDuration = (windSpeedKmH) => {
 
 export const WindArrow = styled.span.attrs((props) => ({
   $deg: props.$deg, // Use $deg as transient prop
-   $windspeed: props.$windspeed, // Add wind speed as a transient prop
+  $windspeed: props.$windspeed, // Add wind speed as a transient prop
 }))`
   margin-left: 10px;
   border-left: 9px solid transparent;
@@ -252,7 +251,8 @@ export const WindArrow = styled.span.attrs((props) => ({
   border-bottom: 18px solid #aaaaaa;
   border-radius: 50%;
   transform-origin: center;
-  animation: ${(props) => rotateAnimation(props.$deg)} ${(props) => getAnimationDuration(props.$windspeed)} infinite alternate
+  animation: ${(props) => rotateAnimation(props.$deg)}
+    ${(props) => getAnimationDuration(props.$windspeed)} infinite alternate
     ease-in-out;
 
   &::after {
@@ -302,17 +302,26 @@ export const EmojiContainer = styled.div`
   gap: 10px;
 `;
 
- export const Emoji = styled.span`
+export const Emoji = styled.span`
   font-size: 2rem;
-  
+
   &.changing {
     animation: highlight 1.5s ease-in-out;
   }
-  
+
   @keyframes highlight {
-    0% { transform: scale(1); opacity: 0.5; }
-    20% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    20% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 `;
 

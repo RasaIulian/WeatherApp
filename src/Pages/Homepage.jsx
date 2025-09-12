@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getWeatherData } from "../hooks/getWeatherData/getWeatherData";
 import { useAltitude } from "../hooks/getAltitude/getAltitude";
 import { useAirQuality } from "../hooks/getAirQuality/getAirQuality";
@@ -7,6 +7,7 @@ import LocationSearchInput from "../Components/LocationSearch/LocationSearchInpu
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThermometerHalf } from "@fortawesome/free-solid-svg-icons";
 import { ScrollDots } from "../Components/ScrollDots/ScrollDots";
+import { useTouchScroll } from "../hooks/touchScroll/touchScroll";
 import { WeatherMap } from "../Components/Map/Map";
 import {
   faWind,
@@ -78,6 +79,18 @@ export function Homepage() {
   // Track which position (0, 1, or 2) is currently changing
   const [changingPosition, setChangingPosition] = useState(0);
   const emojiRefs = useRef([null, null, null]);
+  // Add touch scroll functionality
+  const hourlyScrollRef = useTouchScroll(
+    () => scrollHours(1), // Swipe left = next items
+    () => scrollHours(-1), // Swipe right = previous items
+    75 // Threshold in pixels (adjust as needed)
+  );
+
+  const dailyScrollRef = useTouchScroll(
+    () => scrollDays(1), // Swipe left = next items
+    () => scrollDays(-1), // Swipe right = previous items
+    75 // Threshold in pixels
+  );
 
   useEffect(() => {
     const changeInterval = setInterval(() => {
@@ -122,7 +135,8 @@ export function Homepage() {
       )
     : false;
 
-  // Reverting the changes made to the handleSelectChange function.
+  const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(true);
+
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.selectedIndex;
     const selectedOption = e.target.options[selectedIndex];
@@ -131,39 +145,49 @@ export function Homepage() {
     const selectedName = selectedOption.text.split(",")[0]; // Extract location name
     const selectedCountry = selectedOption.text.split(",")[2]?.trim(); // Extract country
     const selectedState = selectedOption.text.split(",")[1]?.trim(); // Extract state (if available)
+
     setSelectedLocation(selectedOption.text);
     setHourIndex(0);
     setDayIndex(0);
 
     if (selectedLatitude === "current" && selectedLongitude === "current") {
-        // Get current location using getLocation function
-        getLocation();
-        setCurrentLocationData(null);
-        setShowComponents(false);
+      // Check if we're already showing current location
+      if (isUsingCurrentLocation) return; // Already showing current location
+      // Only fetch current location if we're not already showing it
+      setIsUsingCurrentLocation(true);
+      getLocation();
+      setCurrentLocationData(null);
+      setShowComponents(false);
     } else {
-        showPosition(parseFloat(selectedLatitude), parseFloat(selectedLongitude));
-        setShowComponents(false);
+      // Only update if coordinates changed
+      setIsUsingCurrentLocation(false);
 
-        // Set currentLocationData for the selected favorite location
-        const locationData = {
-            lat: parseFloat(selectedLatitude),
-            lon: parseFloat(selectedLongitude),
-            name: selectedName,
-            country: selectedCountry,
-            state: selectedState,
-        };
-        setCurrentLocationData(locationData);
+      showPosition(parseFloat(selectedLatitude), parseFloat(selectedLongitude));
+      setShowComponents(false);
 
-        // Fetch and display altitude
-        fetchAltitude(locationData.lat, locationData.lon).then((altitudeValue) => {
-            const altitudeString = altitudeValue !== undefined ? `${altitudeValue}m` : "N/A";
-            if (locationElement) {
-                locationElement.innerHTML = `
+      // Set currentLocationData for the selected favorite locationac
+      const locationData = {
+        lat: parseFloat(selectedLatitude),
+        lon: parseFloat(selectedLongitude),
+        name: selectedName,
+        country: selectedCountry,
+        state: selectedState,
+      };
+      setCurrentLocationData(locationData);
+
+      // Fetch and display altitude
+      fetchAltitude(locationData.lat, locationData.lon).then(
+        (altitudeValue) => {
+          const altitudeString =
+            altitudeValue !== undefined ? `${altitudeValue}m` : "N/A";
+          if (locationElement) {
+            locationElement.innerHTML = `
                 Latitude: ${locationData.lat.toFixed(1)}°<br>
                 Longitude: ${locationData.lon.toFixed(1)}°<br>
                 Altitude: ${altitudeString}`;
-            }
-        });
+          }
+        }
+      );
     }
   };
 
@@ -227,7 +251,7 @@ export function Homepage() {
       Latitude: ${lat.toFixed(1)}°<br>
       Longitude: ${lon.toFixed(1)}°<br>
       Altitude: ${altitudeString}`;
-    } 
+    }
     showPosition(lat, lon);
     setShowComponents(false);
     // Reset the hourIndex and dayIndex when a new location is selected
@@ -287,7 +311,7 @@ export function Homepage() {
 
     if (navigator.geolocation) {
       const options = {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         timeout: 5000,
         // timeout: 1, // Temporarily set to 1ms to force a timeout for testing
         maximumAge: 0,
@@ -353,21 +377,21 @@ export function Homepage() {
     setLongitude(longitude);
 
     setLocationInfo((prev) => ({
-        ...prev,
-        latitude: latitude.toFixed(1),
-        longitude: longitude.toFixed(1),
+      ...prev,
+      latitude: latitude.toFixed(1),
+      longitude: longitude.toFixed(1),
     }));
 
     try {
-        const altitudeValue = await fetchAltitude(latitude, longitude);
-        if (!loadingAltitude) {
-            setLocationInfo((prev) => ({
-                ...prev,
-                altitude: altitudeValue !== undefined ? altitudeValue + "m" : "N/A",
-            }));
-        }
+      const altitudeValue = await fetchAltitude(latitude, longitude);
+      if (!loadingAltitude) {
+        setLocationInfo((prev) => ({
+          ...prev,
+          altitude: altitudeValue !== undefined ? altitudeValue + "m" : "N/A",
+        }));
+      }
     } catch (error) {
-        console.error("Error fetching altitude:", error);
+      console.error("Error fetching altitude:", error);
     }
   };
 
@@ -507,9 +531,7 @@ export function Homepage() {
         </SearchContainer>
       )}
       {!loadingLocation && selectVisible && !geoLocationError && (
-        <ContainerWrapper>
-       
-        </ContainerWrapper>
+        <ContainerWrapper></ContainerWrapper>
       )}
       {geoLocationError && <ErrorMessage>{geoLocationError}</ErrorMessage>}
       {errorAQI && <ErrorMessage>{errorAQI}</ErrorMessage>}
@@ -517,28 +539,28 @@ export function Homepage() {
       {!geoLocationError && (
         <ContainerWrapper>
           {!loadingLocation && selectVisible && !geoLocationError && (
-               <Container>
-                <p id="location">
-                  Latitude: {locationInfo.latitude}°<br />
-                  Longitude: {locationInfo.longitude}°<br />
-                  {locationInfo.altitude && `Altitude: ${locationInfo.altitude}`}
-                </p>
-            <br />
-            {/* Toggle between Add and Remove button */}
-            {currentLocationData && (
-              <Button
-                onClick={
-                  isAlreadyInFavorites
-                    ? () => removeFavorite(currentLocationData)
-                    : () => addFavorite(currentLocationData)
-                }
-              >
-                {isAlreadyInFavorites
-                  ? "Remove from Favorites"
-                  : "Add to Favorites"}
-              </Button>
-            )}
-          
+            <Container>
+              <p id="location">
+                Latitude: {locationInfo.latitude}°<br />
+                Longitude: {locationInfo.longitude}°<br />
+                {locationInfo.altitude && `Altitude: ${locationInfo.altitude}`}
+              </p>
+              <br />
+              {/* Toggle between Add and Remove button */}
+              {currentLocationData && (
+                <Button
+                  onClick={
+                    isAlreadyInFavorites
+                      ? () => removeFavorite(currentLocationData)
+                      : () => addFavorite(currentLocationData)
+                  }
+                >
+                  {isAlreadyInFavorites
+                    ? "Remove from Favorites"
+                    : "Add to Favorites"}
+                </Button>
+              )}
+
               <WeatherMap latitude={latitude} longitude={longitude} />
             </Container>
           )}
@@ -819,7 +841,7 @@ export function Homepage() {
                       {weatherData.timezone_offset > 0 && "+"}
                       {weatherData.timezone_offset / 3600}
                     </p>
-                    <ListWithArrowsWrapper>
+                    <ListWithArrowsWrapper ref={hourlyScrollRef}>
                       <ul>
                         {weatherData.hourly
                           .slice(hourIndex, hourIndex + hoursToShow) // Display based on hourIndex
@@ -894,7 +916,7 @@ export function Homepage() {
                 {weatherData.daily && (
                   <Container>
                     <h3>Daily:</h3>
-                    <ListWithArrowsWrapper>
+                    <ListWithArrowsWrapper ref={dailyScrollRef}>
                       <ul>
                         {weatherData.daily
                           .slice(dayIndex, dayIndex + daysToShow) // Display based on dayIndex

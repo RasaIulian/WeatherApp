@@ -16,7 +16,6 @@ import {
 mapboxgl.accessToken = process.env.REACT_APP_Map_API_KEY;
 
 export const WeatherMap = ({ latitude, longitude }) => {
-  // ... (rest of your code is the same)
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -173,5 +172,64 @@ export const WeatherMap = ({ latitude, longitude }) => {
         </>
       )}
     </div>
+  );  
+
+
+
+      // mapbox://styles/mapbox/outdoors-v12: A map style designed for outdoor activities.
+      // mapbox://styles/mapbox/satellite-streets-v12: A map style designed for satellite imagery with streets.
+
+  return (
+    <div>
+      <MapContainer ref={mapContainerRef} />
+      {mapLoaded && (
+        <>
+          <MapControlsContainer>
+              <ForecastTime
+              style={{ display: selectedMapType === "none" ? "none" : "block" }}
+            >
+              Time:{" "}
+              {forecastTimes.length > 0 && currentStep < forecastTimes.length
+                ? formatForecastTime(forecastTimes[currentStep])
+                : "Loading..."}
+            </ForecastTime>
+            <ControlRow
+              style={{
+                marginBottom: selectedMapType === "none" ? "1.1rem" : "",
+              }}
+            >
+              <Label htmlFor="mapType">Radar:</Label>
+              <Select
+                id="mapType"
+                value={selectedMapType}
+                onChange={handleMapTypeChange}
+              >
+                <option value="none">None</option>
+                <option value="clouds">Clouds</option>
+                <option value="precipitation">Precipitation</option>
+                <option value="temperature">Temperature</option>
+                <option value="wind">Wind</option>
+                <option value="pressure">Pressure</option>
+              </Select>
+            </ControlRow>
+            <ControlRow
+              style={{ display: selectedMapType === "none" ? "none" : "flex" }}
+            >
+              <Label htmlFor="opacity">Opacity:</Label>
+              <OpacityInput
+                type="range"
+                id="opacity"
+                min="0.5"
+                max="1"
+                step="0.1"
+                value={layerOpacity}
+                onChange={handleOpacityChange}
+              />
+              <OpacityValue>{layerOpacity.toFixed(1)}</OpacityValue>
+            </ControlRow>
+          </MapControlsContainer>
+        </>
+      )}
+    </div>
   );
-};
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ErrorMessage } from "../../Pages/Homepage.style";
 import styled from "styled-components";
 
