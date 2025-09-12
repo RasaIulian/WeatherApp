@@ -841,45 +841,44 @@ export function Homepage() {
                       {weatherData.timezone_offset > 0 && "+"}
                       {weatherData.timezone_offset / 3600}
                     </p>
-                    <ListWithArrowsWrapper ref={hourlyScrollRef}>
+                    <ListWithArrowsWrapper
+                      ref={hourlyScrollRef}
+                      $index={hourIndex}
+                    >
                       <ul>
-                        {weatherData.hourly
-                          .slice(hourIndex, hourIndex + hoursToShow) // Display based on hourIndex
-                          .map((hour, index) => (
-                            <li key={index}>
-                              <b>
-                                {new Date(
-                                  (hour.dt + weatherData.timezone_offset) * 1000
-                                )
-                                  .toISOString()
-                                  .substring(11, 16)}
-                              </b>
-                              <br />
-                              <br />
-                              <div>
-                                <FontAwesomeIcon icon={faThermometerHalf} />{" "}
-                                {Math.round(hour.temp)}°C{" "}
-                              </div>
-                              <br />
-                              Feels like:
-                              <div>{Math.round(hour.feels_like)}°C</div> <br />
-                              Precipitation:{" "}
-                              <div>{Math.round(hour.pop * 100)}%</div> <br />
-                              Humidity: <div>{hour.humidity}%</div>
-                              <br />
-                              Wind:{" "}
-                              <div>
-                                {Math.round(hour.wind_speed * 3.6)} Km/h
-                              </div>
-                              <br />
-                              <AnimatedIcon
-                                src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
-                                alt="Hourly Weather Icon"
-                              />
-                              <br />
-                              {hour.weather[0].description}
-                            </li>
-                          ))}
+                        {weatherData.hourly.map((hour, index) => (
+                          <li key={index}>
+                            <b>
+                              {new Date(
+                                (hour.dt + weatherData.timezone_offset) * 1000
+                              )
+                                .toISOString()
+                                .substring(11, 16)}
+                            </b>
+                            <br />
+                            <br />
+                            <div>
+                              <FontAwesomeIcon icon={faThermometerHalf} />{" "}
+                              {Math.round(hour.temp)}°C{" "}
+                            </div>
+                            <br />
+                            Feels like:
+                            <div>{Math.round(hour.feels_like)}°C</div> <br />
+                            Precipitation:{" "}
+                            <div>{Math.round(hour.pop * 100)}%</div> <br />
+                            Humidity: <div>{hour.humidity}%</div>
+                            <br />
+                            Wind:{" "}
+                            <div>{Math.round(hour.wind_speed * 3.6)} Km/h</div>
+                            <br />
+                            <AnimatedIcon
+                              src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
+                              alt="Hourly Weather Icon"
+                            />
+                            <br />
+                            {hour.weather[0].description}
+                          </li>
+                        ))}
                       </ul>
                       <ArrowsContainer>
                         {/* Left Arrow Button */}
@@ -916,45 +915,42 @@ export function Homepage() {
                 {weatherData.daily && (
                   <Container>
                     <h3>Daily:</h3>
-                    <ListWithArrowsWrapper ref={dailyScrollRef}>
+                    <ListWithArrowsWrapper
+                      $index={dayIndex}
+                      ref={dailyScrollRef}
+                    >
                       <ul>
-                        {weatherData.daily
-                          .slice(dayIndex, dayIndex + daysToShow) // Display based on dayIndex
-                          .map((day, index) => {
-                            const date = new Date(
-                              day.dt * 1000
-                            ).toLocaleDateString("en-US", {
-                              weekday: "short",
-                              month: "short",
-                              day: "numeric",
-                            });
+                        {weatherData.daily.map((day, index) => {
+                          const date = new Date(
+                            day.dt * 1000
+                          ).toLocaleDateString("en-US", {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                          });
 
-                            return (
-                              <li key={index}>
-                                <b>
-                                  {index === 0 && dayIndex === 0
-                                    ? "Today"
-                                    : date}
-                                </b>
-                                <br /> <br />
-                                <FontAwesomeIcon
-                                  icon={faThermometerHalf}
-                                />{" "}
-                                {Math.round(day.temp.min)} -{" "}
-                                {Math.round(day.temp.max)}°C
-                                <br /> <br />
-                                Precipitation:{" "}
-                                <div>{parseInt(day.pop * 100)}%</div>
-                                <br />
-                                <AnimatedIcon
-                                  src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                                  alt="Weather Icon"
-                                />
-                                <br />
-                                {day.summary}
-                              </li>
-                            );
-                          })}
+                          return (
+                            <li key={index}>
+                              <b>
+                                {index === 0 && dayIndex === 0 ? "Today" : date}
+                              </b>
+                              <br /> <br />
+                              <FontAwesomeIcon icon={faThermometerHalf} />{" "}
+                              {Math.round(day.temp.min)} -{" "}
+                              {Math.round(day.temp.max)}°C
+                              <br /> <br />
+                              Precipitation:{" "}
+                              <div>{parseInt(day.pop * 100)}%</div>
+                              <br />
+                              <AnimatedIcon
+                                src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                                alt="Weather Icon"
+                              />
+                              <br />
+                              {day.summary}
+                            </li>
+                          );
+                        })}
                       </ul>
                       <ArrowsContainer>
                         <Button

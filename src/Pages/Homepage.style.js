@@ -131,7 +131,20 @@ export const ListWithArrowsWrapper = styled.div`
   align-items: center;
   position: relative;
   overflow: hidden;
+
+  & > ul {
+    display: flex;
+    justify-content: flex-start;
+    transition: transform 0.3s ease-in-out;
+    will-change: transform;
+    transform: translateX(${(props) => `-${props.$index * 32.5}%`});
+  }
+  li {
+    flex: 0 0 31%;
+    box-sizing: border-box;
+  }
 `;
+
 export const ArrowsContainer = styled.div`
   display: flex;
   justify-content: space-between;
