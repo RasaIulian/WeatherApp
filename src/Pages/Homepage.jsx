@@ -844,6 +844,7 @@ export function Homepage() {
                     <ListWithArrowsWrapper
                       ref={hourlyScrollRef}
                       $index={hourIndex}
+                      $itemsToShow={hoursToShow}
                     >
                       <ul>
                         {weatherData.hourly.map((hour, index) => (
@@ -918,6 +919,7 @@ export function Homepage() {
                     <ListWithArrowsWrapper
                       $index={dayIndex}
                       ref={dailyScrollRef}
+                      $itemsToShow={daysToShow}
                     >
                       <ul>
                         {weatherData.daily.map((day, index) => {

@@ -29,11 +29,10 @@ export const Container = styled.div`
   }
 
   li {
-    margin: 5px;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    padding: 0 0.2rem;
-    width: 10em;
+    padding: 5px;
+    width: 100%; /* Let flex-basis control the width */
     text-align: center;
     justify-content: center;
     line-height: 1.5rem;
@@ -134,13 +133,25 @@ export const ListWithArrowsWrapper = styled.div`
 
   & > ul {
     display: flex;
+    gap: 10px;
     justify-content: flex-start;
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.4s ease-in-out;
     will-change: transform;
-    transform: translateX(${(props) => `-${props.$index * 32.5}%`});
+    /* Calculate percentage based on items to show */
+    transform: translateX(
+      ${(props) =>
+        `calc(${props.$index * -1} * ((100% - ${
+          (props.$itemsToShow - 1) * 10
+        }px) / ${props.$itemsToShow} + 10px))`}
+    );
   }
   li {
-    flex: 0 0 31%;
+    /* Adjust flex-basis to account for the gap */
+    flex: 0 0
+      ${(props) =>
+        `calc((100% - ${(props.$itemsToShow - 1) * 10}px) / ${
+          props.$itemsToShow
+        })`};
     box-sizing: border-box;
   }
 `;
