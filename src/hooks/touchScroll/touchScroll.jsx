@@ -40,6 +40,7 @@ export const useTouchScroll = (onSwipeLeft, onSwipeRight, threshold = 50) => {
       // Check if swipe distance exceeds threshold
       if (Math.abs(deltaX) > threshold) {
         if (deltaX > 0) {
+          e.preventDefault();
           // Swiped left (show next items)
           onSwipeLeft && onSwipeLeft();
         } else {

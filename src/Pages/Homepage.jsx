@@ -884,9 +884,9 @@ export function Homepage() {
                       <ArrowsContainer>
                         {/* Left Arrow Button */}
                         <Button
-                          onClick={() => scrollHours(-1)} // Corrected: Scroll left
-                          disabled={hourIndex === 0} // Corrected: Disable only at the start
-                          className={hourIndex === 0 ? "disabled" : ""} // Corrected: Disable only at the start
+                          onClick={() => scrollHours(-1)}
+                          disabled={hourIndex === 0}
+                          className={hourIndex === 0 ? "disabled" : ""}
                         >
                           <FontAwesomeIcon icon={faChevronLeft} />
                         </Button>
@@ -894,7 +894,6 @@ export function Homepage() {
                         {/* Right Arrow Button */}
                         <Button
                           onClick={() => scrollHours(1)}
-                          // Corrected: Use hourlyDataLength and check if NEXT step is out of bounds
                           disabled={hourIndex + hoursToShow >= hourlyDataLength}
                           className={
                             hourIndex + hoursToShow >= hourlyDataLength
