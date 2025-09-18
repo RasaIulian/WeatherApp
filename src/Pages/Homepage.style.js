@@ -141,7 +141,7 @@ export const ListWithArrowsWrapper = styled.div`
     transform: translateX(
       ${(props) =>
         `calc(${props.$index * -1} * ((100% - ${
-          (props.$itemsToShow - 1) * 10
+          (props.$itemsToShow - 1) * 10 + 15
         }px) / ${props.$itemsToShow} + 10px))`}
     );
   }
@@ -149,7 +149,7 @@ export const ListWithArrowsWrapper = styled.div`
     /* Adjust flex-basis to account for the gap */
     flex: 0 0
       ${(props) =>
-        `calc((100% - ${(props.$itemsToShow - 1) * 10}px) / ${
+        `calc((100% - ${(props.$itemsToShow - 1) * 10 + 15}px) / ${
           props.$itemsToShow
         })`};
     box-sizing: border-box;

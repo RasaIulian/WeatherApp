@@ -36,6 +36,7 @@ import {
   EmojiContainer,
   EmojiWrapper,
 } from "../Pages/Homepage.style";
+import { SunMoonTimes } from "../Components/SunMoonTimes/SunMoonTimes";
 
 // Define the emojis and their order
 const emojis = [
@@ -764,6 +765,7 @@ export function Homepage() {
                     </p>
                     <br />
                     <p>
+                      {" "}
                       Sunset:{" "}
                       {new Date(
                         (weatherData.current.sunset +
@@ -970,7 +972,6 @@ export function Homepage() {
                         </Button>
                       </ArrowsContainer>
                     </ListWithArrowsWrapper>
-
                     <ScrollDots
                       totalPages={totalDayPages}
                       currentPage={currentDayPage}
