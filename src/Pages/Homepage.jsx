@@ -945,6 +945,14 @@ export function Homepage() {
                               Precipitation:{" "}
                               <div>{parseInt(day.pop * 100)}%</div>
                               <br />
+                              <SunMoonTimes
+                                sunrise={day.sunrise}
+                                sunset={day.sunset}
+                                moonrise={day.moonrise}
+                                moonset={day.moonset}
+                                timezoneOffset={weatherData.timezone_offset}
+                              />
+                              <br />
                               <AnimatedIcon
                                 src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
                                 alt="Weather Icon"

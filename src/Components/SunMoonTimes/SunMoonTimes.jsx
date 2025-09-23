@@ -1,4 +1,7 @@
 const formatTime = (timestamp, offset) => {
+  if (typeof timestamp !== "number" || isNaN(timestamp)) {
+    return "N/A";
+  }
   return new Date((timestamp + offset) * 1000).toISOString().substring(11, 16);
 };
 
@@ -8,48 +11,27 @@ export const SunMoonTimes = ({
   moonrise,
   moonset,
   timezoneOffset,
-  isDaily,
 }) => {
   const now = new Date();
   const sunsetTime = new Date((sunset + timezoneOffset) * 1000);
 
-  const showMoonTimes = now > sunsetTime;
-
-  if (isDaily) {
-    return showMoonTimes ? (
-      <>
-        Moonrise:
-        {formatTime(moonrise, timezoneOffset)}
-        <br />
-        <br />
-        Moonset:
-        {formatTime(moonset, timezoneOffset)}
-      </>
-    ) : (
-      <>
-        Sunrise: <br />
-        {formatTime(sunrise, timezoneOffset)}
-        <br />
-        <br />
-        Sunset: <br />
-        {formatTime(sunset, timezoneOffset)}
-      </>
-    );
-  }
-
-  return showMoonTimes ? (
+  return (
     <>
-      Moonrise: {formatTime(moonrise, timezoneOffset)}
+      {/* Moonrise: <br />
+      {formatTime(moonrise, timezoneOffset)}
       <br />
       <br />
-      Moonset: {formatTime(moonset, timezoneOffset)}
-    </>
-  ) : (
-    <>
-      Sunrise: {formatTime(sunrise, timezoneOffset)}
+      Moonset:
+      <br />
+      {formatTime(moonset, timezoneOffset)}
+      <br />
+      <br /> */}
+      Sunrise: <br />
+      {formatTime(sunrise, timezoneOffset)}
       <br />
       <br />
-      Sunset: {formatTime(sunset, timezoneOffset)}
+      Sunset: <br />
+      {formatTime(sunset, timezoneOffset)}
     </>
   );
 };
