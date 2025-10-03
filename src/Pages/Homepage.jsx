@@ -938,8 +938,8 @@ export function Homepage() {
                                 {index === 0 && dayIndex === 0 ? "Today" : date}
                               </b>
                               <br /> <br />
+                              {Math.round(day.temp.min)}{" "}
                               <FontAwesomeIcon icon={faThermometerHalf} />{" "}
-                              {Math.round(day.temp.min)} -{" "}
                               {Math.round(day.temp.max)}°C
                               <br /> <br />
                               Precipitation:{" "}
@@ -952,6 +952,7 @@ export function Homepage() {
                                 moonset={day.moonset}
                                 timezoneOffset={weatherData.timezone_offset}
                               />
+                              <br />
                               <br />
                               <AnimatedIcon
                                 src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
