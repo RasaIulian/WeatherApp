@@ -7,7 +7,7 @@ import LocationSearchInput from "../Components/LocationSearch/LocationSearchInpu
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThermometerHalf } from "@fortawesome/free-solid-svg-icons";
 import { ScrollDots } from "../Components/ScrollDots/ScrollDots";
-import { useTouchScroll } from "../hooks/touchScroll/touchScroll";
+import { useTouchScroll } from "../Components/touchScroll/touchScroll";
 import { WeatherMap } from "../Components/Map/Map";
 import {
   faWind,

@@ -15,6 +15,7 @@ export const useTouchScroll = (onSwipeLeft, onSwipeRight, threshold = 50) => {
     const handleTouchStart = (e) => {
       touchStartX.current = e.touches[0].clientX;
       touchStartY.current = e.touches[0].clientY;
+      touchEndX.current = e.touches[0].clientX;
       isDragging.current = true;
     };
 
