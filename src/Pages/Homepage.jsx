@@ -313,7 +313,7 @@ export function Homepage() {
     if (navigator.geolocation) {
       const options = {
         enableHighAccuracy: true,
-        timeout: 5000,
+        timeout: 3000,
         // timeout: 1, // Temporarily set to 1ms to force a timeout for testing
         maximumAge: 0,
       };

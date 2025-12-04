@@ -130,6 +130,10 @@ export const ListWithArrowsWrapper = styled.div`
   align-items: center;
   position: relative;
   overflow: hidden;
+  &:hover > div {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
   & > ul {
     display: flex;
@@ -161,16 +165,15 @@ export const ArrowsContainer = styled.div`
   justify-content: space-between;
   position: absolute;
   min-width: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
   & * {
     border: none;
-    background-color: rgba(250, 250, 250, 0.5);
     box-shadow: none;
-    padding: 3px;
     border-radius: 50%;
   }
   & *:hover {
-    background-color: rgba(250, 250, 250, 1);
-
     box-shadow: none;
   }
 `;
