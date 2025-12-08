@@ -1,4 +1,6 @@
 Preview:<br>
+<img width="210" height="210" alt="QR-Code" src="https://github.com/user-attachments/assets/475bc93a-ce61-464b-9560-629681f6c457" />
+
 ![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/c7a43fd0-1b51-4137-8e8f-184254e6907d)
 ![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/1e1d16e5-17d7-4fd6-bb40-eaaf12b2b4e7)
 ![image](https://github.com/RasaIulian/WeatherApp/assets/99275349/6df0d400-2ce0-4af1-95cb-364b0a1a208d)
