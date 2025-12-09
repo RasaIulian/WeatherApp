@@ -17,20 +17,20 @@ export const SunMoonTimes = ({
 
   return (
     <>
-      {/* Moonrise: <br />
-      {formatTime(moonrise, timezoneOffset)}
-      <br />
+      Moonrise/set: <br />
+      {formatTime(moonrise, timezoneOffset)} -
+      {/* <br />
       <br />
       Moonset:
-      <br />
+      <br /> */}
       {formatTime(moonset, timezoneOffset)}
       <br />
-      <br /> */}
-      Sunrise: <br />
-      {formatTime(sunrise, timezoneOffset)}
       <br />
+      Sunrise/set: <br />
+      {formatTime(sunrise, timezoneOffset)} -
+      {/* <br />
       <br />
-      Sunset: <br />
+      Sunset: <br /> */}
       {formatTime(sunset, timezoneOffset)}
     </>
   );
