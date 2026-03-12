@@ -253,7 +253,7 @@ const lerp = (start, end, t) => start * (1 - t) + end * t;
 const getAnimationDuration = (windSpeedKmH) => {
   const minSpeed = 0; // Km/h
   const maxSpeed = 100; // Km/h
-  const minDuration = 1.5; // seconds (slowest)
+  const minDuration = 1; // seconds (slowest)
   const maxDuration = 0.05; // seconds (fastest)
 
   // Clamp the wind speed to the defined range

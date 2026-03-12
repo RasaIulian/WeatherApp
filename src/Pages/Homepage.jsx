@@ -84,13 +84,13 @@ export function Homepage() {
   const hourlyScrollRef = useTouchScroll(
     () => scrollHours(1), // Swipe left = next items
     () => scrollHours(-1), // Swipe right = previous items
-    75 // Threshold in pixels (adjust as needed)
+    75, // Threshold in pixels (adjust as needed)
   );
 
   const dailyScrollRef = useTouchScroll(
     () => scrollDays(1), // Swipe left = next items
     () => scrollDays(-1), // Swipe right = previous items
-    75 // Threshold in pixels
+    75, // Threshold in pixels
   );
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export function Homepage() {
     ? favorites.some(
         (fav) =>
           fav.lat === currentLocationData.lat &&
-          fav.lon === currentLocationData.lon
+          fav.lon === currentLocationData.lon,
       )
     : false;
 
@@ -187,7 +187,7 @@ export function Homepage() {
                 Longitude: ${locationData.lon.toFixed(1)}°<br>
                 Altitude: ${altitudeString}`;
           }
-        }
+        },
       );
     }
   };
@@ -297,7 +297,7 @@ export function Homepage() {
       });
     } catch (error) {
       setGeoLocationError(
-        `Could not get location via IP. Please search for a location manually. Error: ${error.message}`
+        `Could not get location via IP. Please search for a location manually. Error: ${error.message}`,
       );
     } finally {
       setLoadingLocation(false);
@@ -329,12 +329,12 @@ export function Homepage() {
             setLoadingLocation(false);
           } else {
             console.warn(
-              `Geolocation API failed: ${error.message}. Falling back to IP-based location.`
+              `Geolocation API failed: ${error.message}. Falling back to IP-based location.`,
             );
             getLocationByIp();
           }
         },
-        options
+        options,
       );
 
       for (let i = 0; i < elementsToHide.length; i++) {
@@ -343,7 +343,7 @@ export function Homepage() {
       setSelectVisible(true);
     } else {
       setGeoLocationError(
-        "Sorry, geolocation is not supported by this browser. Falling back to IP-based location."
+        "Sorry, geolocation is not supported by this browser. Falling back to IP-based location.",
       );
       // Fallback if geolocation API is not supported at all
       getLocationByIp();
@@ -354,17 +354,17 @@ export function Homepage() {
     switch (error.code) {
       case error.PERMISSION_DENIED:
         setGeoLocationError(
-          "You denied the request for Geolocation. Please enable location access in your browser settings."
+          "You denied the request for Geolocation. Please enable location access in your browser settings.",
         );
         break;
       case error.POSITION_UNAVAILABLE:
         setGeoLocationError(
-          "Sorry, your location information is unavailable. Please try again."
+          "Sorry, your location information is unavailable. Please try again.",
         );
         break;
       case error.TIMEOUT:
         setGeoLocationError(
-          "Sorry, the request to get your location timed out. Please try again."
+          "Sorry, the request to get your location timed out. Please try again.",
         );
         break;
       default:
@@ -716,18 +716,21 @@ export function Homepage() {
                             "Low"
                               ? "#4eb400" // green
                               : getUVIndexCategory(weatherData.current.uvi) ===
-                                "Moderate"
-                              ? "#f7e400" // yellow
-                              : getUVIndexCategory(weatherData.current.uvi) ===
-                                "High"
-                              ? "#f88700" // orange
-                              : getUVIndexCategory(weatherData.current.uvi) ===
-                                "Very High"
-                              ? "#d8001d" // red
-                              : getUVIndexCategory(weatherData.current.uvi) ===
-                                "Extreme"
-                              ? "#b54cff" // purple
-                              : "#f0f0f0", // unknown
+                                  "Moderate"
+                                ? "#f7e400" // yellow
+                                : getUVIndexCategory(
+                                      weatherData.current.uvi,
+                                    ) === "High"
+                                  ? "#f88700" // orange
+                                  : getUVIndexCategory(
+                                        weatherData.current.uvi,
+                                      ) === "Very High"
+                                    ? "#d8001d" // red
+                                    : getUVIndexCategory(
+                                          weatherData.current.uvi,
+                                        ) === "Extreme"
+                                      ? "#b54cff" // purple
+                                      : "#f0f0f0", // unknown
                         }}
                       ></Square>
                       <span>
@@ -758,7 +761,7 @@ export function Homepage() {
                       {new Date(
                         (weatherData.current.sunrise +
                           weatherData.timezone_offset) *
-                          1000
+                          1000,
                       )
                         .toISOString()
                         .substring(11, 16)}
@@ -770,7 +773,7 @@ export function Homepage() {
                       {new Date(
                         (weatherData.current.sunset +
                           weatherData.timezone_offset) *
-                          1000
+                          1000,
                       )
                         .toISOString()
                         .substring(11, 16)}
@@ -807,7 +810,7 @@ export function Homepage() {
                               day: "numeric",
                               hour: "2-digit",
                               minute: "2-digit",
-                            }
+                            },
                           )}
                         </p>
                         <br />
@@ -853,7 +856,7 @@ export function Homepage() {
                           <li key={index}>
                             <b>
                               {new Date(
-                                (hour.dt + weatherData.timezone_offset) * 1000
+                                (hour.dt + weatherData.timezone_offset) * 1000,
                               )
                                 .toISOString()
                                 .substring(11, 16)}
@@ -925,7 +928,7 @@ export function Homepage() {
                       <ul>
                         {weatherData.daily.map((day, index) => {
                           const date = new Date(
-                            day.dt * 1000
+                            day.dt * 1000,
                           ).toLocaleDateString("en-US", {
                             weekday: "short",
                             month: "short",
