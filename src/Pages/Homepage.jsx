@@ -26,7 +26,8 @@ import {
   ListWithArrowsWrapper,
   Square,
   Select,
-  Alert,
+  AlertContainer,
+  AlertTitle,
   ErrorMessage,
   LoadingMessage,
   Header,
@@ -73,6 +74,7 @@ export function Homepage() {
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [showComponents, setShowComponents] = useState(false);
+  const [showRadar, setShowRadar] = useState(false);
   const { fetchAltitude, loadingAltitude, altitudeError } = useAltitude(); // Destructure the custom hook
 
   // State to track the indices of the currently displayed emojis
@@ -205,6 +207,10 @@ export function Homepage() {
 
   const toggleShowComponents = () => {
     setShowComponents(!showComponents);
+  };
+
+  const toggleRadar = () => {
+    setShowRadar(!showRadar);
   };
 
   const [hourIndex, setHourIndex] = useState(0); // For hourly forecast
@@ -790,12 +796,12 @@ export function Homepage() {
                 {weatherData.alerts && weatherData.alerts.length > 0 && (
                   <Container>
                     {weatherData.alerts.map((alert, index) => (
-                      <Alert key={index}>
-                        <h3>
+                      <AlertContainer key={index}>
+                        <AlertTitle>
                           Weather Alert
                           {weatherData.alerts.length >= 2 && " "}
                           {weatherData.alerts.length >= 2 && index + 1}:
-                        </h3>
+                        </AlertTitle>
                         <p>
                           <strong>Sender:&nbsp;</strong> {alert.sender_name}
                         </p>
@@ -833,7 +839,7 @@ export function Homepage() {
                           <strong>Description:&nbsp;</strong>
                           {alert.description}
                         </p>
-                      </Alert>
+                      </AlertContainer>
                     ))}
                   </Container>
                 )}

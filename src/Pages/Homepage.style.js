@@ -233,8 +233,12 @@ export const Square = styled.span`
   border: 1px solid rgba(170, 170, 170, 0.5); // Equivalent RGBA color for #aaaaaa
 `;
 
-export const Alert = styled.div`
+export const AlertContainer = styled.div`
   color: #d32f2f;
+`;
+
+export const AlertTitle = styled.h3`
+  margin-bottom: 0;
 `;
 
 const rotateAnimation = ($deg) => keyframes`
