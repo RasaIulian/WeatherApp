@@ -125,6 +125,27 @@ export const Button = styled.button`
   }
 `;
 
+export const ArrowButton = styled.button`
+  padding: 0 20px;
+  margin: 0;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 3px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+
+  &:disabled {
+    opacity: 0;
+    cursor: default;
+    pointer-events: none;
+  }
+  &:hover {
+    background-color: #eaeaea;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+  }
+`;
+
 export const ListWithArrowsWrapper = styled.div`
   display: flex;
   align-items: center;

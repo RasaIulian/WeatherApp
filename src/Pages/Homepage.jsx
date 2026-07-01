@@ -22,6 +22,7 @@ import {
   SearchContainer,
   AnimatedIcon,
   Button,
+  ArrowButton,
   ArrowsContainer,
   ListWithArrowsWrapper,
   Square,
@@ -571,127 +572,6 @@ export function Homepage() {
               <WeatherMap latitude={latitude} longitude={longitude} />
             </Container>
           )}
-          {!loadingLocation && !errorAQI && !loadingAQI && aqi && (
-            <Container>
-              <h3>Air Quality: </h3>
-              <p>{getAQICategory(aqi)}</p>
-              <FontAwesomeIcon
-                icon={faWind}
-                style={{ color: getAQIColor(aqi), marginLeft: "5px" }}
-              />
-
-              <br />
-              {showComponents && (
-                <div>
-                  <p>Air quality index: {aqi} (1-5)</p>
-                  <br />
-                  <p>
-                    PM2.5 - Fine particles matter: {components.pm2_5} μg/m3
-                    -&nbsp;
-                    <span
-                      style={{
-                        color: getComponentColor("pm2_5", components.pm2_5),
-                      }}
-                    >
-                      ({categorizeComponent("pm2_5", components.pm2_5)})
-                    </span>{" "}
-                  </p>
-                  <br />
-                  <p>
-                    PM10 - Coarse particulate matter: {components.pm10} μg/m3
-                    -&nbsp;
-                    <span
-                      style={{
-                        color: getComponentColor("pm10", components.pm10),
-                      }}
-                    >
-                      ({categorizeComponent("pm10", components.pm10)})
-                    </span>{" "}
-                  </p>
-                  <br />
-
-                  <p>
-                    O₃ - Ozone: {components.o3} μg/m3 -&nbsp;
-                    <span
-                      style={{
-                        color: getComponentColor("o3", components.o3),
-                      }}
-                    >
-                      ({categorizeComponent("o3", components.o3)})
-                    </span>{" "}
-                  </p>
-                  <br />
-                  <p>
-                    SO₂ - Sulphur dioxide: {components.so2} μg/m3 -&nbsp;
-                    <span
-                      style={{
-                        color: getComponentColor("so2", components.so2),
-                      }}
-                    >
-                      ({categorizeComponent("so2", components.so2)})
-                    </span>{" "}
-                  </p>
-                  <br />
-                  <p>
-                    NO₂ - Nitrogen dioxide: {components.no2} μg/m3 -&nbsp;
-                    <span
-                      style={{
-                        color: getComponentColor("no2", components.no2),
-                      }}
-                    >
-                      ({categorizeComponent("no2", components.no2)})
-                    </span>{" "}
-                  </p>
-                  <br />
-
-                  <p>
-                    CO - Carbon monoxide: {components.co} μg/m3 -&nbsp;
-                    <span
-                      style={{
-                        color: getComponentColor("co", components.co),
-                      }}
-                    >
-                      ({categorizeComponent("co", components.co)})
-                    </span>{" "}
-                  </p>
-                  <br />
-                  <p>
-                    NO - Nitrogen monoxide: {components.no} μg/m3 -&nbsp;
-                    <span
-                      style={{
-                        color: getComponentColor("no", components.no),
-                      }}
-                    >
-                      ({categorizeComponent("no", components.no)})
-                    </span>{" "}
-                  </p>
-                  <br />
-                  <p>
-                    NH3 - Ammonia: {components.nh3} μg/m3 -&nbsp;
-                    <span
-                      style={{
-                        color: getComponentColor("nh3", components.nh3),
-                      }}
-                    >
-                      ({categorizeComponent("nh3", components.nh3)})
-                    </span>{" "}
-                  </p>
-                </div>
-              )}
-              <Button onClick={toggleShowComponents}>
-                {!showComponents ? (
-                  <>
-                    more <FontAwesomeIcon icon={faChevronDown} />
-                  </>
-                ) : (
-                  <>
-                    less <FontAwesomeIcon icon={faChevronUp} />
-                  </>
-                )}
-              </Button>
-            </Container>
-          )}
-
           {!loadingWeather &&
             !loadingLocation &&
             !loadingAQI &&
@@ -791,6 +671,147 @@ export function Homepage() {
                     />
                     <br />
                     <p>{weatherData.current.weather[0].description}</p>
+                    <br />
+                    {!loadingLocation && !errorAQI && !loadingAQI && aqi && (
+                      <>
+                        <p>Air Quality: {getAQICategory(aqi)}</p>
+                        <FontAwesomeIcon
+                          icon={faWind}
+                          style={{ color: getAQIColor(aqi), marginLeft: "5px" }}
+                        />
+
+                        <br />
+                        {showComponents && (
+                          <div>
+                            <p>Air quality index: {aqi} (1-5)</p>
+                            <br />
+                            <p>
+                              PM2.5 - Fine particles matter: {components.pm2_5}{" "}
+                              μg/m3 -&nbsp;
+                              <span
+                                style={{
+                                  color: getComponentColor(
+                                    "pm2_5",
+                                    components.pm2_5,
+                                  ),
+                                }}
+                              >
+                                (
+                                {categorizeComponent("pm2_5", components.pm2_5)}
+                                )
+                              </span>{" "}
+                            </p>
+                            <br />
+                            <p>
+                              PM10 - Coarse particulate matter:{" "}
+                              {components.pm10} μg/m3 -&nbsp;
+                              <span
+                                style={{
+                                  color: getComponentColor(
+                                    "pm10",
+                                    components.pm10,
+                                  ),
+                                }}
+                              >
+                                ({categorizeComponent("pm10", components.pm10)})
+                              </span>{" "}
+                            </p>
+                            <br />
+
+                            <p>
+                              O₃ - Ozone: {components.o3} μg/m3 -&nbsp;
+                              <span
+                                style={{
+                                  color: getComponentColor("o3", components.o3),
+                                }}
+                              >
+                                ({categorizeComponent("o3", components.o3)})
+                              </span>{" "}
+                            </p>
+                            <br />
+                            <p>
+                              SO₂ - Sulphur dioxide: {components.so2} μg/m3
+                              -&nbsp;
+                              <span
+                                style={{
+                                  color: getComponentColor(
+                                    "so2",
+                                    components.so2,
+                                  ),
+                                }}
+                              >
+                                ({categorizeComponent("so2", components.so2)})
+                              </span>{" "}
+                            </p>
+                            <br />
+                            <p>
+                              NO₂ - Nitrogen dioxide: {components.no2} μg/m3
+                              -&nbsp;
+                              <span
+                                style={{
+                                  color: getComponentColor(
+                                    "no2",
+                                    components.no2,
+                                  ),
+                                }}
+                              >
+                                ({categorizeComponent("no2", components.no2)})
+                              </span>{" "}
+                            </p>
+                            <br />
+
+                            <p>
+                              CO - Carbon monoxide: {components.co} μg/m3
+                              -&nbsp;
+                              <span
+                                style={{
+                                  color: getComponentColor("co", components.co),
+                                }}
+                              >
+                                ({categorizeComponent("co", components.co)})
+                              </span>{" "}
+                            </p>
+                            <br />
+                            <p>
+                              NO - Nitrogen monoxide: {components.no} μg/m3
+                              -&nbsp;
+                              <span
+                                style={{
+                                  color: getComponentColor("no", components.no),
+                                }}
+                              >
+                                ({categorizeComponent("no", components.no)})
+                              </span>{" "}
+                            </p>
+                            <br />
+                            <p>
+                              NH3 - Ammonia: {components.nh3} μg/m3 -&nbsp;
+                              <span
+                                style={{
+                                  color: getComponentColor(
+                                    "nh3",
+                                    components.nh3,
+                                  ),
+                                }}
+                              >
+                                ({categorizeComponent("nh3", components.nh3)})
+                              </span>{" "}
+                            </p>
+                          </div>
+                        )}
+                        <ArrowButton onClick={toggleShowComponents}>
+                          {!showComponents ? (
+                            <>
+                              <FontAwesomeIcon icon={faChevronDown} />
+                            </>
+                          ) : (
+                            <>
+                              <FontAwesomeIcon icon={faChevronUp} />
+                            </>
+                          )}
+                        </ArrowButton>
+                      </>
+                    )}
                   </Container>
                 )}
                 {weatherData.alerts && weatherData.alerts.length > 0 && (
