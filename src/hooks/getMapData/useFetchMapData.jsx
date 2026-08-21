@@ -6,7 +6,7 @@ const useFetchMapData = (
   mapRef,
   mapLoaded,
   layerOpacity,
-  selectedMapType
+  selectedMapType,
 ) => {
   const [forecastTimes, setForecastTimes] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
@@ -29,7 +29,7 @@ const useFetchMapData = (
     const fetchMapData = async () => {
       try {
         const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}`
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}`,
         );
         const data = await response.json();
 
@@ -40,12 +40,12 @@ const useFetchMapData = (
 
         // Filter forecast data for the next 24 hours
         const filteredData = data.list.filter(
-          (item) => item.dt <= Math.floor(Date.now() / 1000) + 24 * 3600
+          (item) => item.dt <= Math.floor(Date.now() / 1000) + 24 * 3600,
         );
 
         if (filteredData.length === 0) {
           console.error(
-            "No forecast data available for the selected timeframe"
+            "No forecast data available for the selected timeframe",
           );
           return;
         }
@@ -81,7 +81,7 @@ const useFetchMapData = (
             source: sourceId,
             paint: {
               "raster-opacity": layerOpacity,
-              "raster-opacity-transition": { duration: 1500 },
+              "raster-opacity-transition": { duration: 600 },
             },
           });
 

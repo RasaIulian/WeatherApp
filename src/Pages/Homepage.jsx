@@ -568,7 +568,6 @@ export function Homepage() {
                     : "Add to Favorites"}
                 </Button>
               )}
-
               <WeatherMap latitude={latitude} longitude={longitude} />
             </Container>
           )}
@@ -687,7 +686,7 @@ export function Homepage() {
                             <br />
                             <p>
                               PM2.5 - Fine particles matter: {components.pm2_5}{" "}
-                              μg/m3 -&nbsp;
+                              μg/m³ -&nbsp;
                               <span
                                 style={{
                                   color: getComponentColor(
@@ -704,7 +703,7 @@ export function Homepage() {
                             <br />
                             <p>
                               PM10 - Coarse particulate matter:{" "}
-                              {components.pm10} μg/m3 -&nbsp;
+                              {components.pm10} μg/m³ -&nbsp;
                               <span
                                 style={{
                                   color: getComponentColor(
@@ -719,7 +718,7 @@ export function Homepage() {
                             <br />
 
                             <p>
-                              O₃ - Ozone: {components.o3} μg/m3 -&nbsp;
+                              O₃ - Ozone: {components.o3} μg/m³ -&nbsp;
                               <span
                                 style={{
                                   color: getComponentColor("o3", components.o3),
@@ -730,7 +729,7 @@ export function Homepage() {
                             </p>
                             <br />
                             <p>
-                              SO₂ - Sulphur dioxide: {components.so2} μg/m3
+                              SO₂ - Sulphur dioxide: {components.so2} μg/m³
                               -&nbsp;
                               <span
                                 style={{
@@ -745,7 +744,7 @@ export function Homepage() {
                             </p>
                             <br />
                             <p>
-                              NO₂ - Nitrogen dioxide: {components.no2} μg/m3
+                              NO₂ - Nitrogen dioxide: {components.no2} μg/m³
                               -&nbsp;
                               <span
                                 style={{
@@ -761,7 +760,7 @@ export function Homepage() {
                             <br />
 
                             <p>
-                              CO - Carbon monoxide: {components.co} μg/m3
+                              CO - Carbon monoxide: {components.co} μg/m³
                               -&nbsp;
                               <span
                                 style={{
@@ -773,7 +772,7 @@ export function Homepage() {
                             </p>
                             <br />
                             <p>
-                              NO - Nitrogen monoxide: {components.no} μg/m3
+                              NO - Nitrogen monoxide: {components.no} μg/m³
                               -&nbsp;
                               <span
                                 style={{
