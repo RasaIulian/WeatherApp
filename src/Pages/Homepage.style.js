@@ -22,7 +22,7 @@ export const Container = styled.div`
   }
 
   ul {
-    margin-bottom: 0;
+    margin: 5px;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -381,4 +381,8 @@ export const EmojiWrapper = styled.div`
   position: relative;
   width: 3rem;
   height: 3rem;
+`;
+
+export const TimeZone = styled.span`
+  font-size: 0.8rem;
 `;

@@ -9,22 +9,41 @@ import {
   MapControlsContainer,
   ControlRow,
   ForecastTime,
-  OpacityInput,
-  OpacityValue,
-  Label,
-} from "./Map.style"; // Import the styled components
+  PlaybackControls,
+  PlayButton,
+  SpeedContainer,
+  SpeedInput,
+  SpeedLabel,
+} from "./Map.style";
 mapboxgl.accessToken = process.env.REACT_APP_Map_API_KEY;
 
 export const WeatherMap = ({ latitude, longitude }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
+  const userManualZoomRef = useRef(false); // Track manual zoom
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [layerOpacity, setLayerOpacity] = useState(0.9);
-  const [selectedMapType, setSelectedMapType] = useState("none"); // Default to "none"
+  const [layerOpacity, setLayerOpacity] = useState(1);
+  const [selectedMapType, setSelectedMapType] = useState("precipitation"); // Default
   const [mapStyle, setMapStyle] = useState(
     "mapbox://styles/mapbox/satellite-streets-v12",
+    //su Options:
+    // mapbox://styles/mapbox/streets-v12: A standard street map style.
+    // mapbox://styles/mapbox/light-v11: A light-colored map style.
+    // mapbox://styles/mapbox/dark-v11: A dark-colored map style.
+    // mapbox://styles/mapbox/outdoors-v12: A map style designed for outdoor activities.
+    // mapbox://styles/mapbox/satellite-streets-v12: A map style designed for satellite imagery with streets.
   );
-  const [mapZoom, setMapZoom] = useState(10);
+  const [mapZoom, setMapZoom] = useState(5);
+  const [animationPlaying, setAnimationPlaying] = useState(true);
+
+  const [animationSpeed, setAnimationSpeed] = useState(1);
+
+  // Precipitation animates with real RainViewer frames. Clouds/temperature/
+  // wind/pressure animate cosmetically (see useFetchMapData.js header comment
+  // for why — OWM's free tile endpoint doesn't support real timestamped
+  // frames). Both cases populate forecastTimes, so the timeline + playback
+  // UI shows for any selected layer type except "none".
+  const isAnimatedLayer = selectedMapType !== "none";
 
   // Use the custom hook
   const { forecastTimes, currentStep } = useFetchMapData(
@@ -34,6 +53,8 @@ export const WeatherMap = ({ latitude, longitude }) => {
     mapLoaded,
     layerOpacity,
     selectedMapType,
+    animationPlaying,
+    animationSpeed,
   );
 
   // Clean up function to handle map and interval cleanup
@@ -72,6 +93,11 @@ export const WeatherMap = ({ latitude, longitude }) => {
         .addTo(mapRef.current);
     });
 
+    // Track manual zoom changes
+    mapRef.current.on("zoom", () => {
+      userManualZoomRef.current = true;
+    });
+
     // Return cleanup function
     return cleanUp;
   }, [latitude, longitude, mapStyle]);
@@ -80,44 +106,28 @@ export const WeatherMap = ({ latitude, longitude }) => {
     const date = new Date(timestamp * 1000);
     const options = {
       day: "2-digit",
-      month: "long",
+      month: "short",
       hour: "2-digit",
       minute: "2-digit",
     };
     return date.toLocaleString("en-GB", options).replace(",", "");
   };
 
-  const handleOpacityChange = (e) => {
-    const opacity = parseFloat(e.target.value);
-    setLayerOpacity(opacity);
+  const handleMapTypeChange = (e) => {
+    const selectedType = e.target.value;
+    setSelectedMapType(selectedType);
 
-    if (mapRef.current && mapRef.current.getLayer("weather-layer")) {
-      mapRef.current.setPaintProperty(
-        "weather-layer",
-        "raster-opacity",
-        opacity,
-      );
-    }
+    // Reset the manual zoom flag for the next radar selection
+    userManualZoomRef.current = false;
   };
 
-  const handleMapTypeChange = (e) => {
-    const newSelectedMapType = e.target.value;
-    setSelectedMapType(newSelectedMapType);
+  const handlePlayPauseClick = () => {
+    setAnimationPlaying(!animationPlaying);
+  };
 
-    // Change map style only if "None" not selected
-    if (newSelectedMapType === "none") {
-      setMapStyle("mapbox://styles/mapbox/satellite-streets-v12"); // Revert to default style
-    } else {
-      setMapStyle("mapbox://styles/mapbox/dark-v11");
-      setMapZoom(6);
-
-      //    Map style   Options:
-      // mapbox://styles/mapbox/streets-v12: A standard street map style.
-      // mapbox://styles/mapbox/light-v11: A light-colored map style.
-      // mapbox://styles/mapbox/dark-v11: A dark-colored map style.
-      // mapbox://styles/mapbox/outdoors-v12: A map style designed for outdoor activities.
-      // mapbox://styles/mapbox/satellite-streets-v12: A map style designed for satellite imagery with streets.
-    }
+  const handleSpeedChange = (e) => {
+    const speed = parseFloat(e.target.value);
+    setAnimationSpeed(speed);
   };
 
   return (
@@ -126,20 +136,38 @@ export const WeatherMap = ({ latitude, longitude }) => {
       {mapLoaded && (
         <>
           <MapControlsContainer>
-            <ForecastTime
-              style={{ display: selectedMapType === "none" ? "none" : "block" }}
-            >
-              Time:{" "}
-              {forecastTimes.length > 0 && currentStep < forecastTimes.length
-                ? formatForecastTime(forecastTimes[currentStep])
-                : "Loading..."}
-            </ForecastTime>
+            {isAnimatedLayer && (
+              <ForecastTime $isVisible>
+                {forecastTimes.length > 0 && currentStep < forecastTimes.length
+                  ? formatForecastTime(forecastTimes[currentStep])
+                  : "Loading..."}
+              </ForecastTime>
+            )}
+            {isAnimatedLayer && (
+              <PlaybackControls>
+                <PlayButton onClick={handlePlayPauseClick}>
+                  {animationPlaying ? "⏸" : "▶"}
+                </PlayButton>
+                <SpeedContainer>
+                  <SpeedLabel>Speed:</SpeedLabel>
+                  <SpeedInput
+                    type="range"
+                    min="0.5"
+                    max="2"
+                    step="0.25"
+                    value={animationSpeed}
+                    onChange={handleSpeedChange}
+                  />
+                  <SpeedLabel>{animationSpeed.toFixed(2)}x</SpeedLabel>
+                </SpeedContainer>
+              </PlaybackControls>
+            )}
+
             <ControlRow
               style={{
                 marginBottom: selectedMapType === "none" ? "1.1rem" : "",
               }}
             >
-              <Label htmlFor="mapType">Radar:</Label>
               <Select
                 id="mapType"
                 value={selectedMapType}
@@ -150,24 +178,21 @@ export const WeatherMap = ({ latitude, longitude }) => {
                 <option value="precipitation">Precipitation</option>
                 <option value="temperature">Temperature</option>
                 <option value="wind">Wind</option>
-                <option value="pressure">Pressure</option>
+                <option value="pressure">Atm. Pressure</option>
               </Select>
             </ControlRow>
-            <ControlRow
-              style={{ display: selectedMapType === "none" ? "none" : "flex" }}
-            >
-              <Label htmlFor="opacity">Opacity:</Label>
-              <OpacityInput
-                type="range"
-                id="opacity"
-                min="0.5"
-                max="1"
-                step="0.1"
-                value={layerOpacity}
-                onChange={handleOpacityChange}
-              />
-              <OpacityValue>{layerOpacity.toFixed(1)}</OpacityValue>
-            </ControlRow>
+            {selectedMapType === "precipitation" && (
+              <small>
+                Precipitation data by{" "}
+                <a
+                  href="https://www.rainviewer.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  RainViewer
+                </a>
+              </small>
+            )}
           </MapControlsContainer>
         </>
       )}

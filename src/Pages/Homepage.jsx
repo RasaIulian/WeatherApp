@@ -37,6 +37,7 @@ import {
   Emoji,
   EmojiContainer,
   EmojiWrapper,
+  TimeZone,
 } from "../Pages/Homepage.style";
 import { SunMoonTimes } from "../Components/SunMoonTimes/SunMoonTimes";
 
@@ -867,11 +868,11 @@ export function Homepage() {
                 {weatherData.hourly && (
                   <Container>
                     <h3>Hourly:</h3>
-                    <p>
+                    <TimeZone>
                       Timezone {weatherData.timezone}: GMT
                       {weatherData.timezone_offset > 0 && "+"}
                       {weatherData.timezone_offset / 3600}
-                    </p>
+                    </TimeZone>
                     <ListWithArrowsWrapper
                       ref={hourlyScrollRef}
                       $index={hourIndex}

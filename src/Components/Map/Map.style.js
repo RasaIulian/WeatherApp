@@ -25,14 +25,55 @@ export const ControlRow = styled.div`
   }
 `;
 
-export const OpacityInput = styled.input`
-  /* styles for the range input here */
-`;
-
-export const OpacityValue = styled.span`
-  /* styles for the opacity value display here */
-`;
-
 export const ForecastTime = styled.p`
   display: ${({ isVisible }) => (isVisible ? "block" : "none")};
+`;
+
+export const PlaybackControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-radius: 5px;
+  font-size: 1rem;
+`;
+
+export const PlayButton = styled.button`
+  width: 45px;
+  height: 35px;
+  padding: 0;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
+export const SpeedContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const SpeedInput = styled.input`
+  width: 230px;
+  cursor: pointer;
+`;
+
+export const SpeedLabel = styled.span`
+  font-size: 1rem;
+  min-width: 50px;
 `;

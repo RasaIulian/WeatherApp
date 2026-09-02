@@ -4,7 +4,7 @@ const DotsContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 5px;
   width: 100%;
 `;
 
@@ -26,7 +26,7 @@ export const ScrollDots = ({ totalPages, currentPage }) => {
   const dots = [];
   for (let i = 0; i < totalPages; i++) {
     dots.push(
-      <Dot key={i} className={`dot ${i === currentPage ? "active" : ""}`} />
+      <Dot key={i} className={`dot ${i === currentPage ? "active" : ""}`} />,
     );
   }
   return <DotsContainer className="scroll-dots">{dots}</DotsContainer>;
