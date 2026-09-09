@@ -14,6 +14,7 @@ import {
   SpeedContainer,
   SpeedInput,
   SpeedLabel,
+  RainViewerLink,
 } from "./Map.style";
 mapboxgl.accessToken = process.env.REACT_APP_Map_API_KEY;
 
@@ -152,7 +153,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
                   <SpeedLabel>Speed:</SpeedLabel>
                   <SpeedInput
                     type="range"
-                    min="0.5"
+                    min="1"
                     max="2"
                     step="0.25"
                     value={animationSpeed}
@@ -183,14 +184,14 @@ export const WeatherMap = ({ latitude, longitude }) => {
             </ControlRow>
             {selectedMapType === "precipitation" && (
               <small>
-                Precipitation data by{" "}
-                <a
+                Data by{" "}
+                <RainViewerLink
                   href="https://www.rainviewer.com"
                   target="_blank"
                   rel="noreferrer"
                 >
                   RainViewer
-                </a>
+                </RainViewerLink>
               </small>
             )}
           </MapControlsContainer>

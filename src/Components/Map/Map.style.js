@@ -77,3 +77,8 @@ export const SpeedLabel = styled.span`
   font-size: 1rem;
   min-width: 50px;
 `;
+
+export const RainViewerLink = styled.a`
+  color: inherit;
+  vertical-align: top;
+`;

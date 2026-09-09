@@ -13,7 +13,11 @@ import { useState, useEffect, useRef } from "react";
  * whenever the precipitation layer is active.
  */
 
+// RainViewer API: returns historical and nowcast precipitation frames.
 const RAINVIEWER_API = "https://api.rainviewer.com/public/weather-maps.json";
+
+// OpenWeatherMap forecast API: provides timestamps used by static overlay
+// timeline controls. It does not provide the map tile images.
 const OWM_FORECAST_API = "https://api.openweathermap.org/data/2.5/forecast";
 
 const staticLayerIds = {
@@ -95,7 +99,7 @@ const useFetchMapData = (
     animationSpeedRef.current = animationSpeed;
   }, [animationSpeed]);
 
-  const tileUrl = (host, path) => `${host}${path}/256/{z}/{x}/{y}/2/1_1.png`; // color scheme 2, smooth=1, snow=1
+  const tileUrl = (path) => `/rainviewer${path}/256/{z}/{x}/{y}/2/1_1.png`; // color scheme 2, smooth=1, snow=1
 
   const removeLayer = (id) => {
     const map = mapRef.current;
@@ -111,10 +115,7 @@ const useFetchMapData = (
   };
 
   const scheduleNextFrame = () => {
-    const interval = Math.max(
-      300,
-      BASE_INTERVAL_MS / animationSpeedRef.current,
-    );
+    const interval = BASE_INTERVAL_MS / animationSpeedRef.current;
     timeoutRef.current = setTimeout(advanceFrame, interval);
   };
 
@@ -136,14 +137,20 @@ const useFetchMapData = (
     // Preload the next tile onto the idle (invisible) layer first, then
     // crossfade once it's actually loaded — this removes the blank gap
     // the old opacity-0-then-swap approach had.
-    map
-      .getSource(idleId)
-      .setTiles([tileUrl(hostRef.current, frames[stepRef.current].path)]);
+    map.getSource(idleId).setTiles([tileUrl(frames[stepRef.current].path)]);
 
     map.once("idle", () => {
-      if (!mapRef.current) return;
+      if (
+        mapRef.current !== map ||
+        !map.getLayer(idleId) ||
+        !map.getLayer(activeId)
+      ) {
+        return;
+      }
+
       map.setPaintProperty(idleId, "raster-opacity", layerOpacityRef.current);
       map.setPaintProperty(activeId, "raster-opacity", 0);
+
       activeLayerRef.current = idleId;
       idleLayerRef.current = activeId;
 
@@ -151,6 +158,8 @@ const useFetchMapData = (
     });
   };
 
+  // OpenWeatherMap map tile URL for the current clouds, temperature, wind,
+  // or pressure overlay.
   const staticTileUrl = (layerName, timestamp) =>
     `https://tile.openweathermap.org/map/${layerName}/{z}/{x}/{y}.png?appid=${weatherApiKey}${
       timestamp ? `&date=${timestamp}` : ""
@@ -214,13 +223,13 @@ const useFetchMapData = (
       source: STATIC_LAYER,
       paint: {
         "raster-opacity": layerOpacityRef.current,
-        "raster-opacity-transition": { duration: 400 },
+        "raster-opacity-transition": { duration: 500 },
         "raster-resampling": "linear",
       },
     });
 
-    // Fetch real forecast timestamps (free endpoint) purely to drive the
-    // ticking clock label — the tile image itself won't change per step.
+    // Fetch forecast timestamps from OpenWeatherMap for the static overlay
+    // timeline. The map tile itself remains the current OWM image.
     try {
       const res = await fetch(
         `${OWM_FORECAST_API}?lat=${latitude}&lon=${longitude}&appid=${weatherApiKey}`,
@@ -245,11 +254,11 @@ const useFetchMapData = (
     }
   };
 
-  const setupRadarLayers = (map, host, frames) => {
+  const setupRadarLayers = (map, frames) => {
     [RADAR_LAYER_A, RADAR_LAYER_B].forEach((id, i) => {
       map.addSource(id, {
         type: "raster",
-        tiles: [tileUrl(host, frames[stepRef.current].path)],
+        tiles: [tileUrl(frames[stepRef.current].path)],
         tileSize: 256,
         // RainViewer's radar tiles only exist up to zoom 7. Capping
         // maxzoom here tells Mapbox to oversample (stretch) the zoom-7
@@ -263,7 +272,7 @@ const useFetchMapData = (
         source: id,
         paint: {
           "raster-opacity": i === 0 ? layerOpacityRef.current : 0,
-          "raster-opacity-transition": { duration: 400 },
+          "raster-opacity-transition": { duration: 200 },
           "raster-resampling": "linear",
         },
       });
@@ -298,7 +307,8 @@ const useFetchMapData = (
       };
     }
 
-    // Precipitation: fetch RainViewer frame list, then animate.
+    // Fetch RainViewer radar frame metadata, then use each frame path to build
+    // the precipitation tile URLs.
     (async () => {
       try {
         const res = await fetch(RAINVIEWER_API);
@@ -320,7 +330,7 @@ const useFetchMapData = (
         setForecastTimes(frames.map((f) => f.time));
         setCurrentStep(stepRef.current);
 
-        setupRadarLayers(map, data.host, frames);
+        setupRadarLayers(map, frames);
 
         if (animationPlayingRef.current) scheduleNextFrame();
       } catch (error) {
