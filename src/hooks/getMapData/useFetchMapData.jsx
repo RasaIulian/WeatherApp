@@ -99,7 +99,10 @@ const useFetchMapData = (
     animationSpeedRef.current = animationSpeed;
   }, [animationSpeed]);
 
-  const tileUrl = (path) => `/rainviewer${path}/256/{z}/{x}/{y}/2/1_1.png`; // color scheme 2, smooth=1, snow=1
+  const tileUrl = (path) => {
+    const host = hostRef.current.replace(/^https?:\/\//, "");
+    return `https://${host}${path}/256/{z}/{x}/{y}/2/1_1.png`;
+  }; // color scheme 2, smooth=1, snow=1
 
   const removeLayer = (id) => {
     const map = mapRef.current;
