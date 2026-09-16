@@ -799,7 +799,14 @@ export function Homepage() {
                             </p>
                           </div>
                         )}
-                        <ArrowButton onClick={toggleShowComponents}>
+                        <ArrowButton
+                          onClick={toggleShowComponents}
+                          title={
+                            !showComponents
+                              ? "Show Air Quality Components"
+                              : "Hide Air Quality Components"
+                          }
+                        >
                           {!showComponents ? (
                             <>
                               <FontAwesomeIcon icon={faChevronDown} />

@@ -136,7 +136,10 @@ export const WeatherMap = ({ latitude, longitude }) => {
             <PlaybackControls>
               {isAnimatedLayer && (
                 <>
-                  <Button onClick={handlePlayPauseClick}>
+                  <Button
+                    onClick={handlePlayPauseClick}
+                    title={animationPlaying ? "Pause" : "Play"}
+                  >
                     {animationPlaying ? "⏸" : "▶"}
                   </Button>
                   <SpeedContainer>
@@ -150,7 +153,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
                       </ForecastTime>
                     </SpeedLabel>
                   </SpeedContainer>
-                  <Button onClick={handleSpeedChange}>
+                  <Button onClick={handleSpeedChange} title="Change speed">
                     {animationSpeed}x
                   </Button>{" "}
                 </>
@@ -160,6 +163,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
                   id="mapType"
                   value={selectedMapType}
                   onChange={handleMapTypeChange}
+                  title="Select radar type"
                 >
                   <option value="none">None</option>
                   <option value="clouds">Clouds</option>

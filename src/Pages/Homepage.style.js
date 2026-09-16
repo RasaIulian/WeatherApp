@@ -105,7 +105,7 @@ export const AnimatedIcon = styled.img`
 `;
 
 export const Button = styled.button`
-  width: 70px;
+  min-width: 70px;
   height: 40px;
   padding: 10px;
   margin: 10px 0;
