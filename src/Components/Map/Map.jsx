@@ -3,16 +3,14 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FullscreenControl } from "mapbox-gl";
 import useFetchMapData from "../../hooks/getMapData/useFetchMapData";
-import { Select } from "../../Pages/Homepage.style";
+import { Select, Button } from "../../Pages/Homepage.style";
 import {
   MapContainer,
   MapControlsContainer,
   ControlRow,
   ForecastTime,
   PlaybackControls,
-  PlayButton,
   SpeedContainer,
-  SpeedInput,
   SpeedLabel,
   RainViewerLink,
 } from "./Map.style";
@@ -23,17 +21,16 @@ export const WeatherMap = ({ latitude, longitude }) => {
   const mapRef = useRef(null);
   const userManualZoomRef = useRef(false); // Track manual zoom
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [layerOpacity, setLayerOpacity] = useState(1);
+  const layerOpacity = 1;
   const [selectedMapType, setSelectedMapType] = useState("precipitation"); // Default
-  const [mapStyle, setMapStyle] = useState(
-    "mapbox://styles/mapbox/satellite-streets-v12",
-    //su Options:
-    // mapbox://styles/mapbox/streets-v12: A standard street map style.
-    // mapbox://styles/mapbox/light-v11: A light-colored map style.
-    // mapbox://styles/mapbox/dark-v11: A dark-colored map style.
-    // mapbox://styles/mapbox/outdoors-v12: A map style designed for outdoor activities.
-    // mapbox://styles/mapbox/satellite-streets-v12: A map style designed for satellite imagery with streets.
-  );
+  const mapStyle = "mapbox://styles/mapbox/satellite-streets-v12";
+  //su Options:
+  // mapbox://styles/mapbox/streets-v12: A standard street map style.
+  // mapbox://styles/mapbox/light-v11: A light-colored map style.
+  // mapbox://styles/mapbox/dark-v11: A dark-colored map style.
+  // mapbox://styles/mapbox/outdoors-v12: A map style designed for outdoor activities.
+  // mapbox://styles/mapbox/satellite-streets-v12: A map style designed for satellite imagery with streets.
+
   const [mapZoom, setMapZoom] = useState(5);
   const [animationPlaying, setAnimationPlaying] = useState(true);
 
@@ -47,7 +44,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
   const isAnimatedLayer = selectedMapType !== "none";
 
   // Use the custom hook
-  const { forecastTimes, currentStep } = useFetchMapData(
+  const { forecastTimes, currentStep, setFrame } = useFetchMapData(
     latitude,
     longitude,
     mapRef,
@@ -126,9 +123,8 @@ export const WeatherMap = ({ latitude, longitude }) => {
     setAnimationPlaying(!animationPlaying);
   };
 
-  const handleSpeedChange = (e) => {
-    const speed = parseFloat(e.target.value);
-    setAnimationSpeed(speed);
+  const handleSpeedChange = () => {
+    setAnimationSpeed((speed) => (speed === 1 ? 2 : 1));
   };
 
   return (
@@ -137,51 +133,44 @@ export const WeatherMap = ({ latitude, longitude }) => {
       {mapLoaded && (
         <>
           <MapControlsContainer>
-            {isAnimatedLayer && (
-              <ForecastTime $isVisible>
-                {forecastTimes.length > 0 && currentStep < forecastTimes.length
-                  ? formatForecastTime(forecastTimes[currentStep])
-                  : "Loading..."}
-              </ForecastTime>
-            )}
-            {isAnimatedLayer && (
-              <PlaybackControls>
-                <PlayButton onClick={handlePlayPauseClick}>
-                  {animationPlaying ? "⏸" : "▶"}
-                </PlayButton>
-                <SpeedContainer>
-                  <SpeedLabel>Speed:</SpeedLabel>
-                  <SpeedInput
-                    type="range"
-                    min="1"
-                    max="2"
-                    step="0.25"
-                    value={animationSpeed}
-                    onChange={handleSpeedChange}
-                  />
-                  <SpeedLabel>{animationSpeed.toFixed(2)}x</SpeedLabel>
-                </SpeedContainer>
-              </PlaybackControls>
-            )}
+            <PlaybackControls>
+              {isAnimatedLayer && (
+                <>
+                  <Button onClick={handlePlayPauseClick}>
+                    {animationPlaying ? "⏸" : "▶"}
+                  </Button>
+                  <SpeedContainer>
+                    <SpeedLabel>
+                      {" "}
+                      <ForecastTime $isVisible>
+                        {forecastTimes.length > 0 &&
+                        currentStep < forecastTimes.length
+                          ? formatForecastTime(forecastTimes[currentStep])
+                          : "Loading forecast time..."}
+                      </ForecastTime>
+                    </SpeedLabel>
+                  </SpeedContainer>
+                  <Button onClick={handleSpeedChange}>
+                    {animationSpeed}x
+                  </Button>{" "}
+                </>
+              )}
+              <ControlRow>
+                <Select
+                  id="mapType"
+                  value={selectedMapType}
+                  onChange={handleMapTypeChange}
+                >
+                  <option value="none">None</option>
+                  <option value="clouds">Clouds</option>
+                  <option value="precipitation">Precipitation</option>
+                  <option value="temperature">Temperature</option>
+                  <option value="wind">Wind</option>
+                  <option value="pressure">Atm. Pressure</option>
+                </Select>
+              </ControlRow>
+            </PlaybackControls>
 
-            <ControlRow
-              style={{
-                marginBottom: selectedMapType === "none" ? "1.1rem" : "",
-              }}
-            >
-              <Select
-                id="mapType"
-                value={selectedMapType}
-                onChange={handleMapTypeChange}
-              >
-                <option value="none">None</option>
-                <option value="clouds">Clouds</option>
-                <option value="precipitation">Precipitation</option>
-                <option value="temperature">Temperature</option>
-                <option value="wind">Wind</option>
-                <option value="pressure">Atm. Pressure</option>
-              </Select>
-            </ControlRow>
             {selectedMapType === "precipitation" && (
               <small>
                 Data by{" "}

@@ -349,7 +349,7 @@ const useFetchMapData = (
     };
   }, [latitude, longitude, mapLoaded, mapRef, selectedMapType]);
 
-  return { forecastTimes, currentStep };
+  return { forecastTimes, currentStep, setFrame: setCurrentStep };
 };
 
 export default useFetchMapData;
