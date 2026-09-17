@@ -183,7 +183,7 @@ export const ListWithArrowsWrapper = styled.div`
   }
 `;
 
-export const ArrowsContainer = styled.div`
+export const ScrollContainer = styled.div`
   display: flex;
   justify-content: space-between;
   position: absolute;
@@ -199,6 +199,13 @@ export const ArrowsContainer = styled.div`
   & *:hover {
     box-shadow: none;
   }
+`;
+
+export const ScrollButton = styled.button`
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  opacity: 70%;
 `;
 
 export const SearchContainer = styled.div`

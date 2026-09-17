@@ -23,7 +23,8 @@ import {
   AnimatedIcon,
   Button,
   ArrowButton,
-  ArrowsContainer,
+  ScrollContainer,
+  ScrollButton,
   ListWithArrowsWrapper,
   Square,
   Select,
@@ -920,18 +921,18 @@ export function Homepage() {
                           </li>
                         ))}
                       </ul>
-                      <ArrowsContainer>
+                      <ScrollContainer>
                         {/* Left Arrow Button */}
-                        <Button
+                        <ScrollButton
                           onClick={() => scrollHours(-1)}
                           disabled={hourIndex === 0}
                           className={hourIndex === 0 ? "disabled" : ""}
                         >
                           <FontAwesomeIcon icon={faChevronLeft} />
-                        </Button>
+                        </ScrollButton>
 
                         {/* Right Arrow Button */}
-                        <Button
+                        <ScrollButton
                           onClick={() => scrollHours(1)}
                           disabled={hourIndex + hoursToShow >= hourlyDataLength}
                           className={
@@ -941,8 +942,8 @@ export function Homepage() {
                           }
                         >
                           <FontAwesomeIcon icon={faChevronRight} />
-                        </Button>
-                      </ArrowsContainer>
+                        </ScrollButton>
+                      </ScrollContainer>
                     </ListWithArrowsWrapper>
                     <ScrollDots
                       totalPages={totalHourPages}
@@ -1001,22 +1002,22 @@ export function Homepage() {
                           );
                         })}
                       </ul>
-                      <ArrowsContainer>
-                        <Button
+                      <ScrollContainer>
+                        <ScrollButton
                           onClick={() => scrollDays(-1)}
                           disabled={dayIndex === 0}
                         >
                           <FontAwesomeIcon icon={faChevronLeft} />
-                        </Button>{" "}
-                        <Button
+                        </ScrollButton>{" "}
+                        <ScrollButton
                           onClick={() => scrollDays(1)}
                           disabled={
                             dayIndex + daysToShow >= weatherData.daily.length
                           }
                         >
                           <FontAwesomeIcon icon={faChevronRight} />
-                        </Button>
-                      </ArrowsContainer>
+                        </ScrollButton>
+                      </ScrollContainer>
                     </ListWithArrowsWrapper>
                     <ScrollDots
                       totalPages={totalDayPages}
