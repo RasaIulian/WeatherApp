@@ -106,7 +106,7 @@ const useFetchMapData = (
 
     const proxyBase =
       process.env.REACT_APP_RAINVIEWER_PROXY ||
-      "https://weather-radar-proxy.yourname.workers.dev";
+      "https://weather-radar-proxy.krrmmb647f.workers.dev";
 
     return `${proxyBase}?base=${encodeURIComponent(base)}&z={z}&x={x}&y={y}`;
   };
