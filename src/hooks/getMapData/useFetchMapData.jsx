@@ -99,9 +99,16 @@ const useFetchMapData = (
     animationSpeedRef.current = animationSpeed;
   }, [animationSpeed]);
 
+  // uodated with cloudflare Proxy to avoid CORS issues with RainViewer tiles. The proxy is a simple Cloudflare Worker that fetches the tile and returns it with CORS headers.
   const tileUrl = (path) => {
     const host = hostRef.current.replace(/^https?:\/\//, "");
-    return `https://${host}${path}/256/{z}/{x}/{y}/2/1_1.png`;
+    const rainViewerUrl = `https://${host}${path}/256/{z}/{x}/{y}/2/1_1.png`;
+
+    const proxyBase =
+      process.env.REACT_APP_RAINVIEWER_PROXY ||
+      "https://weather-radar-proxy.yourname.workers.dev";
+
+    return `${proxyBase}?url=${encodeURIComponent(rainViewerUrl)}`;
   }; // color scheme 2, smooth=1, snow=1
 
   const removeLayer = (id) => {
