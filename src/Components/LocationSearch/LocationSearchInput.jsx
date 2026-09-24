@@ -8,7 +8,6 @@ const Input = styled.input`
   font-size: 1.2rem;
   padding: 8px;
   margin-right: 0.5rem;
-  margin-bottom: 1rem;
   border: 1px solid #eaeaea;
   border-radius: 3px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -82,7 +81,7 @@ const LocationSearchInput = ({ onSelectLocation }) => {
         setErrorMessage(
           input
             ? `Sorry, "${input}" not found. Please try again.`
-            : "Sorry, location not found. Please try again."
+            : "Sorry, location not found. Please try again.",
         );
         setSearchResults([]);
       }

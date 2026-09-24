@@ -13,6 +13,7 @@ import {
   SpeedContainer,
   SpeedLabel,
   RainViewerLink,
+  RainViewerText,
 } from "./Map.style";
 mapboxgl.accessToken = process.env.REACT_APP_Map_API_KEY;
 
@@ -176,7 +177,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
             </PlaybackControls>
 
             {selectedMapType === "precipitation" && (
-              <small>
+              <RainViewerText>
                 Data by{" "}
                 <RainViewerLink
                   href="https://www.rainviewer.com"
@@ -185,7 +186,7 @@ export const WeatherMap = ({ latitude, longitude }) => {
                 >
                   RainViewer
                 </RainViewerLink>
-              </small>
+              </RainViewerText>
             )}
           </MapControlsContainer>
         </>

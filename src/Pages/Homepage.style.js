@@ -48,15 +48,27 @@ export const Container = styled.div`
 export const Header = styled.h2`
   line-height: 1.5rem;
 `;
+const fadeOut = keyframes`
+  0%, 90% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+  }
+`;
 
 export const ErrorMessage = styled.div`
-  // background-color: #ffcdd2;
+  background-color: #fafafa;
   color: #c63737;
   padding: 5px;
   border-radius: 5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  margin-bottom: 20px;
-  max-width: 950px;
+  margin-top: 20px;
+  max-width: 920px;
+  animation: ${fadeOut} 10s ease-in-out forwards;
   @media (max-width: 980px) {
     max-width: 460px;
   }
@@ -221,6 +233,12 @@ export const SearchContainer = styled.div`
   }
 `;
 
+export const SelectContainer = styled.div`
+  display: flex;
+  alignItems: "center",
+  gap: "0.5rem"
+`;
+
 export const Select = styled.select`
   width: 15rem;
   height: 2.5rem;
@@ -251,6 +269,24 @@ export const Select = styled.select`
   option:not(:checked) {
     border: none;
     outline: none;
+  }
+`;
+
+export const RemoveButton = styled.button`
+  width: 35px;
+  height: 37px;
+  padding: 0;
+  font-size: 1.3rem;
+  margin-left: 5px;
+  cursor: pointer;
+  border: 1px solid #eaeaea;
+  border-radius: 3px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-out;
+
+  &:hover {
+    color: #eb2222;
+    background-color: #eaeaea;
   }
 `;
 

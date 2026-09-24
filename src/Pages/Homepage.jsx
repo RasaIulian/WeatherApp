@@ -28,6 +28,8 @@ import {
   ListWithArrowsWrapper,
   Square,
   Select,
+  SelectContainer,
+  RemoveButton,
   AlertContainer,
   AlertTitle,
   ErrorMessage,
@@ -127,6 +129,18 @@ export function Homepage() {
   }, [changingPosition]);
 
   const { favorites, addFavorite, removeFavorite } = useFavorites();
+  const [selectedFavorite, setSelectedFavorite] = useState(null);
+
+  const handleRemoveSelectedFavorite = () => {
+    if (!selectedFavorite) return;
+
+    removeFavorite(selectedFavorite);
+    setSelectedFavorite(null);
+    setSelectedLocation("");
+    setCurrentLocationData(null);
+    setIsUsingCurrentLocation(true);
+    setShowComponents(false);
+  };
   const [currentLocationData, setCurrentLocationData] = useState(null); // Track current location data
 
   // New state for emoji animation
@@ -148,53 +162,30 @@ export function Homepage() {
     const selectedOption = e.target.options[selectedIndex];
     const selectedLatitude = selectedOption.getAttribute("latitude");
     const selectedLongitude = selectedOption.getAttribute("longitude");
-    const selectedName = selectedOption.text.split(",")[0]; // Extract location name
-    const selectedCountry = selectedOption.text.split(",")[2]?.trim(); // Extract country
-    const selectedState = selectedOption.text.split(",")[1]?.trim(); // Extract state (if available)
-
-    setSelectedLocation(selectedOption.text);
-    setHourIndex(0);
-    setDayIndex(0);
 
     if (selectedLatitude === "current" && selectedLongitude === "current") {
-      // Check if we're already showing current location
-      if (isUsingCurrentLocation) return; // Already showing current location
-      // Only fetch current location if we're not already showing it
+      setSelectedFavorite(null);
       setIsUsingCurrentLocation(true);
       getLocation();
       setCurrentLocationData(null);
       setShowComponents(false);
-    } else {
-      // Only update if coordinates changed
-      setIsUsingCurrentLocation(false);
-
-      showPosition(parseFloat(selectedLatitude), parseFloat(selectedLongitude));
-      setShowComponents(false);
-
-      // Set currentLocationData for the selected favorite locationac
-      const locationData = {
-        lat: parseFloat(selectedLatitude),
-        lon: parseFloat(selectedLongitude),
-        name: selectedName,
-        country: selectedCountry,
-        state: selectedState,
-      };
-      setCurrentLocationData(locationData);
-
-      // Fetch and display altitude
-      fetchAltitude(locationData.lat, locationData.lon).then(
-        (altitudeValue) => {
-          const altitudeString =
-            altitudeValue !== undefined ? `${altitudeValue}m` : "N/A";
-          if (locationElement) {
-            locationElement.innerHTML = `
-                Latitude: ${locationData.lat.toFixed(1)}°<br>
-                Longitude: ${locationData.lon.toFixed(1)}°<br>
-                Altitude: ${altitudeString}`;
-          }
-        },
-      );
+      return;
     }
+
+    const locationData = {
+      lat: parseFloat(selectedLatitude),
+      lon: parseFloat(selectedLongitude),
+      name: selectedOption.text.split(",")[0],
+      country: selectedOption.text.split(",")[2]?.trim(),
+      state: selectedOption.text.split(",")[1]?.trim(),
+    };
+
+    setSelectedFavorite(locationData);
+    setSelectedLocation(selectedOption.text);
+    setIsUsingCurrentLocation(false);
+    showPosition(parseFloat(selectedLatitude), parseFloat(selectedLongitude));
+    setShowComponents(false);
+    setCurrentLocationData(locationData);
   };
 
   const {
@@ -244,6 +235,7 @@ export function Homepage() {
   };
 
   const selectFoundLocation = async (location) => {
+    setSelectedFavorite(null);
     const { lat, lon, name, country, state } = location;
     setLatitude(lat);
     setLongitude(lon);
@@ -520,24 +512,37 @@ export function Homepage() {
       {!loadingAQI && !loadingLocation && selectVisible && (
         <SearchContainer>
           <LocationSearchInput onSelectLocation={selectFoundLocation} />
-          <Select
-            id="select"
-            value={selectedLocation}
-            onChange={handleSelectChange}
-          >
-            <option hidden value="">
-              Select favorite location
-            </option>
-            <option latitude="current" longitude="current">
-              Current Location
-            </option>
-            {/* Dynamically generate options from favorites */}
-            {favorites.map((fav, index) => (
-              <option key={index} latitude={fav.lat} longitude={fav.lon}>
-                {`${fav.name}, ${fav.state || ""} ${fav.country}`}
+          <SelectContainer>
+            <Select
+              id="select"
+              value={selectedLocation}
+              onChange={handleSelectChange}
+            >
+              <option hidden value="">
+                Select favorite location
               </option>
-            ))}
-          </Select>
+              <option latitude="current" longitude="current">
+                Current Location
+              </option>
+
+              {favorites.map((fav, index) => (
+                <option key={index} latitude={fav.lat} longitude={fav.lon}>
+                  {`${fav.name}, ${fav.state || ""} ${fav.country}`}
+                </option>
+              ))}
+            </Select>
+
+            {selectedFavorite && (
+              <RemoveButton
+                type="button"
+                aria-label={`Remove ${selectedFavorite.name || "favorite"} from favorites`}
+                title={`Remove ${selectedFavorite.name || "favorite"} from favorites`}
+                onClick={handleRemoveSelectedFavorite}
+              >
+                ×
+              </RemoveButton>
+            )}
+          </SelectContainer>
         </SearchContainer>
       )}
       {!loadingLocation && selectVisible && !geoLocationError && (
@@ -556,20 +561,14 @@ export function Homepage() {
                 {locationInfo.altitude && `Altitude: ${locationInfo.altitude}`}
               </p>
               <br />
-              {/* Toggle between Add and Remove button */}
-              {currentLocationData && (
-                <Button
-                  onClick={
-                    isAlreadyInFavorites
-                      ? () => removeFavorite(currentLocationData)
-                      : () => addFavorite(currentLocationData)
-                  }
-                >
-                  {isAlreadyInFavorites
-                    ? "Remove from Favorites"
-                    : "Add to Favorites"}
-                </Button>
-              )}
+              {currentLocationData &&
+                (isAlreadyInFavorites ? (
+                  <Button style={{ display: "none" }}> </Button>
+                ) : (
+                  <Button onClick={() => addFavorite(currentLocationData)}>
+                    Add to Favorites
+                  </Button>
+                ))}
               <WeatherMap latitude={latitude} longitude={longitude} />
             </Container>
           )}

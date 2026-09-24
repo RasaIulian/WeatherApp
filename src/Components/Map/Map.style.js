@@ -9,6 +9,7 @@ export const MapContainer = styled.div`
 export const MapControlsContainer = styled.div`
   display: flex;
   flex-direction: column;
+  margin-left: 10px;
 `;
 
 export const Label = styled.label`
@@ -36,7 +37,7 @@ export const PlaybackControls = styled.div`
   flex-wrap: wrap;
   border-radius: 5px;
   font-size: 1rem;
-  margin: 5px 10px;
+  margin: 5px 0;
   @media (max-width: 515px) {
     align-items: stretch;
   }
@@ -61,4 +62,8 @@ export const SpeedLabel = styled.span`
 export const RainViewerLink = styled.a`
   color: inherit;
   vertical-align: top;
+`;
+
+export const RainViewerText = styled.span`
+  font-size: 0.8rem;
 `;
